@@ -6,3 +6,4 @@ authors = ["thealexhoar <thealexhoar@gmail.com>"]
 [dependencies]
 sfml = "*"
 radium_graphics = { path = "../graphics"}
+radium_ecs = { path = "../ecs"}
