@@ -1,4 +1,5 @@
 extern crate sfml;
+extern crate radium_ecs;
 extern crate radium_graphics;
 
 use radium_graphics::{GlyphSet, GlyphBatch, Tile, DrawTarget, Color};
