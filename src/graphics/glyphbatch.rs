@@ -3,7 +3,10 @@ extern crate sfml;
 use graphics::{DrawTarget, GlyphSet, Tile, Color, TILE_ID_MAX_VALUE};
 
 use sfml::system::{Vector2u, Vector2f};
-use sfml::graphics::{BlendMode, Transform, PrimitiveType, Image, Texture, IntRect, RenderWindow, RenderStates, RenderTarget, VertexArray, Vertex};
+use sfml::graphics::{
+    BlendMode, Transform, PrimitiveType, 
+    Image, Texture, IntRect, RenderWindow, 
+    RenderStates, RenderTarget, VertexArray, Vertex};
 use sfml::graphics::Color as SFColor;
 
 pub struct GlyphBatch {
@@ -37,11 +40,15 @@ impl GlyphBatch {
             _pixel_dimensions: Vector2u::new(0, 0),
             _big_offset: Vector2u::new(0, 0),
             _small_offset: Vector2u::new(0, 0),
-            _fg_vertices: match VertexArray::new_init(PrimitiveType::sfQuads, vertex_count) {
+            _fg_vertices: match VertexArray::new_init(
+                PrimitiveType::sfQuads, vertex_count) 
+            {
                 Some(vertex_array) => vertex_array,
                 None               => panic!("Couldn't create VertexArray")
             },
-            _bg_vertices: match VertexArray::new_init(PrimitiveType::sfQuads, vertex_count) {
+            _bg_vertices: match VertexArray::new_init(
+                PrimitiveType::sfQuads, vertex_count)
+            {
                 Some(vertex_array) => vertex_array,
                 None               => panic!("Couldn't create VertexArray")
             },

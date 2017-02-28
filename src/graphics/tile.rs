@@ -17,7 +17,11 @@ impl Clone for Tile {
 }
 
 impl Tile {
-    pub fn new(fg_color: Option<Color>, bg_color: Option<Color>, tile_id: u32) -> Tile {
+    pub fn new(
+        fg_color: Option<Color>, 
+        bg_color: Option<Color>, 
+        tile_id: u32
+    ) -> Tile {
         Tile {
             fg_color: fg_color,
             bg_color: bg_color,
