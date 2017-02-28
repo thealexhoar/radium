@@ -64,7 +64,11 @@ impl GlyphBatch {
         glyphbatch
     }
 
-    pub fn set_pixel_resolution(&mut self, pixel_width:u32, pixel_height:u32) {
+    pub fn set_pixel_resolution(
+        &mut self, 
+        pixel_width:u32, 
+        pixel_height:u32
+    ) {
         let true_tile_size = Vector2f::new(
             pixel_width as f32 / self._tiled_dimensions.x as f32, 
             pixel_height as f32 / self._tiled_dimensions.y as f32
@@ -82,8 +86,14 @@ impl GlyphBatch {
         self._small_offset.x = extra_space.x / self._tiled_dimensions.x / 2;
         self._small_offset.y = extra_space.y / self._tiled_dimensions.y / 2;
 
-        self._big_offset.x = (extra_space.x - self._small_offset.x * self._tiled_dimensions.x) / 2;
-        self._big_offset.y = (extra_space.y - self._small_offset.y * self._tiled_dimensions.y) / 2;
+        self._big_offset.x = (
+            extra_space.x 
+            - self._small_offset.x * self._tiled_dimensions.x
+            ) / 2;
+        self._big_offset.y = (
+            extra_space.y 
+            - self._small_offset.y * self._tiled_dimensions.y
+            ) / 2;
     }
 
     pub fn render(&mut self, window:&mut RenderWindow) {
@@ -101,8 +111,14 @@ impl GlyphBatch {
                 None
         );
 
-        window.draw_with_renderstates(&self._bg_vertices, &mut bg_renderstates);
-        window.draw_with_renderstates(&self._fg_vertices, &mut fg_renderstates);
+        window.draw_with_renderstates(
+            &self._bg_vertices, 
+            &mut bg_renderstates
+        );
+        window.draw_with_renderstates(
+            &self._fg_vertices, 
+            &mut fg_renderstates
+        );
 
     }
 
@@ -111,7 +127,10 @@ impl GlyphBatch {
             for y in 0..self.drawtarget.height() {
                 match self.drawtarget.get_tile(x, y) {
                     Some(tile) => self.set_vertices(tile, x, y),
-                    None       => self.set_vertices(Tile::new(None, None, 0), x, y) 
+                    None       => self.set_vertices(
+                        Tile::new(None, None, 0),
+                        x, y
+                    ) 
                 };
             }
         }
@@ -123,7 +142,11 @@ impl GlyphBatch {
         }
 
         match tile.fg_color {
-            Some(color) => self.set_tile_fg_vertices(tile.tile_id, color, x, y),
+            Some(color) => self.set_tile_fg_vertices(
+                tile.tile_id,
+                color, 
+                x, y
+            ),
             None        => self.set_tile_fg_vertices(0, Color::clear(), x, y)
         }
 
@@ -133,7 +156,12 @@ impl GlyphBatch {
         }
     }
 
-    fn set_tile_fg_vertices(&mut self, tile_id:u32, color:Color, x:u32, y:u32) {
+    fn set_tile_fg_vertices(
+        &mut self,
+        tile_id:u32,
+        color:Color,
+        x:u32, y:u32
+    ) {
         let base_index = (x + y * self._tiled_dimensions.x) * 4;
         let source_rect = self._glyphset.sub_rects[tile_id as usize];
 
@@ -152,8 +180,10 @@ impl GlyphBatch {
 
                 next_position = self.vertex_position(x + i, y + j);
                 next_tex_coords = Vector2f::new(
-                    (source_rect.left + source_rect.width * (i as i32)) as f32, 
-                    (source_rect.top + source_rect.height * (j as i32)) as f32
+                    (source_rect.left 
+                    + source_rect.width * (i as i32)) as f32, 
+                    (source_rect.top 
+                    + source_rect.height * (j as i32)) as f32
                 );
                 next_color = GlyphBatch::color_to_sf_color(color);
                 
@@ -202,8 +232,10 @@ impl GlyphBatch {
 
     fn vertex_position(&self, x:u32, y:u32) -> Vector2f {
         Vector2f::new(
-            (self._big_offset.x + x * (self._tile_size.x + self._small_offset.x)) as f32,
-            (self._big_offset.y + y * (self._tile_size.y + self._small_offset.y)) as f32
+            (self._big_offset.x 
+            + x * (self._tile_size.x + self._small_offset.x)) as f32,
+            (self._big_offset.y 
+            + y * (self._tile_size.y + self._small_offset.y)) as f32
         )
     }
 

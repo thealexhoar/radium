@@ -1,11 +1,10 @@
 extern crate sfml;
 
-pub use color::Color as Color;
-pub use drawtarget::DrawTarget as DrawTarget;
-pub use glyphbatch::GlyphBatch as GlyphBatch;
-pub use glyphset::GlyphSet as GlyphSet;
-pub use tile::Tile as Tile;
-pub use tile::TILE_ID_MAX_VALUE as TILE_ID_MAX_VALUE;
+pub use color::Color;
+pub use drawtarget::DrawTarget;
+pub use glyphbatch::GlyphBatch;
+pub use glyphset::GlyphSet;
+pub use tile::{Tile, TILE_ID_MAX_VALUE};
 
 
 pub mod color;
