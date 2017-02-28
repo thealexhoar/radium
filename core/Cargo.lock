@@ -1,7 +1,8 @@
 [root]
-name = "radium"
+name = "radium_core"
 version = "0.1.0"
 dependencies = [
+ "radium_graphics 0.1.0",
  "sfml 0.11.2 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
@@ -63,6 +64,13 @@ dependencies = [
 name = "libc"
 version = "0.2.20"
 source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "radium_graphics"
+version = "0.1.0"
+dependencies = [
+ "sfml 0.11.2 (registry+https://github.com/rust-lang/crates.io-index)",
+]
 
 [[package]]
 name = "sfml"

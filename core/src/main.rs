@@ -1,10 +1,7 @@
 extern crate sfml;
+extern crate radium_graphics;
 
-mod graphics;
-
-use graphics::{GlyphSet, GlyphBatch, Tile, DrawTarget};
-
-use graphics::color::Color;
+use radium_graphics::{GlyphSet, GlyphBatch, Tile, DrawTarget, Color};
 
 use sfml::system::Vector2f;
 use sfml::window::{ContextSettings, VideoMode, event, window_style};
