@@ -1,8 +1,14 @@
+use Engine;
+use Event;
 
 pub trait PassiveSystem {
-    pub fn update(engine:&Engine);
+    fn update(&mut self, engine:&Engine);
 }
 
 pub trait ReactiveSystem {
-    pub fn update(engine:&Engine, )
+    fn update(&mut self, engine:&Engine, event:Event);
+}
+
+pub trait ContinuousSystem {
+    fn update(&mut self, engine:&Engine, delta_time:u32);
 }
