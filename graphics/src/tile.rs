@@ -2,18 +2,12 @@ use Color;
 
 pub const TILE_ID_MAX_VALUE:u32 = 255;
 
+#[derive(Clone, Copy)]
 pub struct Tile {
     pub fg_color: Option<Color>,
     pub bg_color: Option<Color>,
     pub tile_id: u32
     
-}
-
-impl Copy for Tile {}
-impl Clone for Tile {
-    fn clone(&self) -> Tile {
-        *self
-    }
 }
 
 impl Tile {

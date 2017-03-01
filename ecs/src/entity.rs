@@ -1,1 +1,1 @@
-pub struct Entity(u32);
+pub type Entity = u32;
