@@ -15,8 +15,4 @@ pub mod event;
 pub mod system;
 
 #[cfg(test)]
-mod tests {
-    #[test]
-    fn it_works() {
-    }
-}
+mod tests;

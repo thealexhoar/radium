@@ -38,7 +38,7 @@ impl DrawTarget {
 
     pub fn set_tiles_rect(
         &mut self, 
-        tile:Option<Tile>, 
+        tile:Option<Tile>,
         x:u32, y:u32, 
         width:u32, height:u32
      ) {
@@ -51,44 +51,45 @@ impl DrawTarget {
         }
     }
 
-    pub fn overwrite_tile(&mut self, tile:Option<Tile>, x:u32, y:u32) {
+    pub fn overlay_tile(&mut self, tile:Option<Tile>, x:u32, y:u32) {
         let index = self.get_index(x, y);
         match tile {
-            Some(other) => match self._data[index] {
-                Some(mut tile) => tile.overwrite(other),
-                None       => self._data[index] = Some(other)
+            Some(other) => self._data[index] = match self._data[index] {
+                Some(mut tile) => Some(tile.overlay(other)),
+                None           => Some(other)
             },
             None        => return
         }
     }
 
-    pub fn overwrite_tiles_rect(
+    pub fn overlay_tiles_rect(
         &mut self, 
-        tile:Option<Tile>, 
+        tile:Option<Tile>,  
         x:u32, y:u32, 
         width:u32, height:u32
+
     ) {
         let x_bound = min(x+width, self._width);
         let y_bound = min(y+height, self._height);
         for i in x..x_bound {
             for j in y..y_bound {
-                self.overwrite_tile(tile, i, j);
+                self.overlay_tile(tile, i, j);
             }
         }
     }
 
-    pub fn overwrite_tile_soft(&mut self, tile:Option<Tile>, x:u32, y:u32) {
+    pub fn overlay_tile_soft(&mut self, tile:Option<Tile>, x:u32, y:u32) {
         let index = self.get_index(x, y);
         match tile {
-            Some(other) => match self._data[index] {
-                Some(mut tile) => tile.overwrite_soft(other),
-                None       => self._data[index] = Some(other)
+            Some(other) => self._data[index] =  match self._data[index] {
+                Some(mut tile) => Some(tile.overlay_soft(other)),
+                None           => Some(other)
             },
             None        => return
         }
     }
 
-    pub fn overwrite_tiles_rect_soft(
+    pub fn overlay_tiles_rect_soft(
         &mut self, 
         tile:Option<Tile>, 
         x:u32, y:u32, 
@@ -98,7 +99,7 @@ impl DrawTarget {
         let y_bound = min(y+height, self._height);
         for i in x..x_bound {
             for j in y..y_bound {
-                self.overwrite_tile_soft(tile, i, j);
+                self.overlay_tile_soft(tile, i, j);
             }
         }
     }
@@ -132,14 +133,14 @@ impl DrawTarget {
         }
     }
 
-    pub fn overwrite_from_drawtarget(
+    pub fn overlay_from_drawtarget(
         &mut self, 
         drawtarget:&DrawTarget, 
         x:u32, y:u32
     ) {
         let width = drawtarget.width();
         let height = drawtarget.height();
-        self.overwrite_from_drawtarget_subrect(
+        self.overlay_from_drawtarget_subrect(
             drawtarget, 
             x, y, 
             0, 0, 
@@ -147,7 +148,7 @@ impl DrawTarget {
         );
     }
 
-    pub fn overwrite_from_drawtarget_subrect(
+    pub fn overlay_from_drawtarget_subrect(
         &mut self,
         drawtarget:&DrawTarget,
         x:u32, y:u32,
@@ -166,14 +167,14 @@ impl DrawTarget {
         }
     }
 
-    pub fn overwrite_soft_from_drawtarget(
+    pub fn overlay_soft_from_drawtarget(
         &mut self,
         drawtarget:&DrawTarget,
         x:u32, y:u32
     ) {
         let width = drawtarget.width();
         let height = drawtarget.height();
-        self.overwrite_soft_from_drawtarget_subrect(
+        self.overlay_soft_from_drawtarget_subrect(
             drawtarget,
             x, y,
             0, 0,
@@ -181,7 +182,7 @@ impl DrawTarget {
         );
     }
 
-    pub fn overwrite_soft_from_drawtarget_subrect(
+    pub fn overlay_soft_from_drawtarget_subrect(
         &mut self,
         drawtarget:&DrawTarget,
         x:u32, y:u32,
@@ -192,7 +193,7 @@ impl DrawTarget {
         let y_bound = min(height, self._height - y);
         for i in 0..x_bound {
             for j in 0..y_bound {
-                self.overwrite_tile_soft(
+                self.overlay_tile_soft(
                     drawtarget.get_tile(sub_x + i, sub_y + j), 
                     x + i, 
                     y + j

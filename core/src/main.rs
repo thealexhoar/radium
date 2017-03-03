@@ -9,20 +9,20 @@ use radium_graphics::{
 
 fn main() {
     // Create the window of the application
-    let mut window = Window::new(800, 600);
+    let mut window = Window::new(1600, 1200);
 
     let glyphset = GlyphSet::new("assets/tileset_10x10.png", 10, 10, 256);
     let mut glyphbatch:GlyphBatch = GlyphBatch::new(
         glyphset, 
         40, 30, 
-        800, 600
+        1600, 1200
     );
 
     glyphbatch.drawtarget.set_tiles_rect(
         Some(Tile::new(
             Some(Color::white()), 
             Some(Color::new_from_rgb(10,10,55)), 
-            225
+            208
         )), 
         5, 3, 
         22, 10

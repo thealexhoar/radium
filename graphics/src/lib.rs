@@ -16,8 +16,4 @@ pub mod tile;
 pub mod window;
 
 #[cfg(test)]
-mod tests {
-    #[test]
-    fn it_works() {
-    }
-}
+mod tests;

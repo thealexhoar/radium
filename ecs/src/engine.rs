@@ -17,27 +17,39 @@ impl ComponentManager {
         }
     }
 
-    pub fn get(&self, entity:Entity, id:&TypeId) -> Option<&Any> {
-        match self._data.get(id) { 
-            Some(data_vec) => {
-                match data_vec[entity as usize] {
-                    Some(ref data) =>  Some(data.deref()),
-                    None       => None
-                }
+    pub fn get<T: Component>(&self, entity:Entity) -> Option<&T> {
+        let id = TypeId::of::<T>();
+        match self._data.get(&id) { 
+            Some(data_vec) =>  match data_vec[entity as usize] {
+                Some(ref data_box) => data_box.downcast_ref::<T>(),
+                None           => None
             },
             None       => None
         }
     }
-    
-    pub fn get_mut(&mut self, entity:Entity, id:&TypeId) -> Option<&mut Any> {
+
+    pub fn get_mut<T: Component>(&mut self, entity:Entity) -> Option<&mut T> {
+        let id = TypeId::of::<T>();
         match self._data.get_mut(&id) { 
-            Some(data_vec) => {
-                match data_vec[entity as usize] {
-                    Some(ref mut data) => Some(data.deref_mut()),
-                    None       => None
-                }
+            Some(data_vec) => match data_vec[entity as usize] {
+                Some(ref mut data_box) => data_box.downcast_mut::<T>(),
+                None           => None
             },
             None       => None
+        }
+    }
+
+    pub fn set<T: Component + Any>(&mut self, entity:Entity, component:T) {
+        let id = TypeId::of::<T>();
+        match self._data.get_mut(&id) { 
+            Some(data_vec) => 
+                data_vec[entity as usize] = Some(Box::new(component)),
+            None           => {
+                let mut new_vec = Vec::new();
+                new_vec.reserve(entity as usize + 1);
+                new_vec[entity as usize] = Some(Box::new(component) as Box<Any>);
+                self._data.insert(id, new_vec);
+            }
         }
     }
 }
