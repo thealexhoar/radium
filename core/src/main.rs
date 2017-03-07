@@ -8,25 +8,38 @@ use radium_graphics::{
 
 
 fn main() {
+    let width = 1920;
+    let height = 1080;
     // Create the window of the application
-    let mut window = Window::new(1600, 1200);
+    let mut window = Window::new(width, height);
 
     let glyphset = GlyphSet::new("assets/tileset_10x10.png", 10, 10, 256);
     let mut glyphbatch:GlyphBatch = GlyphBatch::new(
         glyphset, 
-        40, 30, 
-        1600, 1200
+        192, 108,
+        width, height
     );
 
     glyphbatch.drawtarget.set_tiles_rect(
         Some(Tile::new(
-            Some(Color::white()), 
-            Some(Color::new_from_rgb(10,10,55)), 
-            208
-        )), 
-        5, 3, 
+            Some(Color::new_from_rgb(100,100,100)), 
+            None, 
+            138
+        )),
+        5, 3,
         22, 10
+    );
+
+    for i in 0..4 {
+        glyphbatch.drawtarget.overlay_tile(
+            Some(Tile::new(
+                Some(Color::yellow()),
+                None,
+                208 + i
+            )),
+            7 + i, 8 + i
         );
+    }
 
     glyphbatch.drawtarget.draw_string_slice(
         "Hello World!", 

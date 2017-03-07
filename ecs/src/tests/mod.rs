@@ -1,4 +1,2 @@
+mod componentmanagertest;
 
-#[test]
-fn it_works() {
-}

@@ -8,6 +8,7 @@ use sfml::graphics::{
     Image, Texture, IntRect, RenderWindow, 
     RenderStates, RenderTarget, VertexArray, Vertex};
 use sfml::graphics::Color as SFColor;
+use std::cmp::min;
 
 pub struct GlyphBatch {
     _tile_size: Vector2u,
@@ -72,11 +73,18 @@ impl GlyphBatch {
         let true_tile_size = Vector2f::new(
             pixel_width as f32 / self._tiled_dimensions.x as f32, 
             pixel_height as f32 / self._tiled_dimensions.y as f32
-            );
+        );
         self._pixel_dimensions.x = pixel_width;
         self._pixel_dimensions.y = pixel_height;
-        self._tile_size.x = true_tile_size.x as u32;
-        self._tile_size.y = true_tile_size.y as u32;
+
+
+        let base_tile_size = self._glyphset.tile_size();
+        let x_scale = true_tile_size.x as u32 / base_tile_size.x;
+        let y_scale = true_tile_size.y as u32 / base_tile_size.y;
+        let min_scale = min(x_scale, y_scale);
+
+        self._tile_size.x = min_scale * base_tile_size.x;
+        self._tile_size.y = min_scale * base_tile_size.y;
 
         let extra_space = Vector2u::new(
             pixel_width - self._tiled_dimensions.x * self._tile_size.x,
@@ -179,6 +187,18 @@ impl GlyphBatch {
                 };
 
                 next_position = self.vertex_position(x + i, y + j);
+                let horiz_factor:i32 = match i == 1 {
+                    true => -1,
+                    false => 1
+                };
+                let vert_factor:i32 = match j == 1 {
+                    true => -1,
+                    false => 1
+                };
+                next_position.x += (self._small_offset.x as i32 / 2
+                                    * horiz_factor ) as f32;
+                next_position.y += (self._small_offset.y as i32 / 2
+                                    * vert_factor) as f32;
                 next_tex_coords = Vector2f::new(
                     (source_rect.left 
                     + source_rect.width * (i as i32)) as f32, 
@@ -232,7 +252,7 @@ impl GlyphBatch {
 
     fn vertex_position(&self, x:u32, y:u32) -> Vector2f {
         Vector2f::new(
-            (self._big_offset.x 
+            (self._big_offset.x  
             + x * (self._tile_size.x + self._small_offset.x)) as f32,
             (self._big_offset.y 
             + y * (self._tile_size.y + self._small_offset.y)) as f32

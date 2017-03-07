@@ -1,10 +1,7 @@
-use Data;
-
 pub enum EventType {
     Named(String)
 }
 
-pub struct Event {
-    pub event_type: EventType,
-    pub data: Data
+pub trait Event : 'static {
+    //TODO: add a serialize function
 }

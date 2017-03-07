@@ -7,11 +7,17 @@ use std::cmp::min;
 
 pub struct GlyphSet {
     pub texture: Texture,
-    pub sub_rects: Vec<IntRect>
+    pub sub_rects: Vec<IntRect>,
+    _tile_size: Vector2u
 }
 
 impl GlyphSet {
-    pub fn new(filename:&str, tile_width:u32, tile_height:u32, tile_count:u32) -> GlyphSet {
+    pub fn new(
+        filename:&str, 
+        tile_width:u32,
+        tile_height:u32, 
+        tile_count:u32
+    ) -> GlyphSet {
         let texture = match Texture::new_from_file(filename) {
             Some(texture) => texture,
             None          => panic!("Couldn't load texture at {}", filename)
@@ -36,7 +42,12 @@ impl GlyphSet {
                         )
                     }
                 )
-                .collect()
+                .collect(),
+            _tile_size:Vector2u::new(tile_width, tile_height)
         }
+    }
+
+    pub fn tile_size(&self) -> Vector2u {
+        self._tile_size
     }
 }
