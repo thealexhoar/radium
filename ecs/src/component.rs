@@ -37,7 +37,7 @@ impl ComponentManager {
         match self._data.get(&id) { 
             Some(data_vec) =>  match data_vec[entity as usize] {
                 Some(ref data_box) => data_box.downcast_ref::<T>(),
-                None           => None
+                None               => None
             },
             None           => None
         }
