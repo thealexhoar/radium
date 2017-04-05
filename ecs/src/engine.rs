@@ -5,7 +5,6 @@ use {EventType, Event};
 use Scheduler;
 
 
-
 pub struct Engine {
     _passive_systems: Vec<Box<PassiveSystem>>,
     _reactive_systems: Vec<Box<ReactiveSystem>>,

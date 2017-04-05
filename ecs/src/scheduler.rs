@@ -1,36 +1,30 @@
 use Entity;
 use {Event, EventType};
+use std::any::Any;
 
 
-struct ScheduledEvent {
-    pub event_type: EventType,
-    pub event: Box<Event>,
-    pub delta_time: u32
-}
 
 
 pub struct Scheduler {
-    _event_queue: Vec<ScheduledEvent>,
-    _turn_taker_queue: Vec<Entity>
+    _event_queue: Vec<Event>
 }
 
 impl Scheduler {
     pub fn new() -> Scheduler {
         Scheduler {
-            _event_queue: Vec::new(),
-            _turn_taker_queue: Vec::new()
+            _event_queue: Vec::new()
         }
     }
 
-    pub fn schedule_event<T: Event + Sized>(
+    pub fn push_event<T: Any + Sized>(
         &mut self, 
         event_type: EventType, 
-        event: T,
+        data: T,
         delta_time: u32
     ) {
-        let scheduled_event = ScheduledEvent{
+        let new_event = Event{
             event_type: event_type,
-            event: Box::new(event),
+            data: Box::new(data),
             delta_time: delta_time
         };
         let mut index:Option<usize> = None;
@@ -41,18 +35,18 @@ impl Scheduler {
             }
         }
         match index {
-            Some(i) => self._event_queue.insert(i, scheduled_event),
-            None    => self._event_queue.push(scheduled_event)
+            Some(i) => self._event_queue.insert(i, new_event),
+            None    => self._event_queue.push(new_event)
         };
     }
 
-    pub fn pop(&mut self) -> Option<(EventType, Box<Event>)> {
+    pub fn pop_event(&mut self) -> Option<Event> {
         match self._event_queue.len() {
             0 => None,
             _ => {
-                let scheduled_event = self._event_queue.remove(0);
-                self.subtract_time(scheduled_event.delta_time);
-                Some((scheduled_event.event_type, scheduled_event.event))
+                let event = self._event_queue.remove(0);
+                self.subtract_time(event.delta_time);
+                Some(event)
             }
         }
     }
