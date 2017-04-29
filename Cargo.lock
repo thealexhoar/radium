@@ -1,9 +1,8 @@
 [root]
-name = "radium_core"
+name = "radium"
 version = "0.1.0"
 dependencies = [
- "radium_ecs 0.1.0",
- "radium_graphics 0.1.0",
+ "sfml 0.12.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -45,17 +44,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "csfml-system-sys 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "sfml-build 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
-name = "radium_ecs"
-version = "0.1.0"
-
-[[package]]
-name = "radium_graphics"
-version = "0.1.0"
-dependencies = [
- "sfml 0.12.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]

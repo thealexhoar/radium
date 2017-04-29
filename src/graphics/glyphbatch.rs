@@ -1,6 +1,4 @@
-extern crate sfml;
-
-use {DrawTarget, GlyphSet, Tile, Color, TILE_ID_MAX_VALUE};
+use graphics::{DrawTarget, GlyphSet, Tile, Color, TILE_ID_MAX_VALUE};
 
 use sfml::system::{Vector2u, Vector2f};
 use sfml::graphics::{

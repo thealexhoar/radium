@@ -1,9 +1,7 @@
-extern crate sfml;
-
-use GlyphBatch;
+use graphics::GlyphBatch;
 
 use sfml::system::Vector2f;
-use sfml::window::{ContextSettings, VideoMode, Style};
+use sfml::window::{ContextSettings, VideoMode, style};
 use sfml::window::Event as SFEvent;
 use sfml::graphics::{RenderWindow, RenderTarget};
 use sfml::graphics::Color as SFColor;
@@ -54,7 +52,7 @@ impl Window {
         let mut window = match RenderWindow::new(
             VideoMode::new(width, height, 32),
             "Radium",
-            Style::default(),
+            style::CLOSE,
             &ContextSettings::default()
         ) {
             Some(window) => window,
@@ -89,7 +87,7 @@ impl Window {
         self._render_window.is_open()
     }
 
-    pub fn close(mut self) {
+    pub fn close(&mut self) {
         self._render_window.close();
     }
 

@@ -1,3 +1,0 @@
-
-mod colortest;
-mod tiletest;

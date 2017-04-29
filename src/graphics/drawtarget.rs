@@ -1,4 +1,5 @@
-use {Color, Tile, TILE_ID_MAX_VALUE};
+use graphics::{Color, Tile, TILE_ID_MAX_VALUE};
+
 use std::cmp::min;
 use std::str::Chars;
 

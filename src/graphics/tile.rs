@@ -1,4 +1,4 @@
-use Color;
+use graphics::Color;
 
 pub const TILE_ID_MAX_VALUE:u32 = 255;
 

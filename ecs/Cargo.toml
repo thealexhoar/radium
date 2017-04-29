@@ -1,6 +1,0 @@
-[package]
-name = "radium_ecs"
-version = "0.1.0"
-authors = ["Alex Hoar <thealexhoar@gmail.com>"]
-
-[dependencies]

@@ -1,4 +1,3 @@
-extern crate sfml;
 
 use sfml::system::Vector2u;
 use sfml::graphics::{Texture, IntRect};

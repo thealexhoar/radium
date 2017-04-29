@@ -1,8 +1,7 @@
 [package]
-name = "radium_core"
+name = "radium"
 version = "0.1.0"
 authors = ["thealexhoar <thealexhoar@gmail.com>"]
 
 [dependencies]
-radium_graphics = { path = "./graphics"}
-radium_ecs = { path = "./ecs"}
+sfml = "0.12.0"
