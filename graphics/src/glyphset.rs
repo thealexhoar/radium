@@ -18,13 +18,13 @@ impl GlyphSet {
         tile_height:u32, 
         tile_count:u32
     ) -> GlyphSet {
-        let texture = match Texture::new_from_file(filename) {
+        let texture = match Texture::from_file(filename) {
             Some(texture) => texture,
             None          => panic!("Couldn't load texture at {}", filename)
         };
         let tiles = min(tile_width * tile_height, tile_count);
-        let tiled_width = texture.get_size().x / tile_width;
-        let tiled_height = texture.get_size().y / tile_height;
+        let tiled_width = texture.size().x / tile_width;
+        let tiled_height = texture.size().y / tile_height;
 
         GlyphSet {
             texture: texture,

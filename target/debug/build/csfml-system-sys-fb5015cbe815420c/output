@@ -1,0 +1,2 @@
+cargo:rustc-link-lib=sfml-system
+cargo:rustc-link-lib=csfml-system

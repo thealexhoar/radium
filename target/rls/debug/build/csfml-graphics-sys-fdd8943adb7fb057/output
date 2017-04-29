@@ -1,0 +1,2 @@
+cargo:rustc-link-lib=sfml-graphics
+cargo:rustc-link-lib=csfml-graphics

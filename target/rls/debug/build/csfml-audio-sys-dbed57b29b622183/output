@@ -1,0 +1,2 @@
+cargo:rustc-link-lib=sfml-audio
+cargo:rustc-link-lib=csfml-audio

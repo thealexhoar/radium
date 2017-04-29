@@ -29,7 +29,7 @@ impl GlyphBatch {
         tiled_width:u32, tiled_height:u32,
         pixel_width:u32, pixel_height:u32
     ) -> GlyphBatch {
-        let null_img = match Image::new_from_color(1, 1, &SFColor::white()) {
+        let null_img = match Image::from_color(1, 1, &SFColor::white()) {
             Some(img) => img,
             None      => panic!("Couldn't create Image")
         };
@@ -41,21 +41,17 @@ impl GlyphBatch {
             _pixel_dimensions: Vector2u::new(0, 0),
             _big_offset: Vector2u::new(0, 0),
             _small_offset: Vector2u::new(0, 0),
-            _fg_vertices: match VertexArray::new_init(
-                PrimitiveType::sfQuads, vertex_count) 
-            {
-                Some(vertex_array) => vertex_array,
-                None               => panic!("Couldn't create VertexArray")
-            },
-            _bg_vertices: match VertexArray::new_init(
-                PrimitiveType::sfQuads, vertex_count)
-            {
-                Some(vertex_array) => vertex_array,
-                None               => panic!("Couldn't create VertexArray")
-            },
+            _fg_vertices: VertexArray::new_init(
+                PrimitiveType::Quads,
+                vertex_count as usize
+            ),
+            _bg_vertices: VertexArray::new_init(
+                PrimitiveType::Quads,
+                vertex_count as usize
+            ),
             _glyphset: glyphset,
             drawtarget: DrawTarget::new(tiled_width, tiled_height),
-            _null_texture: match Texture::new_from_image(&null_img) {
+            _null_texture: match Texture::from_image(&null_img) {
                 Some(texture) => texture,
                 None          => panic!("Couldn't create Texture")
             }
@@ -106,26 +102,26 @@ impl GlyphBatch {
 
     pub fn render(&mut self, window:&mut RenderWindow) {
         let mut fg_renderstates = RenderStates::new (
-                BlendMode::blend_alpha(),
-                Transform::new_identity(),
+                BlendMode::default(),
+                Transform::identity(),
                 Some(&self._glyphset.texture),
                 None
         );
 
         let mut bg_renderstates = RenderStates::new (
-                BlendMode::blend_alpha(),
-                Transform::new_identity(),
+                BlendMode::default(),
+                Transform::identity(),
                 Some(&self._null_texture),
                 None
         );
 
         window.draw_with_renderstates(
             &self._bg_vertices, 
-            &mut bg_renderstates
+            bg_renderstates
         );
         window.draw_with_renderstates(
             &self._fg_vertices, 
-            &mut fg_renderstates
+            fg_renderstates
         );
 
     }
@@ -172,11 +168,6 @@ impl GlyphBatch {
     ) {
         let base_index = (x + y * self._tiled_dimensions.x) * 4;
         let source_rect = self._glyphset.sub_rects[tile_id as usize];
-
-        let mut next_position:Vector2f;
-        let mut next_tex_coords:Vector2f;
-        let mut next_color:SFColor;
-
         
         for i in 0..2 {
             for j in 0..2 {
@@ -186,7 +177,7 @@ impl GlyphBatch {
                     _ => 0 //never reached
                 };
 
-                next_position = self.vertex_position(x + i, y + j);
+                let mut next_position = self.vertex_position(x + i, y + j);
                 let horiz_factor:i32 = match i == 1 {
                     true => -1,
                     false => 1
@@ -199,18 +190,18 @@ impl GlyphBatch {
                                     * horiz_factor ) as f32;
                 next_position.y += (self._small_offset.y as i32 / 2
                                     * vert_factor) as f32;
-                next_tex_coords = Vector2f::new(
+                let next_tex_coords = Vector2f::new(
                     (source_rect.left 
                     + source_rect.width * (i as i32)) as f32, 
                     (source_rect.top 
                     + source_rect.height * (j as i32)) as f32
                 );
-                next_color = GlyphBatch::color_to_sf_color(color);
+                let next_color = GlyphBatch::color_to_sf_color(color);
                 
-                *self._fg_vertices.get_vertex(index) = Vertex::new(
-                    &next_position,
-                    &next_color,
-                    &next_tex_coords
+                self._fg_vertices[index as usize] = Vertex::new(
+                    next_position,
+                    next_color,
+                    next_tex_coords
                 );
             }
         }
@@ -219,11 +210,6 @@ impl GlyphBatch {
     fn set_tile_bg_vertices(&mut self, color:Color, x:u32, y:u32) {
         let base_index = (x + y * self._tiled_dimensions.x) * 4;
 
-        let mut next_position:Vector2f;
-        let mut next_tex_coords:Vector2f;
-        let mut next_color:SFColor;
-
-        
         for i in 0..2 {
             for j in 0..2 {
                 let index = match j {
@@ -233,17 +219,17 @@ impl GlyphBatch {
                 };
 
 
-                next_position = self.vertex_position(x + i, y + j);
-                next_tex_coords = Vector2f::new(
+                let next_position = self.vertex_position(x + i, y + j);
+                let next_tex_coords = Vector2f::new(
                     i as f32,
                     j as f32
                 );
-                next_color = GlyphBatch::color_to_sf_color(color);
+                let next_color = GlyphBatch::color_to_sf_color(color);
                 
-                *self._bg_vertices.get_vertex(index) = Vertex::new(
-                    &next_position,
-                    &next_color,
-                    &next_tex_coords
+                self._bg_vertices[index as usize] = Vertex::new(
+                    next_position,
+                    next_color,
+                    next_tex_coords
                 );
             }
         }
@@ -260,7 +246,7 @@ impl GlyphBatch {
     }
 
     fn color_to_sf_color(color:Color) -> SFColor {
-        SFColor::new_rgba(color.r, color.g, color.b, color.a)
+        SFColor::rgba(color.r, color.g, color.b, color.a)
     }
 
 }
