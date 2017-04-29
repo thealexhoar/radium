@@ -8,6 +8,7 @@ use sfml::graphics::{RenderWindow, RenderTarget};
 use sfml::graphics::Color as SFColor;
 
 pub enum Event {
+    Closed,
     None
 }
 impl Copy for Event {}
@@ -78,13 +79,6 @@ impl Window {
     pub fn events(&mut self) -> Events {
         let mut out_events:Vec<Event> = Vec::new();
         for event in  self._render_window.events() {
-            match event {
-                event::Closed => {
-                    self._render_window.close();
-                    break;
-                },
-                _ => {/*nothing*/}
-            };
             out_events.push(Window::convert_event(event));
         }
         Events::new(out_events)
@@ -94,8 +88,15 @@ impl Window {
         self._render_window.is_open()
     }
 
+    pub fn close(mut self) {
+        self._render_window.close();
+    }
+
 
     fn convert_event(sf_event:event::Event) -> Event {
-        Event::None
+        match sf_event {
+            event::Closed => Event::Closed,
+            _             => Event::None
+        }
     }
 }

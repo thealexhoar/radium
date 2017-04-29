@@ -48,8 +48,15 @@ fn main() {
         Some(Color::cyan())
     );
 
-    while window.is_open() {
+    'outer: loop {
         for event in window.events() {
+            match event {
+                Event::Closed => {
+                    window.close();
+                    break 'outer;
+                },
+                _             => {}
+            }
         }
 
         window.clear();
