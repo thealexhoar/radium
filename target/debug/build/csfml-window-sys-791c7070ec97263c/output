@@ -1,2 +1,0 @@
-cargo:rustc-link-lib=sfml-window
-cargo:rustc-link-lib=csfml-window

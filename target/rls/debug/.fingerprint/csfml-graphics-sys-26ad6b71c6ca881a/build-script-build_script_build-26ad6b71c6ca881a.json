@@ -1,1 +1,0 @@
-{"rustc":8457749901995008191,"features":"[]","target":1969086303484218613,"profile":14528549471338536373,"deps":[["sfml-build v0.1.0",2798661076055903921]],"local":{"Precalculated":"0.3.0"},"rustflags":["-Zunstable-options","-Zsave-analysis","--error-format=json","-Zcontinue-parse-after-error"]}

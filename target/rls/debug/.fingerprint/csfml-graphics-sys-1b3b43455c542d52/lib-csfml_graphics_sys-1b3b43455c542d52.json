@@ -1,1 +1,0 @@
-{"rustc":8457749901995008191,"features":"[]","target":2104142990027076485,"profile":11331657609859909161,"deps":[["csfml-system-sys v0.2.1",16018681452237583329],["csfml-window-sys v0.2.0",5436001965354574411]],"local":{"Precalculated":"0.3.0"},"rustflags":["-Zunstable-options","-Zsave-analysis","--error-format=json","-Zcontinue-parse-after-error"]}
