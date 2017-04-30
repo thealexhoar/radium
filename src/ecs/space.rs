@@ -1,7 +1,4 @@
-use PositionComponent;
-use Component;
-use ComponentManager;
-use Entity;
+use ecs::{Component, PositionComponent, Entity, ComponentManager};
 use std::collections::{HashMap};
 
 const CHUNK_SIDE_LEN:i32 = 10;

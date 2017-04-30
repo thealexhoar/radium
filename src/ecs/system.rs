@@ -1,6 +1,4 @@
-use Engine;
-use Event;
-use ComponentManager;
+use ecs::{ComponentManager, Event};
 
 pub struct EventResult{
     pub resulting_events: Vec<Event>,
@@ -8,11 +6,16 @@ pub struct EventResult{
 }
 
 //don't modify any data, just read it
+//useful for rendering, animating, etc
 pub trait PassiveSystem {
-    fn update(&mut self, engine:&Engine) -> EventResult;
+    fn update(
+        &mut self,
+        component_manager: &ComponentManager,
+        delta_time: f32 // real elapsed time
+    ) -> EventResult;
 }
 
-//respond to actions 
+//respond to actions
 pub trait ReactiveSystem {
     fn update(
         &mut self,
@@ -22,11 +25,11 @@ pub trait ReactiveSystem {
 }
 
 //run continuously to handle continuous processes
-//ie animations
+//ie spawning, day-night cycle
 pub trait ContinuousSystem {
     fn update(
         &mut self,
         component_manager: &mut ComponentManager,
-        delta_time: f32 // real elapsed time
+        delta_time:u32 //game elapsed time
     ) -> EventResult;
 }

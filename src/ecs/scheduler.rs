@@ -1,18 +1,19 @@
-use Entity;
-use {Event, EventType};
+use ecs:: {Entity, Event, EventType};
 use std::any::Any;
 
 
 
 
 pub struct Scheduler {
-    _event_queue: Vec<Event>
+    _event_queue: Vec<Event>,
+    _elapsed_time: u64
 }
 
 impl Scheduler {
     pub fn new() -> Scheduler {
         Scheduler {
-            _event_queue: Vec::new()
+            _event_queue: Vec::new(),
+            _elapsed_time: 0
         }
     }
 
@@ -46,6 +47,7 @@ impl Scheduler {
             _ => {
                 let event = self._event_queue.remove(0);
                 self.subtract_time(event.delta_time);
+                self._elapsed_time += event.delta_time as u64;
                 Some(event)
             }
         }

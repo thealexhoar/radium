@@ -1,11 +1,12 @@
-
+use ecs::Engine;
 use graphics::{GlyphSet, GlyphBatch, Tile, Color, Window,  Event};
 
 pub struct Core {
-    width:u32,
-    height:u32,
-    window:Window,
-    glyphbatch:GlyphBatch
+    width: u32,
+    height: u32,
+    window: Window,
+    glyphbatch: GlyphBatch,
+    engine: Engine
 }
 
 impl Core {
@@ -18,7 +19,8 @@ impl Core {
                 GlyphSet::new("assets/tileset_10x10.png", 10, 10, 256),
                 80, 45,
                 width, height
-            )
+            ),
+            engine: Engine::new()
         }
     }
 
