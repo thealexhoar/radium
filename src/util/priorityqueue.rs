@@ -62,7 +62,7 @@ impl<T: Sized> Index<usize> for PriorityQueue<T> {
 
 impl<T: Sized> IndexMut<usize> for PriorityQueue<T> {
     fn index_mut(&mut self, index: usize) -> &mut T {
-        let target_index = self.len() - index;
+        let target_index = self.len() - 1 - index;
         &mut self._data[target_index].value
     }
 }

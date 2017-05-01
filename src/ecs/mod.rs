@@ -10,6 +10,8 @@ pub use self::system::{
 };
 pub use self::space::Space;
 
+use self::testsystems::TestReactor;
+
 pub mod componentmanager;
 pub mod component;
 pub mod engine;
@@ -18,3 +20,5 @@ pub mod event;
 mod scheduler;
 pub mod system;
 pub mod space;
+
+mod testsystems;

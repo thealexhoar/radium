@@ -1,8 +1,17 @@
 use ecs::{ComponentManager, Event, Space};
 
 pub struct EventResult{
-    pub resulting_events: Vec<Event>,
+    pub resulting_events: Option<Vec<Event>>,
     pub allow_event: bool
+}
+
+impl EventResult {
+    pub fn empty(allow_event:bool) -> EventResult {
+        EventResult {
+            resulting_events: None,
+            allow_event
+        }
+    }
 }
 
 //don't modify any data, just read it

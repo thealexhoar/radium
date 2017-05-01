@@ -4,7 +4,8 @@ use ecs::{
     Entity,
     EventType, Event,
     Scheduler,
-    Space
+    Space,
+    TestReactor
 };
 use util::PriorityQueue;
 
@@ -20,14 +21,45 @@ pub struct Engine {
 
 impl Engine {
     pub fn new() -> Engine {
-        Engine {
+        let mut engine = Engine {
             _passive_systems: PriorityQueue::new(),
             _reactive_systems: PriorityQueue::new(),
             _continuous_systems: PriorityQueue::new(),
             _component_manager: ComponentManager::new(),
             _scheduler: Scheduler::new(),
             _space: Space::new()
-        }
+        };
+        engine._scheduler.push_event(Event::new(
+            EventType::Named(String::from("test")),
+            1 as u32,
+            1
+        ));
+        engine.add_reactive_system(TestReactor::new(
+            1,
+            2,
+            0
+        ), 0);
+        engine.add_reactive_system(TestReactor::new(
+            2,
+            3,
+            0
+        ), 0);
+        engine.add_reactive_system(TestReactor::new(
+            3,
+            4,
+            0
+        ), 0);
+        engine.add_reactive_system(TestReactor::new(
+            4,
+            5,
+            0
+        ), 0);
+        engine.add_reactive_system(TestReactor::new(
+            5,
+            0,
+            5
+        ), 0);
+        engine
     }
 
     pub fn add_passive_system<T: 'static + PassiveSystem + Sized>(
@@ -65,18 +97,21 @@ impl Engine {
             };
             let mut event_accepted = true;
             
-            for i in 0..self._reactive_systems.len() {
+            'inner: for i in 0..self._reactive_systems.len() {
                 let results = self._reactive_systems[i].update(
                     &mut self._component_manager,
                     &mut self._space,
                     &next_event
                 );
-                for response_event in results.resulting_events {
-                    self._scheduler.push_event(response_event);
+                match results.resulting_events {
+                    Some(result_events) => for response_event in result_events {
+                        self._scheduler.push_event(response_event);
+                    },
+                    None               => {}
                 }
                 if !results.allow_event {
                     event_accepted = false;
-                    break;
+                    break 'inner;
                 }
             }
 
