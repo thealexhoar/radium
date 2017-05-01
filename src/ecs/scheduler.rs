@@ -1,7 +1,5 @@
-use ecs:: {Entity, Event, EventType};
+use ecs::{Entity, Event, EventType, EventResult};
 use std::any::Any;
-
-
 
 
 pub struct Scheduler {
@@ -17,27 +15,20 @@ impl Scheduler {
         }
     }
 
-    pub fn push_event<T: Any + Sized>(
+    pub fn push_event(
         &mut self, 
-        event_type: EventType, 
-        data: T,
-        delta_time: u32
+        event: Event
     ) {
-        let new_event = Event{
-            event_type: event_type,
-            data: Box::new(data),
-            delta_time: delta_time
-        };
         let mut index:Option<usize> = None;
         for i in 0..self._event_queue.len() {
-            if self._event_queue[i].delta_time > delta_time {
+            if self._event_queue[i].delta_time > event.delta_time {
                 index = Some(i);
                 break;
             }
         }
         match index {
-            Some(i) => self._event_queue.insert(i, new_event),
-            None    => self._event_queue.push(new_event)
+            Some(i) => self._event_queue.insert(i, event),
+            None    => self._event_queue.push(event)
         };
     }
 

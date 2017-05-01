@@ -3,7 +3,8 @@ use ecs::{
     Component, ComponentManager,
     Entity,
     EventType, Event,
-    Scheduler 
+    Scheduler,
+    Space
 };
 use util::PriorityQueue;
 
@@ -13,7 +14,8 @@ pub struct Engine {
     _reactive_systems: PriorityQueue<Box<ReactiveSystem>>,
     _continuous_systems: PriorityQueue<Box<ContinuousSystem>>,
     _component_manager: ComponentManager,
-    _scheduler: Scheduler
+    _scheduler: Scheduler,
+    _space: Space
 }
 
 impl Engine {
@@ -23,7 +25,8 @@ impl Engine {
             _reactive_systems: PriorityQueue::new(),
             _continuous_systems: PriorityQueue::new(),
             _component_manager: ComponentManager::new(),
-            _scheduler: Scheduler::new()
+            _scheduler: Scheduler::new(),
+            _space: Space::new()
         }
     }
 
@@ -54,7 +57,49 @@ impl Engine {
         self._continuous_systems.insert(system_box, priority);
     }
 
-    pub fn update(&mut self, delta_time:f32) {
-        //update calls go here
+    pub fn update(&mut self, true_delta_time:f32) {
+        'outer: loop {
+            let next_event = match self._scheduler.pop_event() {
+                Some(event) => event,
+                None        => break 'outer
+            };
+            let mut event_accepted = true;
+            
+            for i in 0..self._reactive_systems.len() {
+                let results = self._reactive_systems[i].update(
+                    &mut self._component_manager,
+                    &mut self._space,
+                    &next_event
+                );
+                for response_event in results.resulting_events {
+                    self._scheduler.push_event(response_event);
+                }
+                if !results.allow_event {
+                    event_accepted = false;
+                    break;
+                }
+            }
+
+            if event_accepted {
+                for i in 0..self._continuous_systems.len() {
+                    self._continuous_systems[i].update(
+                        &mut self._component_manager,
+                        &mut self._space,
+                        next_event.delta_time
+                    );
+                }
+                for i in 0..self._passive_systems.len() {
+                    self._passive_systems[i].update(
+                        & self._component_manager,
+                        & self._space,
+                        true_delta_time
+                    );
+                }
+            }
+
+            if next_event.delta_time != 0 {
+                break;
+            }
+        }
     }
 }

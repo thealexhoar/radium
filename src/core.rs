@@ -1,12 +1,14 @@
 use ecs::Engine;
 use graphics::{GlyphSet, GlyphBatch, Tile, Color, Window,  Event};
+use sfml::system::Clock;
 
 pub struct Core {
     width: u32,
     height: u32,
     window: Window,
     glyphbatch: GlyphBatch,
-    engine: Engine
+    engine: Engine, 
+    clock: Clock
 }
 
 impl Core {
@@ -20,7 +22,8 @@ impl Core {
                 80, 45,
                 width, height
             ),
-            engine: Engine::new()
+            engine: Engine::new(),
+            clock: Clock::start()
         }
     }
 
@@ -55,6 +58,7 @@ impl Core {
     }
 
     pub fn run(&mut self) {
+        self.clock.restart();
         'outer: loop {
             for event in self.window.events() {
                 match event {
@@ -65,6 +69,10 @@ impl Core {
                     _             => {}
                 }
             }
+            
+            let delta_time = self.clock.restart();
+
+            self.engine.update(delta_time.as_seconds());
 
             self.window.clear();
 

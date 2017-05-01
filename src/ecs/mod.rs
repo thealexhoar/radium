@@ -4,7 +4,10 @@ pub use self::engine::{Engine};
 pub use self::entity::{EntityFactory, Entity};
 pub use self::event::{Event, EventType};
 use self::scheduler::Scheduler;
-pub use self::system::{PassiveSystem, ReactiveSystem, ContinuousSystem};
+pub use self::system::{
+    EventResult,
+    PassiveSystem, ReactiveSystem, ContinuousSystem
+};
 pub use self::space::Space;
 
 pub mod componentmanager;

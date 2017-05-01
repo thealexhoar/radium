@@ -1,4 +1,4 @@
-use ecs::{ComponentManager, Event};
+use ecs::{ComponentManager, Event, Space};
 
 pub struct EventResult{
     pub resulting_events: Vec<Event>,
@@ -11,6 +11,7 @@ pub trait PassiveSystem {
     fn update(
         &mut self,
         component_manager: &ComponentManager,
+        space: &Space,
         delta_time: f32 // real elapsed time
     ) -> EventResult;
 }
@@ -20,7 +21,8 @@ pub trait ReactiveSystem {
     fn update(
         &mut self,
         component_manager: &mut ComponentManager,
-        event:Event
+        space: &mut Space,
+        event: &Event
     ) -> EventResult;
 }
 
@@ -30,6 +32,7 @@ pub trait ContinuousSystem {
     fn update(
         &mut self,
         component_manager: &mut ComponentManager,
-        delta_time:u32 //game elapsed time
+        space: &mut Space,
+        delta_time: u32 //game elapsed time
     ) -> EventResult;
 }
