@@ -28,38 +28,11 @@ impl Engine {
             _component_manager: ComponentManager::new(),
             _scheduler: Scheduler::new(),
             _space: Space::new()
-        };
-        engine._scheduler.push_event(Event::new(
-            EventType::Named(String::from("test")),
-            1 as u32,
-            1
-        ));
-        engine.add_reactive_system(TestReactor::new(
-            1,
-            2,
-            0
-        ), 0);
-        engine.add_reactive_system(TestReactor::new(
-            2,
-            3,
-            0
-        ), 0);
-        engine.add_reactive_system(TestReactor::new(
-            3,
-            4,
-            0
-        ), 0);
-        engine.add_reactive_system(TestReactor::new(
-            4,
-            5,
-            0
-        ), 0);
-        engine.add_reactive_system(TestReactor::new(
-            5,
-            0,
-            5
-        ), 0);
-        engine
+        }
+    }
+
+    pub fn load(&mut self) {
+        //initializes startup
     }
 
     pub fn add_passive_system<T: 'static + PassiveSystem + Sized>(
