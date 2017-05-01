@@ -21,7 +21,7 @@ pub struct Engine {
 
 impl Engine {
     pub fn new() -> Engine {
-        let mut engine = Engine {
+        Engine {
             _passive_systems: PriorityQueue::new(),
             _reactive_systems: PriorityQueue::new(),
             _continuous_systems: PriorityQueue::new(),
