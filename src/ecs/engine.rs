@@ -21,7 +21,7 @@ pub struct Engine {
 
 impl Engine {
     pub fn new() -> Engine {
-        let mut engine = Engine {
+        Engine {
             _passive_systems: PriorityQueue::new(),
             _reactive_systems: PriorityQueue::new(),
             _continuous_systems: PriorityQueue::new(),
@@ -32,7 +32,7 @@ impl Engine {
     }
 
     pub fn load(&mut self) {
-        //initializes startup
+        //initializes startup   
     }
 
     pub fn add_passive_system<T: 'static + PassiveSystem + Sized>(
