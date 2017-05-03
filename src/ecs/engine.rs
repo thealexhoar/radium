@@ -32,7 +32,7 @@ impl Engine {
     }
 
     pub fn load(&mut self) {
-        //initializes startup   
+        //initializes startup
     }
 
     pub fn add_passive_system<T: 'static + PassiveSystem + Sized>(
@@ -73,7 +73,7 @@ impl Engine {
             'inner: for i in 0..self._reactive_systems.len() {
                 let results = self._reactive_systems[i].update(
                     &mut self._component_manager,
-                    &mut self._space,
+                    &mut self._space,   
                     &next_event
                 );
                 match results.resulting_events {

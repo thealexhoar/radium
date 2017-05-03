@@ -1,4 +1,4 @@
-
+use util::Point;
 
 pub trait Component : 'static{
     //TODO: add a serialize function
@@ -8,9 +8,7 @@ pub trait Component : 'static{
 //TODO: find a better home for these little guys?
 
 pub struct PositionComponent {
-    pub x:i32,
-    pub y:i32,
-    pub z:i32
+    pub point: Point
 }
 impl Component for PositionComponent {}
 

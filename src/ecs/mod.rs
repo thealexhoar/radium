@@ -12,13 +12,13 @@ pub use self::space::Space;
 
 use self::testsystems::TestReactor;
 
-pub mod componentmanager;
-pub mod component;
-pub mod engine;
-pub mod entity;
-pub mod event;
+mod componentmanager;
+mod component;
+mod engine;
+mod entity;
+mod event;
 mod scheduler;
-pub mod system;
-pub mod space;
+mod system;
+mod space;
 
 mod testsystems;
