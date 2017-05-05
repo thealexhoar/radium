@@ -1,4 +1,5 @@
 use ecs::{ComponentManager, Event, Space};
+use graphics::Window;
 
 pub struct EventResult{
     pub resulting_events: Option<Vec<Event>>,
@@ -21,8 +22,9 @@ pub trait PassiveSystem {
         &mut self,
         component_manager: &ComponentManager,
         space: &Space,
+        window: &mut Window,
         delta_time: f32 // real elapsed time
-    ) -> EventResult;
+    ) -> Option<Vec<Event>>;
 }
 
 //respond to actions

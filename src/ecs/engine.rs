@@ -4,10 +4,11 @@ use ecs::{
     Entity,
     EventType, Event,
     Scheduler,
-    Space,
-    TestReactor
+    Space
 };
 use util::PriorityQueue;
+use std::ops::Deref;
+use graphics::Window;
 
 
 pub struct Engine {
@@ -33,6 +34,13 @@ impl Engine {
 
     pub fn load(&mut self) {
         //initializes startup
+        self._scheduler.push_event(
+            Event::new(
+                EventType::Initialize,
+                Box::new(0),
+                0
+            )
+        );
     }
 
     pub fn add_passive_system<T: 'static + PassiveSystem + Sized>(
@@ -62,7 +70,23 @@ impl Engine {
         self._continuous_systems.insert(system_box, priority);
     }
 
-    pub fn update(&mut self, true_delta_time:f32) {
+    pub fn update(&mut self, window: &mut Window, true_delta_time:f32) {
+        for i in 0..self._passive_systems.len() {
+            let out = self._passive_systems[i].update(
+                & self._component_manager,
+                & self._space,
+                window,
+                true_delta_time
+            );
+            match out {
+                Some(event_vec) => {
+                    for event in event_vec {
+                        self._scheduler.push_event(event);
+                    }
+                }
+                None      => {}
+            };
+        }
         'outer: loop {
             let next_event = match self._scheduler.pop_event() {
                 Some(event) => event,
@@ -96,17 +120,13 @@ impl Engine {
                         next_event.delta_time
                     );
                 }
-                for i in 0..self._passive_systems.len() {
-                    self._passive_systems[i].update(
-                        & self._component_manager,
-                        & self._space,
-                        true_delta_time
-                    );
-                }
             }
 
-            if next_event.delta_time != 0 {
-                break;
+            match self._scheduler.top_event_time(){
+                None       => {break;}
+                Some(time) => {
+                    if time != 0 {break;}
+                }
             }
         }
     }

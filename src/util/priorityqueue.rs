@@ -23,7 +23,7 @@ impl<T: Sized> PriorityQueue<T> {
         }
     }
     //high priority objects go at the end
-    pub fn insert(&mut self, value:T, priority: i32) {
+    pub fn insert(&mut self, value:T, priority: i32) -> &T{
         let entry = Entry {priority, value};
         let mut index:usize = 0;
         loop {
@@ -36,6 +36,7 @@ impl<T: Sized> PriorityQueue<T> {
             index += 1;
         }
         self._data.insert(index, entry);
+        &(self._data[index].value)
     }
 
     pub fn pop(&mut self) -> Option<T> {

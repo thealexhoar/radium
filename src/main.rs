@@ -3,6 +3,7 @@ mod core;
 mod ecs;
 mod graphics;
 mod util;
+mod radium;
 use core::Core;
 
 fn main() {
@@ -18,4 +19,5 @@ fn main() {
     let mut core = Core::new(width, height);
     core.init();
     core.run();
+
 }

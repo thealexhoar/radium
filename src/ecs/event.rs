@@ -1,6 +1,7 @@
 use std::any::Any;
 
 pub enum EventType {
+    Initialize,
     Named(String)
 }
 

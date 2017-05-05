@@ -98,7 +98,7 @@ impl GlyphBatch {
             ) / 2;
     }
 
-    pub fn render(&mut self, window:&mut RenderWindow) {
+    pub fn render(& self, window:&mut RenderWindow) {
         let mut fg_renderstates = RenderStates::new (
                 BlendMode::default(),
                 Transform::identity(),

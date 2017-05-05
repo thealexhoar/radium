@@ -44,6 +44,14 @@ impl Scheduler {
         }
     }
 
+    pub fn top_event_time(&self) -> Option<u32> {
+        match self._event_queue.len() {
+            0 => None,
+            _ => Some(self._event_queue[self._event_queue.len() - 1]
+                .delta_time)
+        }
+    }
+
     fn subtract_time(&mut self, time:u32) {
         for scheduled_event in &mut self._event_queue {
             scheduled_event.delta_time -= time;

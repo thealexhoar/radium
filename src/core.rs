@@ -1,12 +1,12 @@
 use ecs::Engine;
-use graphics::{GlyphSet, GlyphBatch, Tile, Color, Window,  Event};
+use graphics::{GlyphSet, GlyphBatch, Tile, Color, Window, Event};
+use radium::render::RenderSystem;
 use sfml::system::Clock;
 
 pub struct Core {
     width: u32,
     height: u32,
     window: Window,
-    glyphbatch: GlyphBatch,
     engine: Engine, 
     clock: Clock
 }
@@ -17,18 +17,22 @@ impl Core {
             width,
             height,
             window: Window::new(width, height),
-            glyphbatch: GlyphBatch::new(
-                GlyphSet::new("assets/tileset_10x10.png", 10, 10, 256),
-                80, 45,
-                width, height
-            ),
             engine: Engine::new(),
             clock: Clock::start()
         }
     }
 
     pub fn init(&mut self) {
-        self.glyphbatch.drawtarget.set_tiles_rect(
+
+    }
+
+    pub fn run(&mut self) {
+        let mut glyphbatch = GlyphBatch::new(
+            GlyphSet::new("assets/tileset_10x10.png", 10, 10, 256),
+            80, 45,
+            self.width, self.height
+        );
+        glyphbatch.drawtarget.set_tiles_rect(
             Some(Tile::new(
                 Some(Color::new_from_rgb(100,100,100)), 
                 None, 
@@ -37,9 +41,8 @@ impl Core {
             5, 3,
             22, 10
         );
-
         for i in 0..4 {
-            self.glyphbatch.drawtarget.overlay_tile(
+            glyphbatch.drawtarget.overlay_tile(
                 Some(Tile::new(
                     Some(Color::yellow()),
                     None,
@@ -49,15 +52,20 @@ impl Core {
             );
         }
 
-        self.glyphbatch.drawtarget.draw_string_slice(
+        glyphbatch.drawtarget.draw_string_slice(
             "Hello World!", 
             5, 2, 
             Color::black(), 
             Some(Color::cyan())
         );
-    }
 
-    pub fn run(&mut self) {
+        self.engine.add_passive_system(
+            RenderSystem::new(glyphbatch, 40, 20),
+            0
+        );
+
+        self.engine.load();
+
         self.clock.restart();
         'outer: loop {
             for event in self.window.events() {
@@ -71,13 +79,7 @@ impl Core {
             }
             
             let delta_time = self.clock.restart();
-
-            self.engine.update(delta_time.as_seconds());
-
-            self.window.clear();
-
-            self.glyphbatch.flush_tiles();
-            self.window.draw_glyphbatch(&mut self.glyphbatch);
+            self.engine.update(&mut self.window, delta_time.as_seconds());
         }
     }
 }
