@@ -32,6 +32,7 @@ impl DrawTarget {
         self._data[index]
     }
 
+    //the "set" functions will do a full overwrite
     pub fn set_tile(&mut self, tile:Option<Tile>, x:u32, y:u32) {
         let index = self.get_index(x, y);
         self._data[index] = tile;
@@ -52,6 +53,7 @@ impl DrawTarget {
         }
     }
 
+    //the "overlay" functions will only overwrite if a source value exists
     pub fn overlay_tile(&mut self, tile:Option<Tile>, x:u32, y:u32) {
         let index = self.get_index(x, y);
         match tile {
@@ -79,6 +81,8 @@ impl DrawTarget {
         }
     }
 
+    //the "overlay soft" functions will only overwrite 
+    //if a source value exists AND no destination value exists
     pub fn overlay_tile_soft(&mut self, tile:Option<Tile>, x:u32, y:u32) {
         let index = self.get_index(x, y);
         match tile {

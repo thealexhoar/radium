@@ -72,6 +72,8 @@ impl Engine {
     }
 
     pub fn update(&mut self, window: &mut Window, true_delta_time:f32) {
+        //update passive systems
+        //TODO: move passive system updates to an asynchronous updating system?
         for i in 0..self._passive_systems.len() {
             let out = self._passive_systems[i].update(
                 & self._component_manager,
@@ -88,6 +90,11 @@ impl Engine {
                 None      => {}
             };
         }
+
+        //handle events off the scheduler
+        //first event SHOULD have non-zero delta time
+        //the following events with matching delta times will have dt = 0
+        //so events that are "concurrent" will all occur in one update
         'outer: loop {
             let next_event = match self._scheduler.pop_event() {
                 Some(event) => event,
@@ -95,6 +102,7 @@ impl Engine {
             };
             let mut event_accepted = true;
             
+            //run event against the reactive systems
             'inner: for i in 0..self._reactive_systems.len() {
                 let results = self._reactive_systems[i].update(
                     &mut self._component_manager,
@@ -113,16 +121,24 @@ impl Engine {
                 }
             }
 
-            if event_accepted && next_event.delta_time > 0 {
-                for i in 0..self._continuous_systems.len() {
-                    self._continuous_systems[i].update(
-                        &mut self._component_manager,
-                        &mut self._space,
-                        next_event.delta_time
-                    );
+            if event_accepted {
+                let dt = next_event.delta_time;
+                self._scheduler.elapse_time(dt);
+
+                //if any time passes
+                //update game-time based systems 
+                if dt > 0 {
+                    for i in 0..self._continuous_systems.len() {
+                        self._continuous_systems[i].update(
+                            &mut self._component_manager,
+                            &mut self._space,
+                            next_event.delta_time
+                        );
+                    }
                 }
             }
-
+            //if any time WILL pass with next event end the event looping
+            //return to beginning of game loop to update rendering and input
             match self._scheduler.top_event_time(){
                 None       => {break;}
                 Some(time) => {

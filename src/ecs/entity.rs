@@ -1,5 +1,7 @@
 pub type Entity = u32;
 
+
+//TODO: integrate into the engine somehow
 pub struct EntityFactory {
     _entity_count: u32
 }

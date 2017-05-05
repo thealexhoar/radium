@@ -35,15 +35,12 @@ impl Scheduler {
     pub fn pop_event(&mut self) -> Option<Event> {
         match self._event_queue.len() {
             0 => None,
-            _ => {
-                let event = self._event_queue.remove(0);
-                self.subtract_time(event.delta_time);
-                self._elapsed_time += event.delta_time as u64;
-                Some(event)
-            }
+            _ => Some(self._event_queue.remove(0))
         }
     }
 
+    //peek at how long the next event will take
+    //or returns None if the event queue is empty
     pub fn top_event_time(&self) -> Option<u32> {
         match self._event_queue.len() {
             0 => None,
@@ -52,9 +49,11 @@ impl Scheduler {
         }
     }
 
-    fn subtract_time(&mut self, time:u32) {
+    
+    pub fn elapse_time(&mut self, time:u32) {
         for scheduled_event in &mut self._event_queue {
             scheduled_event.delta_time -= time;
         }
+        self._elapsed_time += time as u64;
     }
 }

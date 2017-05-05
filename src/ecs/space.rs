@@ -44,14 +44,14 @@ impl Chunk {
         }
     }
 
-    fn remove_entity_at(
+    fn remove_entity(
         &mut self,
         entity: Entity,
         point: Point
     ) -> bool {
         match self.data.get_mut(&point.tuple()) {
             Some(ref mut vector) => {
-                let mut result = false;
+                let mut result = false; 
                 for i in 0..vector.len() {
                     if vector[i] == entity {
                         result = true;
@@ -104,7 +104,6 @@ impl Space {
         }
     }
 
-    //optimized remove if the entity pos is known
     pub fn remove_entity(
         &mut self,
         entity:Entity,
@@ -115,9 +114,27 @@ impl Space {
         );
         match self._chunks.get_mut(&(chunk_x, chunk_y,)) {
             Some(ref mut chunk) 
-                 => chunk.remove_entity_at(entity, point),
+                 => chunk.remove_entity(entity, point),
             None => false
         }
+    }
+
+    pub fn move_entity(
+        &mut self,
+        entity: Entity,
+        point0: Point,
+        point1: Point
+    ) -> bool {
+        if !self.remove_entity(entity, point0) {
+            //don't need to clean up, failure makes no change
+            return false;
+        }
+        if !self.add_entity_at(entity, point1) {
+            //do need to clean up the removal
+            self.add_entity_at(entity, point0);
+            return false;
+        }
+        return true;
     }
 
     fn chunk_dimensions(x:i32, y:i32) -> (i32, i32) {

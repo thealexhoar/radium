@@ -10,15 +10,10 @@ pub struct Color {
 
 impl Color {
     pub fn new_from_rgba(r:u8, g:u8, b:u8, a:u8) -> Color {
-        Color {
-            r:r,
-            g:g,
-            b:b,
-            a:a
-        }
+        Color {r,g,b,a}
     }
 
-    pub fn new_from_rgb(r:u8, g:u8, b:u8) -> Color{
+    pub fn new_from_rgb(r:u8, g:u8, b:u8) -> Color {
         Color::new_from_rgba(r,g,b,255)
     }
 
