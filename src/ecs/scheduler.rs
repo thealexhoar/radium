@@ -21,7 +21,7 @@ impl Scheduler {
     ) {
         let mut index:Option<usize> = None;
         for i in 0..self._event_queue.len() {
-            if self._event_queue[i].delta_time > event.delta_time {
+            if self._event_queue[i].delta_time >= event.delta_time {
                 index = Some(i);
                 break;
             }

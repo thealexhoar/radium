@@ -1,4 +1,5 @@
 extern crate sfml;
+mod behavior;
 mod core;
 mod ecs;
 mod graphics;

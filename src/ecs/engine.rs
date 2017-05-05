@@ -37,6 +37,7 @@ impl Engine {
         self._scheduler.push_event(
             Event::new(
                 EventType::Initialize,
+                None,
                 Box::new(0),
                 0
             )
@@ -112,7 +113,7 @@ impl Engine {
                 }
             }
 
-            if event_accepted {
+            if event_accepted && next_event.delta_time > 0 {
                 for i in 0..self._continuous_systems.len() {
                     self._continuous_systems[i].update(
                         &mut self._component_manager,
