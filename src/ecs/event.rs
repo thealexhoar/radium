@@ -1,10 +1,11 @@
 use std::any::Any;
 use ecs::Entity;
 
+#[derive(Copy, Clone)]
 pub enum EventType {
     Initialize,
     WindowEvent,
-    Named(String)
+    Custom(u32)
 }
 
 pub struct Event {

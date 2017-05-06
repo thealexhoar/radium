@@ -3,6 +3,7 @@ pub use self::componentmanager::ComponentManager;
 pub use self::engine::{Engine};
 pub use self::entity::{EntityFactory, Entity};
 pub use self::event::{Event, EventType};
+pub use self::eventbuilder::{EventBuilder, PrototypeEventBuilder};
 pub use self::scheduler::Scheduler;
 pub use self::system::{
     EventResult,
@@ -19,3 +20,4 @@ mod event;
 mod scheduler;
 mod system;
 mod space;
+mod eventbuilder;

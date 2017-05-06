@@ -7,5 +7,5 @@ pub trait BehaviorTreeNode {
         entity: Entity,
         component_manager: &mut ComponentManager,
         space: &mut Space
-    ) -> (Result, Option<Vec<Event>>) {}
+    ) -> (Result, Option<Vec<Event>>);
 }

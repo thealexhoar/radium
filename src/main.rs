@@ -22,10 +22,4 @@ fn main() {
     let mut core = Core::new(width, height);
     core.init();
     core.run();
-    println!("b");
-    let line = math::bresenham(Point::new(10, 10), Point::new(12, 4));
-    for pos in line {
-        println!("x: {} y: {}", pos.x, pos.y);
-    }
-
 }
