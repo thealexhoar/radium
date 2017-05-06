@@ -5,8 +5,6 @@ mod ecs;
 mod game;
 mod graphics;
 mod util;
-use util::math;
-use util::Point;
 use core::Core;
 
 fn main() {
