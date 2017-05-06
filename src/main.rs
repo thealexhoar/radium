@@ -2,9 +2,11 @@ extern crate sfml;
 mod behavior;
 mod core;
 mod ecs;
+mod game;
 mod graphics;
 mod util;
-mod radium;
+use util::math;
+use util::Point;
 use core::Core;
 
 fn main() {
@@ -20,5 +22,10 @@ fn main() {
     let mut core = Core::new(width, height);
     core.init();
     core.run();
+    println!("b");
+    let line = math::bresenham(Point::new(10, 10), Point::new(12, 4));
+    for pos in line {
+        println!("x: {} y: {}", pos.x, pos.y);
+    }
 
 }

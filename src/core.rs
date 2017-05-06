@@ -1,6 +1,6 @@
 use ecs::Engine;
 use graphics::{GlyphSet, GlyphBatch, Tile, Color, Window, Event};
-use radium::render::RenderSystem;
+use game::render::RenderSystem;
 use sfml::system::Clock;
 
 pub struct Core {
@@ -34,7 +34,7 @@ impl Core {
         );
         glyphbatch.drawtarget.set_tiles_rect(
             Some(Tile::new(
-                Some(Color::new_from_rgb(100,100,100)), 
+                Some(Color::new_from_rgb(40,40,40)), 
                 None, 
                 '.' as u32//138
             )),
@@ -67,17 +67,7 @@ impl Core {
         self.engine.load();
 
         self.clock.restart();
-        'outer: loop {
-            for event in self.window.events() {
-                match event {
-                    Event::Closed => {
-                        self.window.close();
-                        break 'outer;
-                    },
-                    _             => {}
-                }
-            }
-            
+        'outer: while self.window.is_open() {
             let delta_time = self.clock.restart();
             self.engine.update(&mut self.window, delta_time.as_seconds());
         }

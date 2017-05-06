@@ -8,7 +8,8 @@ use ecs::{
 };
 use util::PriorityQueue;
 use std::ops::Deref;
-use graphics::Window;
+use graphics::{Window};
+use graphics::Event as WindowEvent;
 
 
 pub struct Engine {
@@ -50,6 +51,8 @@ impl Engine {
         priority:i32
     ) {
         let system_box = Box::new(system);
+
+        let x = 0;
         self._passive_systems.insert(system_box, priority);
     }
 
@@ -71,7 +74,11 @@ impl Engine {
         self._continuous_systems.insert(system_box, priority);
     }
 
-    pub fn update(&mut self, window: &mut Window, true_delta_time:f32) {
+    pub fn update (
+        &mut self, 
+        window: &mut Window,
+        true_delta_time:f32
+    ) {
         //update passive systems
         //TODO: move passive system updates to an asynchronous updating system?
         for i in 0..self._passive_systems.len() {
@@ -90,6 +97,36 @@ impl Engine {
                 None      => {}
             };
         }
+
+
+        let mut window_event:Option<WindowEvent> = None;
+        'event_check: for event in window.events() {
+            match event {
+                WindowEvent::Closed   => {
+                    window.close();
+                    break 'event_check;
+                },
+                WindowEvent::KeyPress { code, alt, ctrl, shift } => {
+                    window_event = Some(event);
+                    break 'event_check;
+                },
+                _                     => {}
+            }
+        }
+
+        match window_event {
+            Some(window_event) => self._scheduler.push_event(
+                Event::new(
+                    EventType::WindowEvent,
+                    None,
+                    window_event,
+                    0
+                )
+            ),
+            None => {
+                return; 
+            }
+        }; ;
 
         //handle events off the scheduler
         //first event SHOULD have non-zero delta time

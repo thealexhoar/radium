@@ -1,4 +1,4 @@
-use radium::render::{TileComponent, ZComponent};
+use game::render::{TileComponent, ZComponent};
 use ecs::{ComponentManager, Event, EventResult, PassiveSystem, Space};
 use graphics::{DrawTarget, GlyphBatch, Tile, Color, Window};
 use util::Point;
@@ -31,7 +31,7 @@ impl PassiveSystem for RenderSystem {
             'horizontal: for i in 0..self.drawtarget.width() as i32 {
                 //TODO: replace with pure black sometime
                 let mut draw_tile:Tile = Tile::new(
-                    Some(Color::red()),
+                    Some(Color::cyan()),
                     Some(Color::magenta()),
                     'X' as u32
                 );

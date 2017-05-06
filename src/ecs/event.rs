@@ -3,6 +3,7 @@ use ecs::Entity;
 
 pub enum EventType {
     Initialize,
+    WindowEvent,
     Named(String)
 }
 

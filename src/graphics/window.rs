@@ -1,45 +1,25 @@
 use graphics::GlyphBatch;
 
 use sfml::system::Vector2f;
-use sfml::window::{ContextSettings, VideoMode, style};
+use sfml::window::{ContextSettings, Key, VideoMode, style};
 use sfml::window::Event as SFEvent;
 use sfml::graphics::{RenderWindow, RenderTarget};
 use sfml::graphics::Color as SFColor;
 
 pub enum Event {
     Closed,
+    KeyPress {
+        code: Key,
+        alt: bool,
+        ctrl: bool,
+        shift: bool
+    },
     None
 }
 impl Copy for Event {}
 impl Clone for Event {
     fn clone(&self) -> Event {
         *self
-    }
-}
-
-pub struct Events {
-    _events:Vec<Event>
-}
-
-impl Events {
-    pub fn new(mut events:Vec<Event>) -> Events {
-        events.reverse();
-        Events {
-            _events: events
-        }
-    }
-}
-
-impl Iterator for Events {
-    type Item = Event;
-
-    fn next(&mut self) -> Option<Event> {
-        match self._events.len() {
-            0 => None,
-            _ => {
-                self._events.pop()
-            }
-        }
     }
 }
 
@@ -75,12 +55,19 @@ impl Window {
         self._render_window.display();
     }
 
-    pub fn events(&mut self) -> Events {
+    pub fn events(&mut self) -> Vec<Event> {
         let mut out_events:Vec<Event> = Vec::new();
         for event in  self._render_window.events() {
             out_events.push(Window::convert_event(event));
         }
-        Events::new(out_events)
+        out_events
+    }
+
+    pub fn wait_for_event(&mut self) -> Event {
+        //can simply unwrap, as failure will be caused only by error
+        return Self::convert_event(
+            self._render_window.wait_event().unwrap()
+        );
     }
 
     pub fn is_open(&self) -> bool {
@@ -95,7 +82,9 @@ impl Window {
     fn convert_event(sf_event:SFEvent) -> Event {
         match sf_event {
             SFEvent::Closed => Event::Closed,
-            _             => Event::None
+            SFEvent::KeyPressed {code, alt, ctrl, shift, system } 
+                            => Event::KeyPress {code, alt, ctrl, shift},
+            _               => Event::None
         }
     }
 }
