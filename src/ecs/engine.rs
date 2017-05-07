@@ -3,13 +3,16 @@ use ecs::{
     Component, ComponentManager,
     Entity,
     EventType, Event,
+    PositionComponent, TurnComponent,
     Scheduler,
     Space
 };
-use util::PriorityQueue;
+use util::{Point, PriorityQueue};
 use std::ops::Deref;
-use graphics::{Window};
+use graphics::{Color, Tile, Window};
 use graphics::Event as WindowEvent;
+use game::player::PlayerComponent;
+use game::render::TileComponent;
 
 
 pub struct Engine {
@@ -43,6 +46,23 @@ impl Engine {
                 0
             )
         );
+
+        self._space.load_chunk(0,0);
+
+        let player = self._component_manager.create_entity();
+        self._component_manager.set(player, PlayerComponent::new());
+        self._component_manager.set(player, PositionComponent::new(0, 0));
+        self._component_manager.set(player, TurnComponent::new());
+        self._component_manager.set(player, TileComponent::new(
+            Tile::new(
+                Some(Color::black()),
+                Some(Color::green()),
+                '@' as u32
+            ),
+            0
+        ));
+
+        self._space.add_entity_at(player, Point::new(0, 0));
     }
 
     pub fn add_passive_system<T: 'static + PassiveSystem + Sized>(
@@ -161,6 +181,18 @@ impl Engine {
             if event_accepted {
                 let dt = next_event.delta_time;
                 self._scheduler.elapse_time(dt);
+
+                match next_event.event_type {
+                    EventType::WaitInput => self._scheduler.push_event(
+                        Event::new(
+                            EventType::WaitInput,
+                            None,
+                            0,
+                            0
+                        )
+                    ),
+                    _ => {}
+                };
 
                 //if any time passes
                 //update game-time based systems 

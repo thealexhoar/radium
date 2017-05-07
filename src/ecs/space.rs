@@ -76,6 +76,11 @@ impl Space {
         }
     }
 
+    pub fn load_chunk(&mut self, chunk_x: i32, chunk_y:i32 ) {
+        //TODO: complex chunk load/unload
+        self._chunks.insert((chunk_x, chunk_y), Chunk::new(chunk_x, chunk_y));
+    } 
+
     pub fn entities_at(
         &self, 
         point: Point
@@ -83,8 +88,14 @@ impl Space {
         let (chunk_x, chunk_y) = Self::chunk_dimensions(
             point.x, point.y
         );
+
+        let b = self._chunks.contains_key(&(chunk_x, chunk_y));
+
         match self._chunks.get(&(chunk_x, chunk_y)) {
-            Some(chunk) => chunk.entities_at(point),
+            Some(chunk) => {
+                let out = chunk.entities_at(point);
+                out
+            },
             None        => None
         }
     }

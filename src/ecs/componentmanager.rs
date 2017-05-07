@@ -1,4 +1,4 @@
-use ecs::{Entity, Component};
+use ecs::{Entity, EntityFactory, Component, Family};
 use std::collections::{HashMap, HashSet};
 use std::any::{Any, TypeId};
 
@@ -8,7 +8,8 @@ pub struct ComponentManager {
     _data: HashMap<(TypeId, Entity), Option<Box<Any>>>,
     _entities: HashSet<Entity>,
     _component_types: HashSet<TypeId>,
-    _size: usize
+    _size: usize,
+    _entity_factory:EntityFactory
 }
 
 impl ComponentManager {
@@ -17,7 +18,8 @@ impl ComponentManager {
             _data: HashMap::new(),
             _entities: HashSet::new(),
             _component_types: HashSet::new(),
-            _size: 0
+            _size: 0,
+            _entity_factory: EntityFactory::new()
         }
     }
 
@@ -67,7 +69,13 @@ impl ComponentManager {
         self._data.insert((id, entity), Some(Box::new(component)));
         return true;
     }
-    
+
+    pub fn create_entity(&mut self) -> Entity {
+        let entity = self._entity_factory.create_entity();
+        self.add_entity(entity);
+        return entity;
+    }
+
     pub fn add_entity(&mut self, entity: Entity) -> bool {
         if self._entities.insert(entity) {
             for id in self._component_types.iter() {
@@ -86,6 +94,52 @@ impl ComponentManager {
             return true;
         }
         else { return false; }
+    }
+
+    //TODO: add option to constantly listen for a specific family
+    pub fn get_entities_for(&self, family:&Family) -> Vec<Entity> {
+        let mut out = Vec::new();
+        'entity_loop: for entity in self._entities.iter() {
+            //check all
+            //fail if one is not found
+            for id in family.all_components.iter() {
+                if !self.component_exists(*id, *entity) {
+                    continue 'entity_loop;
+                }
+            }
+
+            //check one
+            //pass if one is found
+            'one_loop: for id in family.one_components.iter() {
+                if self.component_exists(*id, *entity) {
+                    break 'one_loop;
+                }
+            }
+
+            //check none
+            //fail if one is found
+            for id in family.none_components.iter() {
+                if self.component_exists(*id, *entity) {
+                    continue 'entity_loop;
+                }
+            }
+
+            out.push(*entity);
+        }
+        out
+    }
+
+
+    fn component_exists(&self, id:TypeId, entity:Entity) -> bool {
+        match self._data.get(&(id, entity)) {
+            Some(data_option) => match *data_option {
+                Some(ref data_box) => true,
+                //entity component pair is possible, but nonexistant
+                None           => false
+            },
+            //entity or component doesn't yet exist in manager
+            None              => false
+        }
     }
 
 }

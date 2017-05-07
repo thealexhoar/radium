@@ -1,12 +1,14 @@
 {
     "version": "0.2.0",
     "configurations": [
+
         {
             "name": "Debug",
             "type": "gdb",
             "request": "launch",
             "target": "target/debug/radium",
-            "cwd": "${workspaceRoot}"
+            "cwd": "${workspaceRoot}",
+            "arguments": "--size 800 450"
         }
     ]
 }

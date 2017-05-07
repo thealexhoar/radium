@@ -5,6 +5,9 @@ use ecs::Entity;
 pub enum EventType {
     Initialize,
     WindowEvent,
+    WaitInput,
+    TakeTurn,
+    Action,
     Custom(u32)
 }
 

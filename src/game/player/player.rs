@@ -1,5 +1,6 @@
 use ecs::{Event, Component};
 
+#[derive(Copy, Clone)]
 pub enum PlayerAction {
     MoveUp,
     MoveDown,

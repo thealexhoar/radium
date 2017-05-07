@@ -1,7 +1,9 @@
 use ecs::Engine;
 use graphics::{GlyphSet, GlyphBatch, Tile, Color, Window, Event};
 use game::render::RenderSystem;
+use game::player::PlayerSystem;
 use sfml::system::Clock;
+
 
 pub struct Core {
     width: u32,
@@ -61,6 +63,11 @@ impl Core {
 
         self.engine.add_passive_system(
             RenderSystem::new(glyphbatch, 40, 20),
+            0
+        );
+
+        self.engine.add_reactive_system(
+            PlayerSystem::new(),
             0
         );
 

@@ -9,7 +9,7 @@ use sfml::graphics::Color as SFColor;
 pub enum Event {
     Closed,
     KeyPress {
-        code: Key,
+        code: char,
         alt: bool,
         ctrl: bool,
         shift: bool
@@ -83,8 +83,21 @@ impl Window {
         match sf_event {
             SFEvent::Closed => Event::Closed,
             SFEvent::KeyPressed {code, alt, ctrl, shift, system } 
-                            => Event::KeyPress {code, alt, ctrl, shift},
+                            => Self::convert_key_event(code, alt, ctrl, shift),
             _               => Event::None
+        }
+    }
+
+    fn convert_key_event (
+        code:Key, 
+        alt: bool, ctrl: bool, shift: bool
+    ) -> Event {
+        match code {
+            Key::A => Event::KeyPress{code:'a', alt, ctrl, shift},
+            Key::D => Event::KeyPress{code:'d', alt, ctrl, shift},
+            Key::S => Event::KeyPress{code:'s', alt, ctrl, shift},
+            Key::W => Event::KeyPress{code:'w', alt, ctrl, shift},
+            _      => Event::None
         }
     }
 }

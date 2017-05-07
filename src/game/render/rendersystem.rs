@@ -1,4 +1,4 @@
-use game::render::{TileComponent, ZComponent};
+use game::render::{TileComponent};
 use ecs::{ComponentManager, Event, EventResult, PassiveSystem, Space};
 use graphics::{DrawTarget, GlyphBatch, Tile, Color, Window};
 use util::Point;
@@ -38,7 +38,7 @@ impl PassiveSystem for RenderSystem {
 
                 match space.entities_at(Point::new(i, j)) {
                     Some(entities) => {
-                        let mut max_z:u32 = 0;
+                        let mut max_z:i32 = -1;
                         'components:
                         for (index, entity) in entities.iter().enumerate() {
                             //try to get tile component
@@ -47,14 +47,8 @@ impl PassiveSystem for RenderSystem {
                                 Some(component) => component,
                                 None            => {continue 'components;}
                             };
-                            //try to get z component
-                            let zc = match component_manager
-                                .get::<ZComponent>(*entity) {
-                                Some(component) => component,
-                                None            => {continue 'components;}
-                            };
-                            if zc.z > max_z {
-                                max_z = zc.z;
+                            if tc.z as i32 > max_z {
+                                max_z = tc.z as i32;
                                 draw_tile = tc.tile;
                             }
                         }

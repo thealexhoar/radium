@@ -7,9 +7,23 @@ pub struct EventResult{
 }
 
 impl EventResult {
-    pub fn empty(allow_event:bool) -> EventResult {
-        EventResult {
+    pub fn new(resulting_events:Option<Vec<Event>>, allow_event:bool) -> Self {
+        Self {
+            resulting_events,
+            allow_event
+        }
+    }
+
+    pub fn empty() -> Self {
+        Self {
             resulting_events: None,
+            allow_event: true
+        }
+    }
+
+    pub fn single_result(event: Event, allow_event:bool) -> Self {
+        Self {
+            resulting_events: Some(vec![event]),
             allow_event
         }
     }
@@ -25,6 +39,7 @@ pub trait PassiveSystem {
         window: &mut Window,
         delta_time: f32 // real elapsed time
     ) -> Option<Vec<Event>>;
+
 }
 
 //respond to actions
