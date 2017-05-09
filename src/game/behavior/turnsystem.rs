@@ -7,8 +7,9 @@ use behavior::Behavior;
 use game::behavior::BehaviorComponent;
 use std::ops::DerefMut;
 
-pub struct TurnTakerSystem {
-
+pub struct TurnTakerSystem {}
+impl TurnTakerSystem {
+    pub fn new() -> Self { Self{} }
 }
 
 impl ReactiveSystem for TurnTakerSystem {

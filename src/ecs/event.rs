@@ -7,8 +7,7 @@ pub enum EventType {
     WindowEvent,
     WaitInput,
     TakeTurn,
-    Action,
-    Custom(u32)
+    Action(u32)
 }
 
 pub struct Event {
