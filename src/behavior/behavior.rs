@@ -1,43 +1,53 @@
 use ecs::{ComponentManager, Space, Entity, Event, EventBuilder};
-use behavior::{BehaviorTreeNode, Result};
+use behavior::Result;
+use std::ops::DerefMut;
 
-//returns a single result, always
-pub struct ResultNode {
-    result: Result
-}
-
-impl ResultNode {
-    pub fn new(result:Result) -> Self { Self { result } }
-}
-
-impl BehaviorTreeNode for ResultNode {
+pub trait Behavior {
     fn execute(
         &mut self,
         entity: Entity,
-        component_manager: &mut ComponentManager,
-        space: &mut Space
+        component_manager: &ComponentManager,
+        space: &Space
+    ) -> (Result, Option<Vec<Event>>);
+}
+
+//returns a single result, always
+pub struct ResultBehavior {
+    result: Result
+}
+
+impl ResultBehavior {
+    pub fn new(result:Result) -> Self { Self { result } }
+}
+
+impl Behavior for ResultBehavior {
+    fn execute(
+        &mut self,
+        entity: Entity,
+        component_manager: &ComponentManager,
+        space: &Space
     ) -> (Result, Option<Vec<Event>>) {
         (self.result, None)
     }
 }
 
 //returns Success and a single event, always
-pub struct EventNode {
+pub struct EventBehavior {
     event_builder: Box<EventBuilder>
 }
 
-impl EventNode {
+impl EventBehavior {
     pub fn new(event_builder: Box<EventBuilder>) -> Self { 
         Self { event_builder} 
     }
 }
 
-impl BehaviorTreeNode for EventNode {
+impl Behavior for EventBehavior {
     fn execute(
         &mut self,
         entity: Entity,
-        component_manager: &mut ComponentManager,
-        space: &mut Space
+        component_manager: &ComponentManager,
+        space: &Space
     ) -> (Result, Option<Vec<Event>>) {
         let mut out = Vec::new();
         out.push(self.event_builder.build_event());
@@ -47,12 +57,12 @@ impl BehaviorTreeNode for EventNode {
 
 //execute in order until one fails
 //will loop forever unless terminated
-pub struct SequenceNode {
-    children: Vec<Box<BehaviorTreeNode>>,
+pub struct SequenceBehavior {
+    children: Vec<Box<Behavior>>,
     current_node: usize
 }
 
-impl SequenceNode {
+impl SequenceBehavior {
     pub fn new() -> Self {
         Self {
             children: Vec::new(),
@@ -60,29 +70,30 @@ impl SequenceNode {
         }
     }
 
-    pub fn push_child(&mut self, child:Box<BehaviorTreeNode>) {
+    pub fn push_child(&mut self, child:Box<Behavior>) {
         self.children.push(child);
     }
 
-    pub fn insert_child(&mut self, index:usize, child:Box<BehaviorTreeNode>) {
+    pub fn insert_child(&mut self, index:usize, child:Box<Behavior>) {
         self.children.insert(index, child);
     }
 
     pub fn add_terminator(&mut self) {
-        self.children.push(Box::new(ResultNode::new(Result::Failure)));
+        self.children.push(Box::new(ResultBehavior::new(Result::Failure)));
     }
 }
 
-impl BehaviorTreeNode for SequenceNode {
+impl Behavior for SequenceBehavior {
     fn execute(
         &mut self,
         entity: Entity,
-        component_manager: &mut ComponentManager,
-        space: &mut Space
+        component_manager: &ComponentManager,
+        space: &Space
     ) -> (Result, Option<Vec<Event>>) {
         let mut out_events = Vec::new();
         loop {
             let (result, events_option) = self.children[self.current_node]
+                .deref_mut()
                 .execute(entity, component_manager, space);
 
             match events_option {
@@ -115,12 +126,12 @@ impl BehaviorTreeNode for SequenceNode {
 
 //execute in order until one succeeds
 //will loop forever unless terminated
-pub struct SelectorNode {
-    children: Vec<Box<BehaviorTreeNode>>,
+pub struct SelectorBehavior {
+    children: Vec<Box<Behavior>>,
     current_node: usize
 }
 
-impl SelectorNode {
+impl SelectorBehavior {
     pub fn new() -> Self {
         Self {
             children: Vec::new(),
@@ -128,29 +139,30 @@ impl SelectorNode {
         }
     }
 
-    pub fn push_child(&mut self, child:Box<BehaviorTreeNode>) {
+    pub fn push_child(&mut self, child:Box<Behavior>) {
         self.children.push(child);
     }
 
-    pub fn insert_child(&mut self, index:usize, child:Box<BehaviorTreeNode>) {
+    pub fn insert_child(&mut self, index:usize, child:Box<Behavior>) {
         self.children.insert(index, child);
     }
 
     pub fn add_terminator(&mut self) {
-        self.children.push(Box::new(ResultNode::new(Result::Success)));
+        self.children.push(Box::new(ResultBehavior::new(Result::Success)));
     }
 }
 
-impl BehaviorTreeNode for SelectorNode {
+impl Behavior for SelectorBehavior {
     fn execute(
         &mut self,
         entity: Entity,
-        component_manager: &mut ComponentManager,
-        space: &mut Space
+        component_manager: &ComponentManager,
+        space: &Space
     ) -> (Result, Option<Vec<Event>>) {
         let mut out_events = Vec::new();
         loop {
             let (result, events_option) = self.children[self.current_node]
+                .deref_mut()
                 .execute(entity, component_manager, space);
 
             match events_option {

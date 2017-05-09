@@ -1,10 +1,9 @@
 pub use self::result::Result;
-pub use self::behaviortree::BehaviorTreeNode;
-pub use self::nodes::{
-    ResultNode, EventNode,
-    SequenceNode, SelectorNode
+pub use self::behavior::{
+    Behavior,
+    ResultBehavior, EventBehavior,
+    SequenceBehavior, SelectorBehavior
 };
 
 mod result;
-mod behaviortree;
-mod nodes;
+mod behavior;

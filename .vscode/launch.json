@@ -1,7 +1,14 @@
 {
     "version": "0.2.0",
     "configurations": [
-
+        {
+            "name": "Launch",
+            "type": "lldb",
+            "request": "launch",
+            "program": "${workspaceRoot}/target/debug/radium",
+            "args": ["--size", "800", "450"],
+            "cwd": "${workspaceRoot}"
+        },
         {
             "name": "Debug",
             "type": "gdb",
