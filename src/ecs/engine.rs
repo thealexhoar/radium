@@ -1,17 +1,19 @@
+use control::*;
 use ecs::*;
 use util::{Point, PriorityQueue};
-use std::ops::Deref;
 use graphics::{Color, Tile, Window};
 use graphics::Event as WindowEvent;
-use control::ControllerComponent;
 use game::graphics::TileComponent;
-
-use std::ops::DerefMut;
+use game::player::PlayerController;
+use control::Controller;
+use std::ops::{Deref, DerefMut};
+use std::collections::{HashMap, HashSet};
 
 pub struct Engine {
     pub passive_systems: Vec<Box<PassiveSystem>>,
     pub continuous_systems: Vec<Box<ContinuousSystem>>,
     _entities: Vec<Entity>,
+    _controllers: HashMap<Entity, Box<Controller>>,
     _component_manager: ComponentManager,
     _scheduler: Scheduler,
     _space: Space
@@ -23,6 +25,7 @@ impl Engine {
             passive_systems: Vec::new(),
             continuous_systems: Vec::new(),
             _entities: Vec::new(),
+            _controllers: HashMap::new(),
             _component_manager: ComponentManager::new(),
             _scheduler: Scheduler::new(),
             _space: Space::new()
@@ -36,13 +39,16 @@ impl Engine {
         self._component_manager.set(player, PositionComponent::new(0, 0));
         self._component_manager.set(player, TileComponent::new(
             Tile::new(
-                Some(Color::green()),
-                Some(Color::black()),
+                Some(Color::white()),
+                Some(Color::blue()),
                 '@' as u32
             )
         ));
 
         self._space.add_entity_at(player, Point::new(0, 0));
+
+        self._controllers.insert(player, Box::new(PlayerController::new()));
+        self._scheduler.push_entity(player, 0);
 
     }
 
@@ -72,11 +78,20 @@ impl Engine {
                 dt
             );
         }
-        let controller_component_option = 
-            self._component_manager.get_mut::<ControllerComponent>(entity);
-        let controller = match controller_component_option {
-            Some(controller_component) => &mut controller_component.controller,
-            None                       => { return; }
-        };
+        let controller = match self._controllers.get_mut(&entity) {
+            Some(controller_box) => controller_box.deref_mut(),
+            None                 => { return; }
+        };      
+
+        let next_dt = controller.update(
+            &mut self._component_manager,
+            &mut self._space,
+            window,
+            entity,
+            dt
+        );
+
+        self._scheduler.push_entity(entity, next_dt);
+        //then return entity to the scheduler
     }
 }

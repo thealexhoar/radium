@@ -71,7 +71,7 @@ impl Core {
             let delta_time = self.clock.restart();
             self.engine.update(&mut self.window, delta_time.as_seconds());
             //clear event queue and check for closing event
-            self.window.events();
+            //self.window.events();
         }
     }
 }

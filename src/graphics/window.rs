@@ -2,6 +2,7 @@ use graphics::GlyphBatch;
 
 use sfml::system::Vector2f;
 use sfml::window::{ContextSettings, Key, VideoMode, style};
+use sfml::window::Window as SFWindow;
 use sfml::window::Event as SFEvent;
 use sfml::graphics::{RenderWindow, RenderTarget};
 use sfml::graphics::Color as SFColor;
@@ -79,17 +80,15 @@ impl Window {
     pub fn wait_for_event(&mut self) -> Event {
         //can simply unwrap, as failure will be caused only by error
         loop {
-            let events = self.events();
-            if(!self.is_open()) {
-                return Event::None;
-            }
-            for event in self.events() {
-                match event {
-                    Event::None  => {},
-                    _            => return event
-                };
-                //thread::sleep(time::Duration::from_millis(50));
-            }
+
+            let sf_event = self._render_window.wait_event().unwrap();
+            let event = Self::convert_event(sf_event);
+            match event {
+                Event::Close => self.close(),
+                Event::None  => continue,
+                _            => {}
+            };
+            return event;
         }
     }
 

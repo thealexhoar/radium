@@ -1,11 +1,14 @@
 pub use ecs::*;
+pub use graphics::*;
 
-pub struct Controller {
-
+pub trait Controller {
+    //returns delta for controlled entity's reschedule
+    fn update(
+        &mut self,
+        component_manager: &mut ComponentManager,
+        space: &mut Space,
+        window: &mut Window,
+        entity: Entity,
+        delta_time: u32
+    ) -> u32;
 }
-
-pub struct ControllerComponent {
-    pub controller: Controller
-}
-
-impl Component for ControllerComponent {}

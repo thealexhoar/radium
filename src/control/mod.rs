@@ -1,3 +1,3 @@
-pub use self::controller::ControllerComponent;
+pub use self::controller::*;
 
 mod controller;
