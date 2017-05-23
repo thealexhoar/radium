@@ -13,6 +13,8 @@ use graphics::{Color, Tile, Window};
 use graphics::Event as WindowEvent;
 use game::player::PlayerComponent;
 use game::render::TileComponent;
+use game::behavior::BehaviorComponent;
+use game::player::PlayerBehavior;
 
 
 pub struct Engine {
@@ -53,6 +55,10 @@ impl Engine {
         self._component_manager.set(player, PlayerComponent::new());
         self._component_manager.set(player, PositionComponent::new(0, 0));
         self._component_manager.set(player, TurnComponent::new());
+        self._component_manager.set(
+            player,
+            BehaviorComponent::new(PlayerBehavior::new())
+        );
         self._component_manager.set(player, TileComponent::new(
             Tile::new(
                 Some(Color::black()),
@@ -63,6 +69,15 @@ impl Engine {
         ));
 
         self._space.add_entity_at(player, Point::new(0, 0));
+
+        self._scheduler.push_event(
+            Event::new(
+                EventType::TakeTurn,
+                Some(player),
+                0,
+                0
+            )
+        );
     }
 
     pub fn add_passive_system<T: 'static + PassiveSystem + Sized>(

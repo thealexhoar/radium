@@ -6,8 +6,8 @@ pub trait Behavior {
     fn execute(
         &mut self,
         entity: Entity,
-        component_manager: &ComponentManager,
-        space: &Space
+        component_manager: &mut ComponentManager,
+        space: &mut Space
     ) -> (Result, Option<Vec<Event>>);
 }
 
@@ -24,8 +24,8 @@ impl Behavior for ResultBehavior {
     fn execute(
         &mut self,
         entity: Entity,
-        component_manager: &ComponentManager,
-        space: &Space
+        component_manager: &mut ComponentManager,
+        space: &mut Space
     ) -> (Result, Option<Vec<Event>>) {
         (self.result, None)
     }
@@ -46,8 +46,8 @@ impl Behavior for EventBehavior {
     fn execute(
         &mut self,
         entity: Entity,
-        component_manager: &ComponentManager,
-        space: &Space
+        component_manager: &mut ComponentManager,
+        space: &mut Space
     ) -> (Result, Option<Vec<Event>>) {
         let mut out = Vec::new();
         out.push(self.event_builder.build_event());
@@ -87,8 +87,8 @@ impl Behavior for SequenceBehavior {
     fn execute(
         &mut self,
         entity: Entity,
-        component_manager: &ComponentManager,
-        space: &Space
+        component_manager: &mut ComponentManager,
+        space: &mut Space
     ) -> (Result, Option<Vec<Event>>) {
         let mut out_events = Vec::new();
         loop {
@@ -156,8 +156,8 @@ impl Behavior for SelectorBehavior {
     fn execute(
         &mut self,
         entity: Entity,
-        component_manager: &ComponentManager,
-        space: &Space
+        component_manager: &mut ComponentManager,
+        space: &mut Space
     ) -> (Result, Option<Vec<Event>>) {
         let mut out_events = Vec::new();
         loop {

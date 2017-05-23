@@ -1,8 +1,9 @@
 use ecs::Engine;
-use graphics::{GlyphSet, GlyphBatch, Tile, Color, Window, Event};
-use game::render::RenderSystem;
-use game::player::PlayerSystem;
-use game::behavior::TurnTakerSystem;
+use graphics::*;
+use game::render::*;
+use game::player::*;
+use game::behavior::*;
+use game::action::*;
 use sfml::system::Clock;
 
 
@@ -74,6 +75,11 @@ impl Core {
 
         self.engine.add_reactive_system(
             TurnTakerSystem::new(),
+            0
+        );
+
+        self.engine.add_reactive_system(
+            MoveSystem::new(),
             0
         );
 
