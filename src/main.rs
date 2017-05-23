@@ -1,10 +1,10 @@
 extern crate sfml;
-mod behavior;
 mod core;
 mod ecs;
 mod game;
 mod graphics;
 mod util;
+mod control;
 use core::Core;
 
 fn main() {

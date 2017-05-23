@@ -1,4 +1,4 @@
-use ecs::{Entity, EntityFactory, Component, Family};
+use ecs::{Entity, EntityFactory, Component};
 use std::collections::{HashMap, HashSet};
 use std::any::{Any, TypeId};
 
@@ -131,39 +131,6 @@ impl ComponentManager {
             return true;
         }
         else { return false; }
-    }
-
-    //TODO: add option to constantly listen for a specific family
-    pub fn get_entities_for(&self, family:&Family) -> Vec<Entity> {
-        let mut out = Vec::new();
-        'entity_loop: for entity in self._entities.iter() {
-            //check all
-            //fail if one is not found
-            for id in family.all_components.iter() {
-                if !self.component_exists(*id, *entity) {
-                    continue 'entity_loop;
-                }
-            }
-
-            //check one
-            //pass if one is found
-            'one_loop: for id in family.one_components.iter() {
-                if self.component_exists(*id, *entity) {
-                    break 'one_loop;
-                }
-            }
-
-            //check none
-            //fail if one is found
-            for id in family.none_components.iter() {
-                if self.component_exists(*id, *entity) {
-                    continue 'entity_loop;
-                }
-            }
-
-            out.push(*entity);
-        }
-        out
     }
 
 

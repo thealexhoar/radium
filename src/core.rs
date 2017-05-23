@@ -1,10 +1,7 @@
-use ecs::Engine;
+use ecs::*;
 use graphics::*;
-use game::render::*;
-use game::player::*;
-use game::behavior::*;
-use game::action::*;
 use sfml::system::Clock;
+use game::graphics::*;
 
 
 pub struct Core {
@@ -63,37 +60,18 @@ impl Core {
             Some(Color::cyan())
         );
 
-        self.engine.add_passive_system(
-            RenderSystem::new(glyphbatch, 40, 20),
-            0
-        );
-
-        self.engine.add_reactive_system(
-            PlayerSystem::new(),
-            0
-        );
-
-        self.engine.add_reactive_system(
-            TurnTakerSystem::new(),
-            0
-        );
-
-        self.engine.add_reactive_system(
-            MoveSystem::new(),
-            0
-        );
-
-        self.engine.add_reactive_system(
-            Rescheduler::new(),
-            100
+        self.engine.passive_systems.push(
+            Box::new(RenderSystem::new(30, 30, 0, 0, glyphbatch))
         );
 
         self.engine.load();
 
         self.clock.restart();
-        'outer: while self.window.is_open() {
+        while self.window.is_open() {
             let delta_time = self.clock.restart();
             self.engine.update(&mut self.window, delta_time.as_seconds());
+            //clear event queue and check for closing event
+            self.window.events();
         }
     }
 }

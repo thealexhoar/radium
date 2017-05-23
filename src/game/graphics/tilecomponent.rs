@@ -2,12 +2,13 @@ use graphics::Tile;
 use ecs::Component;
 
 pub struct TileComponent {
-    pub tile: Tile,
-    pub z: u32
+    pub tile: Tile
 }
+
 impl Component for TileComponent {}
+
 impl TileComponent {
-    pub fn new(tile: Tile, z:u32) -> Self {
-        Self { tile, z }
+    pub fn new(tile: Tile) -> Self {
+        Self { tile }
     }
 }

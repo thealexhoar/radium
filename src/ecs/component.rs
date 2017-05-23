@@ -18,20 +18,4 @@ impl PositionComponent {
     }
 }
 
-//turn-taking
-//perhaps move to behavior?
-pub struct TurnComponent {
-    initialized: bool
-}
-impl Component for TurnComponent {}
-impl TurnComponent {
-    pub fn new() -> Self {
-        Self { initialized: false }
-    }
-
-    pub fn init(&mut self) {
-        self.initialized = true;
-    }
-}
-
 

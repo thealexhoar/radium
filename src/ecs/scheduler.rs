@@ -1,58 +1,58 @@
-use ecs::{Entity, Event, EventType, EventResult};
+use ecs::*;
 use std::any::Any;
 
+struct ScheduleItem {
+    entity: Entity,
+    delta_time: u32
+}
 
 pub struct Scheduler {
-    _event_queue: Vec<Event>,
+    _queue: Vec<ScheduleItem>,
     _elapsed_time: u64
 }
 
 impl Scheduler {
     pub fn new() -> Scheduler {
         Scheduler {
-            _event_queue: Vec::new(),
+            _queue: Vec::new(),
             _elapsed_time: 0
         }
     }
 
-    pub fn push_event(
+    pub fn push_entity(
         &mut self, 
-        event: Event
+        entity: Entity,
+        delta_time: u32
     ) {
         let mut index:Option<usize> = None;
-        for i in 0..self._event_queue.len() {
-            if self._event_queue[i].delta_time >= event.delta_time {
+        for i in 0..self._queue.len() {
+            if self._queue[i].delta_time >= delta_time {
                 index = Some(i);
                 break;
             }
         }
+
+        let item = ScheduleItem { entity, delta_time };
+
         match index {
-            Some(i) => self._event_queue.insert(i, event),
-            None    => self._event_queue.push(event)
+            Some(i) => self._queue.insert(i, item),
+            None    => self._queue.push(item)
         };
     }
 
-    pub fn pop_event(&mut self) -> Option<Event> {
-        match self._event_queue.len() {
+    pub fn pop_entity(&mut self) -> Option<(Entity, u32)> {
+        match self._queue.len() {
             0 => None,
-            _ => Some(self._event_queue.remove(0))
+            _ => {
+                let dt = self._queue[0].delta_time;
+                self.elapse_time(dt);
+                Some((self._queue.remove(0).entity, dt))
+            }
         }
     }
-
-    //peek at how long the next event will take
-    //or returns None if the event queue is empty
-    pub fn top_event_time(&self) -> Option<u32> {
-        match self._event_queue.len() {
-            0 => None,
-            _ => Some(self._event_queue[self._event_queue.len() - 1]
-                .delta_time)
-        }
-    }
-
-    
     pub fn elapse_time(&mut self, time:u32) {
-        for scheduled_event in &mut self._event_queue {
-            scheduled_event.delta_time -= time;
+        for scheduled_item in &mut self._queue {
+            scheduled_item.delta_time -= time;
         }
         self._elapsed_time += time as u64;
     }

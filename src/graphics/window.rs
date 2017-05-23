@@ -5,9 +5,10 @@ use sfml::window::{ContextSettings, Key, VideoMode, style};
 use sfml::window::Event as SFEvent;
 use sfml::graphics::{RenderWindow, RenderTarget};
 use sfml::graphics::Color as SFColor;
+use std::{time, thread};
 
 pub enum Event {
-    Closed,
+    Close,
     KeyPress {
         code: char,
         alt: bool,
@@ -57,17 +58,39 @@ impl Window {
 
     pub fn events(&mut self) -> Vec<Event> {
         let mut out_events:Vec<Event> = Vec::new();
+        let mut     close = false;
         for event in  self._render_window.events() {
-            out_events.push(Window::convert_event(event));
+            close =  match event {
+                SFEvent::Closed => true,
+                _  => {
+                    out_events.push(Window::convert_event(event));
+                    close
+                }
+            };
+            
+        }
+        if close {
+            self.close();
+            return Vec::new();
         }
         out_events
     }
 
     pub fn wait_for_event(&mut self) -> Event {
         //can simply unwrap, as failure will be caused only by error
-        return Self::convert_event(
-            self._render_window.wait_event().unwrap()
-        );
+        loop {
+            let events = self.events();
+            if(!self.is_open()) {
+                return Event::None;
+            }
+            for event in self.events() {
+                match event {
+                    Event::None  => {},
+                    _            => return event
+                };
+                //thread::sleep(time::Duration::from_millis(50));
+            }
+        }
     }
 
     pub fn is_open(&self) -> bool {
@@ -81,7 +104,7 @@ impl Window {
 
     fn convert_event(sf_event:SFEvent) -> Event {
         match sf_event {
-            SFEvent::Closed => Event::Closed,
+            SFEvent::Closed => Event::Close,
             SFEvent::KeyPressed {code, alt, ctrl, shift, system } 
                             => Self::convert_key_event(code, alt, ctrl, shift),
             _               => Event::None
