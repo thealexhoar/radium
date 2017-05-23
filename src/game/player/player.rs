@@ -47,7 +47,7 @@ impl Behavior for PlayerBehavior{
         };
 
         (Result::Success, Some(vec![
-            construct_move_event(entity, Point::new(1,0), 0)
+            construct_move_event(entity, Point::new(1,1), 0)
             ]))
     }
 }

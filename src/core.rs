@@ -83,6 +83,11 @@ impl Core {
             0
         );
 
+        self.engine.add_reactive_system(
+            Rescheduler::new(),
+            100
+        );
+
         self.engine.load();
 
         self.clock.restart();
