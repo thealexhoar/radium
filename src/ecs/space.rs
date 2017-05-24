@@ -2,29 +2,36 @@ use ecs::{Component, PositionComponent, Entity, ComponentManager};
 use std::collections::{HashMap};
 use util::Point;
 
-const CHUNK_SIDE_LEN:i32 = 10;
+const CHUNK_SIDE_LEN:usize = 10;
 
 struct Chunk {
     corner: Point,
-    data: HashMap<(i32, i32), Vec<Entity>>
+    data: Vec<Vec<Vec<Entity>>>
 }
 
 impl Chunk {
     fn new(left:i32, top:i32) -> Chunk {
+        let mut data: Vec<Vec<Vec<Entity>>> = Vec::with_capacity(CHUNK_SIDE_LEN);
+        for i in 0..CHUNK_SIDE_LEN {
+            let mut next_column: Vec<Vec<Entity>> 
+                = Vec::with_capacity(CHUNK_SIDE_LEN);
+            for j in 0..CHUNK_SIDE_LEN {
+                next_column.insert(j, Vec::new());
+            }
+            data.insert(i, next_column);
+        }
         Chunk {
             corner: Point::new(left, top),
-            data: HashMap::new()
+            data
         }
     }
 
     fn entities_at(
         &self, 
         point: Point
-    ) -> Option<&Vec<Entity>> {
-        match self.data.get(&point.tuple()) {
-            Some(vec) => Some(vec),
-            None      => None
-        }
+    ) -> &Vec<Entity> {
+        let (x,y) = self.local_indices(point);
+        &self.data[x][y]
     }
 
     fn add_entity_at(
@@ -32,16 +39,9 @@ impl Chunk {
         entity:Entity,
         point: Point
     ) -> bool {
-        if !self.data.contains_key(&point.tuple()) {
-            self.data.insert(point.tuple(), Vec::new());
-        }
-        match self.data.get_mut(&point.tuple()) {
-            Some(ref mut vector) => {
-                vector.push(entity);
-                true
-            },
-            None                 => false
-        }
+        let (x,y) = self.local_indices(point);
+        self.data[x][y].push(entity);
+        return true;
     }
 
     fn remove_entity(
@@ -49,19 +49,25 @@ impl Chunk {
         entity: Entity,
         point: Point
     ) -> bool {
-        match self.data.get_mut(&point.tuple()) {
-            Some(ref mut vector) => {
-                let mut result = false; 
-                for i in 0..vector.len() {
-                    if vector[i] == entity {
-                        result = true;
-                        break;
-                    }
-                }
-                result
-            },
-            None                 => false
+        let (x,y) = self.local_indices(point);
+        let vec = &mut self.data[x][y];
+        let mut result = false; 
+        for i in 0..vec.len() {
+            if vec[i] == entity {
+                result = true;
+                vec.remove(i);
+                break;
+            }
         }
+        result
+    }
+
+    fn local_indices(&self, world_point:Point) -> (usize, usize) {
+        let (x,y) = world_point.tuple();
+        (
+            (x - (self.corner.x * CHUNK_SIDE_LEN as i32)) as usize, 
+            (y - (self.corner.y * CHUNK_SIDE_LEN as i32)) as usize
+        )
     }
 }
 
@@ -89,13 +95,8 @@ impl Space {
             point.x, point.y
         );
 
-        let b = self._chunks.contains_key(&(chunk_x, chunk_y));
-
         match self._chunks.get(&(chunk_x, chunk_y)) {
-            Some(chunk) => {
-                let out = chunk.entities_at(point);
-                out
-            },
+            Some(chunk) => Some(chunk.entities_at(point)),
             None        => None
         }
     }
@@ -149,6 +150,6 @@ impl Space {
     }
 
     fn chunk_dimensions(x:i32, y:i32) -> (i32, i32) {
-        (x / CHUNK_SIDE_LEN, y / CHUNK_SIDE_LEN)
+        (x / (CHUNK_SIDE_LEN as i32), y / (CHUNK_SIDE_LEN as i32))
     }
 }

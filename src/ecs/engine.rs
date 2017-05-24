@@ -5,6 +5,7 @@ use graphics::{Color, Tile, Window};
 use graphics::Event as WindowEvent;
 use game::graphics::TileComponent;
 use game::player::PlayerController;
+use game::components::ColliderComponent;
 use control::Controller;
 use std::ops::{Deref, DerefMut};
 use std::collections::{HashMap, HashSet};
@@ -33,10 +34,14 @@ impl Engine {
     }
 
     pub fn load(&mut self) {
-        self._space.load_chunk(0,0);
+        for i in 0..6 {
+            for j in 0..6 {
+                self._space.load_chunk(i,j);
+            }
+        }
 
         let player = self._component_manager.create_entity();
-        self._component_manager.set(player, PositionComponent::new(0, 0));
+        self._component_manager.set(player, PositionComponent::new(1, 1, 1));
         self._component_manager.set(player, TileComponent::new(
             Tile::new(
                 Some(Color::white()),
@@ -44,12 +49,48 @@ impl Engine {
                 '@' as u32
             )
         ));
+        self._component_manager.set(player, ColliderComponent::new(1));
 
-        self._space.add_entity_at(player, Point::new(0, 0));
+        self._space.add_entity_at(player, Point::new(1, 1));
 
         self._controllers.insert(player, Box::new(PlayerController::new()));
         self._scheduler.push_entity(player, 0);
 
+        let tile_fg = Color::new_from_rgb(50,50,50);
+        let tile_bg = Color::new_from_rgb(11,11,22);
+        let floor_tile = Tile::new(
+            Some(tile_fg),
+            Some(tile_bg),
+            '.' as u32
+        );
+        let wall_tile = Tile::new(
+            Some(Color::white()),
+            Some(tile_bg),
+            '#' as u32
+        );
+
+        for i in 0..10 {
+            for j in 0..10 {
+                let entity = self._component_manager.create_entity();
+                self._component_manager.set(
+                    entity,
+                    PositionComponent::new(i, j, 0)
+                );
+                let mut tile = floor_tile;
+                if i == 0 || i == 9 || j == 0 || j == 9 {
+                    tile = wall_tile;
+                    self._component_manager.set(
+                        entity,
+                        ColliderComponent::new(1)
+                    );
+                }
+                self._component_manager.set(
+                    entity,
+                    TileComponent::new(tile)
+                );
+                self._space.add_entity_at(entity, Point::new(i, j));
+            }
+        }
     }
 
     pub fn update (
@@ -87,8 +128,7 @@ impl Engine {
             &mut self._component_manager,
             &mut self._space,
             window,
-            entity,
-            dt
+            entity
         );
 
         self._scheduler.push_entity(entity, next_dt);

@@ -1,6 +1,8 @@
 use control::Controller;
 use ecs::*;
 use graphics::*;
+use game::components::ColliderComponent;
+use util::Point;
 
 
 pub struct PlayerController {}
@@ -8,6 +10,67 @@ pub struct PlayerController {}
 impl PlayerController {
     pub fn new() -> Self {
         Self {}
+    }
+    
+    fn move_player(
+        &mut self,
+        component_manager: &mut ComponentManager,
+        space: &mut Space,
+        player: Entity,
+        dx: i32,
+        dy: i32
+    ) -> u32 {
+        
+        let mut new_point: Point = {
+            let position_component = component_manager
+                .get_mut::<PositionComponent>(player)
+                .unwrap();
+
+            Point::new(
+                position_component.point.x + dx,
+                position_component.point.y + dy
+            )
+        };
+
+        
+        
+        let mut move_allowed = {
+            let collider_component = component_manager
+                .get::<ColliderComponent>(player)
+                .unwrap();
+            
+            let collider_bits = collider_component.collision_bits;
+
+            match space.entities_at(new_point) {
+                Some(vector) => vector.iter()
+                    .map(|entity: &Entity| -> bool {
+                        match component_manager
+                            .get::<ColliderComponent>(*entity) {
+                            Some(cc) => cc.collision_bits & collider_bits == 0,
+                            None     => true
+                        }
+                    })
+                    .fold(true, |accum: bool, allow: bool| accum && allow),
+                None => true
+            }
+        };
+
+        let position_component = component_manager
+            .get_mut::<PositionComponent>(player)
+            .unwrap();
+
+        if move_allowed {
+            space.move_entity(
+                player,
+                position_component.point,
+                new_point
+            );
+            position_component.point = new_point;
+            return 1000;
+        }
+        else {
+            return 0;
+        }
     }
 }
 
@@ -17,29 +80,38 @@ impl Controller for PlayerController {
         component_manager: &mut ComponentManager,
         space: &mut Space,
         window: &mut Window,
-        entity: Entity,
-        delta_time: u32
+        entity: Entity
     ) -> u32 {
         match window.wait_for_event() {
             Event::None => 0,
             Event::KeyPress{code, alt, ctrl, shift} => {
-                let position_component = component_manager
-                    .get_mut::<PositionComponent>(entity)
-                    .unwrap();
-                let (x,y) = match (code, alt, ctrl, shift) {
-                    ('a', false, false, false) => (-1, 0),
-                    ('d', false, false, false) => (1, 0),
-                    ('s', false, false, false) => (0, 1),
-                    ('w', false, false, false) => (0, -1),
-                    _ => {return 0;}
-                
-                };
-                
-                space.remove_entity(entity, position_component.point);
-                position_component.point.x += x;
-                position_component.point.y += y;
-                space.add_entity_at(entity, position_component.point);
-                0
+                match (code, alt, ctrl, shift) {
+                    ('a', false, false, false) => self.move_player(
+                        component_manager,
+                        space,
+                        entity,
+                        -1, 0
+                    ),
+                    ('d', false, false, false) => self.move_player(
+                        component_manager,
+                        space,
+                        entity,
+                        1, 0
+                    ),
+                    ('s', false, false, false) => self.move_player(
+                        component_manager,
+                        space,
+                        entity,
+                        0, 1
+                    ),
+                    ('w', false, false, false) => self.move_player(
+                        component_manager,
+                        space,
+                        entity,
+                        0, -1
+                    ),
+                    _ => 0
+                }
             },
             _           => 0
         }

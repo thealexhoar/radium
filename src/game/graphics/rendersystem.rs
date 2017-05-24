@@ -41,7 +41,7 @@ impl PassiveSystem for RenderSystem {
         window: &mut Window,
         delta_time: f32 
     ) {
-
+        //TODO: hard overwrite tiles with floor tiles
         for i in 0..self._width {
             let x = self.world_x + i as i32;
             for j in 0..self._height {
@@ -50,25 +50,34 @@ impl PassiveSystem for RenderSystem {
                     Some(vector) => vector,
                     None         => { continue; }
                 };
-                for n in 1..entities.len()+1 {
-                    let index = entities.len() - n;
+
+                let mut max_depth = 0;
+
+                for n in 0..entities.len() {
+                    let index = n;
                     let entity = entities[index as usize];
-                    let component_option = 
+                    let tile_component_option = 
                         component_manager.get::<TileComponent>(entity);
-                    let tile = match component_option {
+                    let tile = match tile_component_option {
                         Some(tc) => Some(tc.tile),
                         None     => None
                     };
-
-                    self._glyphbatch.drawtarget.overlay_tile(
-                        tile,
-                        i,
-                        j
-                    );
+                    let position_component_option =
+                        component_manager.get::<PositionComponent>(entity);
+                    let position_component = position_component_option.unwrap();
+                    
+                    if position_component.z >= max_depth {
+                        self._glyphbatch.drawtarget.overlay_tile(
+                            tile,
+                            i + self._window_x,
+                            j + self._window_y
+                        );
+                        max_depth = position_component.z;
+                    }
                 }
             }
         }
-
+        
         window.clear();
         self._glyphbatch.flush_tiles();
         window.draw_glyphbatch(&self._glyphbatch);

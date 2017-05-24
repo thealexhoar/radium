@@ -8,7 +8,6 @@ pub trait Controller {
         component_manager: &mut ComponentManager,
         space: &mut Space,
         window: &mut Window,
-        entity: Entity,
-        delta_time: u32
+        entity: Entity
     ) -> u32;
 }

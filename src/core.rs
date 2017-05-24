@@ -61,7 +61,7 @@ impl Core {
         );
 
         self.engine.passive_systems.push(
-            Box::new(RenderSystem::new(30, 30, 0, 0, glyphbatch))
+            Box::new(RenderSystem::new(45, 45, 0, 0, glyphbatch))
         );
 
         self.engine.load();
