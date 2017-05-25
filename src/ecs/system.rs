@@ -1,13 +1,16 @@
 use ecs::{ComponentManager, Space};
-use graphics::Window;
+use graphics::{GlyphBatch, Window};
+use game::Blackboard;
 
 //don't modify any data, just read it
 //useful for rendering, animating, etc
 pub trait PassiveSystem {
     fn update(
         &mut self,
+        blackboard: &mut Blackboard,
         component_manager: &ComponentManager,
         space: &Space,
+        glyphbatch: &mut GlyphBatch,
         window: &mut Window,
         delta_time: f32 // real elapsed time
     );
@@ -19,8 +22,11 @@ pub trait PassiveSystem {
 pub trait ContinuousSystem {
     fn update(
         &mut self,
+        blackboard: &mut Blackboard,
         component_manager: &mut ComponentManager,
         space: &mut Space,
+        glyphbatch: &mut GlyphBatch,
+        window: &mut Window,
         delta_time: u32 //game elapsed time
     );
 }

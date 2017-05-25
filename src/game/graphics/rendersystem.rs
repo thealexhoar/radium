@@ -2,15 +2,16 @@ use ecs::*;
 use graphics::*;
 use util::Point;
 use game::graphics::TileComponent;
+use game::Blackboard;
 
 pub struct RenderSystem {
+    _draw_target: DrawTarget,
     _width: u32,
     _height: u32,
     _window_x: u32,
     _window_y: u32,
     pub world_x: i32,
-    pub world_y: i32,
-    _glyphbatch: GlyphBatch
+    pub world_y: i32
 }
 
 impl RenderSystem {
@@ -18,17 +19,16 @@ impl RenderSystem {
         width:u32,
         height:u32,
         window_x:u32,
-        window_y:u32,
-        glyphbatch: GlyphBatch
+        window_y:u32
     ) -> Self {
         Self {
+            _draw_target: DrawTarget::new(width, height),
             _width: width,
             _height: height,
             _window_x: window_x,
             _window_y: window_y,
             world_x: 0,
-            world_y: 0,
-            _glyphbatch: glyphbatch
+            world_y: 0
         }
     }
 }
@@ -36,16 +36,30 @@ impl RenderSystem {
 impl PassiveSystem for RenderSystem {
     fn update(
         &mut self,
+        blackboard: &mut Blackboard,
         component_manager: &ComponentManager,
         space: &Space,
+        glyphbatch: &mut GlyphBatch,
         window: &mut Window,
         delta_time: f32 
     ) {
+        match blackboard.player {
+            Some(player) => {
+                let position_component = component_manager
+                    .get::<PositionComponent>(player).unwrap();
+                self.world_x = 
+                    position_component.point.x - (self._width as i32) / 2;
+                self.world_y = 
+                    position_component.point.y - (self._height as i32) / 2;
+            },
+            None => {}
+        }
+        self._draw_target.clear();
         //TODO: hard overwrite tiles with floor tiles
         for i in 0..self._width {
-            let x = self.world_x + i as i32;
+            let x = self.world_x + (i as i32);
             for j in 0..self._height {
-                let y = self.world_y + j as i32;
+                let y = self.world_y + (j as i32);
                 let entities = match space.entities_at(Point::new(x,y)) {
                     Some(vector) => vector,
                     None         => { continue; }
@@ -67,7 +81,7 @@ impl PassiveSystem for RenderSystem {
                     let position_component = position_component_option.unwrap();
                     
                     if position_component.z >= max_depth {
-                        self._glyphbatch.drawtarget.overlay_tile(
+                        self._draw_target.overlay_tile(
                             tile,
                             i + self._window_x,
                             j + self._window_y
@@ -77,9 +91,11 @@ impl PassiveSystem for RenderSystem {
                 }
             }
         }
-        
-        window.clear();
-        self._glyphbatch.flush_tiles();
-        window.draw_glyphbatch(&self._glyphbatch);
+
+        glyphbatch.drawtarget.set_from_drawtarget(
+            &self._draw_target,
+            self._window_x,
+            self._window_y
+        );
     }
 }

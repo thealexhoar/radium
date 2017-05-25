@@ -34,6 +34,10 @@ impl Color {
         Color::new_from_rgb(255,255,255)
     }
 
+    pub fn gray() -> Color {
+        Color::new_from_rgb(127,127,127)
+    }
+
     pub fn black() -> Color {
         Color::new_from_rgb(0,0,0)
     }

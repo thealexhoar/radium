@@ -64,10 +64,13 @@ impl Chunk {
 
     fn local_indices(&self, world_point:Point) -> (usize, usize) {
         let (x,y) = world_point.tuple();
-        (
-            (x - (self.corner.x * CHUNK_SIDE_LEN as i32)) as usize, 
-            (y - (self.corner.y * CHUNK_SIDE_LEN as i32)) as usize
-        )
+        let corner_x = self.corner.x * CHUNK_SIDE_LEN as i32;
+        let corner_y = self.corner.y * CHUNK_SIDE_LEN as i32;
+        let transformed_x = x - corner_x;
+        let transformed_y = y - corner_y;
+        let out_x = (x - corner_x) as usize;
+        let out_y = (y - corner_y) as usize;
+        (out_x, out_y)
     }
 }
 
@@ -150,6 +153,21 @@ impl Space {
     }
 
     fn chunk_dimensions(x:i32, y:i32) -> (i32, i32) {
-        (x / (CHUNK_SIDE_LEN as i32), y / (CHUNK_SIDE_LEN as i32))
+        let mut chunk_x;
+        let mut chunk_y; 
+        if x < 0 {
+            chunk_x = (x - 9) / (CHUNK_SIDE_LEN as i32);
+        }
+        else {
+            chunk_x = x / (CHUNK_SIDE_LEN as i32);
+        }
+        if y < 0 {
+            chunk_y = (y - 9) / (CHUNK_SIDE_LEN as i32);
+        }
+        else {
+            chunk_y = y / (CHUNK_SIDE_LEN as i32);
+        }
+
+        (chunk_x, chunk_y)
     }
 }

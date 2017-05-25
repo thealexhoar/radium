@@ -18,6 +18,7 @@ pub struct GlyphBatch {
     _bg_vertices: VertexArray,
     _glyphset: GlyphSet,
     _null_texture: Texture,
+    _null_tile: Tile,
     pub drawtarget: DrawTarget
 }
 
@@ -52,11 +53,20 @@ impl GlyphBatch {
             _null_texture: match Texture::from_image(&null_img) {
                 Some(texture) => texture,
                 None          => panic!("Couldn't create Texture")
-            }
+            },
+            _null_tile: Tile::new(None, Some(Color::black()), 0)
         };
         glyphbatch.set_pixel_resolution(pixel_width, pixel_height);
 
         glyphbatch
+    }
+
+    pub fn set_null_color(&mut self, color:Color) {
+        self._null_tile = Tile::new(
+            None,
+            Some(color),
+            0
+        );
     }
 
     pub fn set_pixel_resolution(
@@ -125,12 +135,13 @@ impl GlyphBatch {
     }
 
     pub fn flush_tiles(&mut self) {
+        let null_tile = self._null_tile;
         for x in 0..self.drawtarget.width() {
             for y in 0..self.drawtarget.height() {
                 match self.drawtarget.get_tile(x, y) {
                     Some(tile) => self.set_vertices(tile, x, y),
                     None       => self.set_vertices(
-                        Tile::new(None, None, 0),
+                        null_tile,
                         x, y
                     ) 
                 };

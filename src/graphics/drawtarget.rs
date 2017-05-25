@@ -27,6 +27,12 @@ impl DrawTarget {
         self._height
     }
 
+    pub fn clear(&mut self) {
+        for i in 0..self._data.len() {
+            self._data[i] = None;
+        }
+    }
+
     pub fn get_tile(&self, x:u32, y:u32) -> Option<Tile> {
         let index = self.get_index(x, y);
         self._data[index]

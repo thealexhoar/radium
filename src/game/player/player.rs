@@ -1,6 +1,7 @@
 use control::Controller;
 use ecs::*;
 use graphics::*;
+use game::Blackboard;
 use game::components::ColliderComponent;
 use util::Point;
 
@@ -14,6 +15,7 @@ impl PlayerController {
     
     fn move_player(
         &mut self,
+        blackboard: &mut Blackboard,
         component_manager: &mut ComponentManager,
         space: &mut Space,
         player: Entity,
@@ -77,6 +79,7 @@ impl PlayerController {
 impl Controller for PlayerController {
     fn update(
         &mut self,
+        blackboard: &mut Blackboard,
         component_manager: &mut ComponentManager,
         space: &mut Space,
         window: &mut Window,
@@ -87,24 +90,28 @@ impl Controller for PlayerController {
             Event::KeyPress{code, alt, ctrl, shift} => {
                 match (code, alt, ctrl, shift) {
                     ('a', false, false, false) => self.move_player(
+                        blackboard,
                         component_manager,
                         space,
                         entity,
                         -1, 0
                     ),
                     ('d', false, false, false) => self.move_player(
+                        blackboard,
                         component_manager,
                         space,
                         entity,
                         1, 0
                     ),
                     ('s', false, false, false) => self.move_player(
+                        blackboard,
                         component_manager,
                         space,
                         entity,
                         0, 1
                     ),
                     ('w', false, false, false) => self.move_player(
+                        blackboard,
                         component_manager,
                         space,
                         entity,

@@ -2,6 +2,7 @@ use ecs::*;
 use graphics::*;
 use sfml::system::Clock;
 use game::graphics::*;
+use game::ui::*;
 
 
 pub struct Core {
@@ -28,40 +29,36 @@ impl Core {
     }
 
     pub fn run(&mut self) {
+        let window_width = 80;
+        let window_height = 45;
+        let game_console_width = 55;
+        let game_console_height = 31;
+
         let mut glyphbatch = GlyphBatch::new(
             GlyphSet::new("assets/tileset_10x10.png", 10, 10, 256),
-            80, 45,
+            window_width, window_height,
             self.width, self.height
         );
-        glyphbatch.drawtarget.set_tiles_rect(
-            Some(Tile::new(
-                Some(Color::new_from_rgb(40,40,40)), 
-                None, 
-                '.' as u32//138
-            )),
-            5, 3,
-            22, 10
-        );
-        for i in 0..4 {
-            glyphbatch.drawtarget.overlay_tile(
-                Some(Tile::new(
-                    Some(Color::yellow()),
-                    None,
-                    208 + i
-                )),
-                7 + i, 8 + i
-            );
-        }
-
-        glyphbatch.drawtarget.draw_string_slice(
-            "Hello World!", 
-            5, 2, 
-            Color::black(), 
-            Some(Color::cyan())
-        );
-
         self.engine.passive_systems.push(
-            Box::new(RenderSystem::new(45, 45, 0, 0, glyphbatch))
+            Box::new(RenderSystem::new(
+                game_console_width,
+                game_console_height,
+                0, 0
+            ))
+        );
+        self.engine.passive_systems.push(
+            Box::new(ConsoleSystem::new(
+                game_console_width,
+                window_height - game_console_height,
+                0, game_console_height
+            ))
+        );
+        self.engine.passive_systems.push(
+            Box::new(InfoSystem::new(
+                window_width - game_console_width,
+                window_height,
+                game_console_width, 0
+            ))
         );
 
         self.engine.load();
@@ -69,7 +66,11 @@ impl Core {
         self.clock.restart();
         while self.window.is_open() {
             let delta_time = self.clock.restart();
-            self.engine.update(&mut self.window, delta_time.as_seconds());
+            self.engine.update(
+                &mut glyphbatch,
+                &mut self.window,
+                delta_time.as_seconds()
+            );
             //clear event queue and check for closing event
             //self.window.events();
         }
