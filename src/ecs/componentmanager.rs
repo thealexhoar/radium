@@ -70,43 +70,6 @@ impl ComponentManager {
         return true;
     }
 
-     //fails if entity not yet in manager
-    pub fn set_box<T: Component + Sized>(
-        &mut self, 
-        entity:Entity, 
-        component:Box<T>
-    ) -> bool { 
-        let id = TypeId::of::<T>();
-        if !self._entities.contains(&entity) {
-            return false;
-        }
-
-        if self._component_types.insert(id) {
-            for e in self._entities.iter() {
-                self._data.insert((id, *e), None);
-            }
-        }
-
-        self._data.insert((id, entity), Some(component));
-        return true;
-    }
-
-    pub fn remove_box<T: Component>( &mut self, entity:Entity
-    ) -> Option<Box<T>> { 
-        let id = TypeId::of::<T>();
-        match self._data.remove(&(id, entity)) {
-            Some(box_option) => match box_option {
-                Some(any_box) => match any_box.downcast::<T>() {
-                    Ok(component_box) => Some(component_box),
-                    Err(_)            => None
-                },
-                None          => None
-            },
-            None             => None
-        }
-    }
-
-
     pub fn create_entity(&mut self) -> Entity {
         let entity = self._entity_factory.create_entity();
         self.add_entity(entity);
@@ -134,6 +97,23 @@ impl ComponentManager {
     }
 
 
+    pub fn entities_with_one(&self, id: TypeId) -> Vec<Entity> {
+        return self.entities_with_many(vec![id]);
+    }
+
+    pub fn entities_with_many(&self, ids: Vec<TypeId>) -> Vec<Entity> {
+        let mut out = Vec::new();
+        for entity in self._entities.iter() {
+            for id in ids.iter() {
+                if !self.component_exists(*id, *entity) {
+                    break;
+                }
+            }
+            out.push(*entity);
+        }
+        out
+    }
+
     fn component_exists(&self, id:TypeId, entity:Entity) -> bool {
         match self._data.get(&(id, entity)) {
             Some(data_option) => match *data_option {
@@ -145,5 +125,6 @@ impl ComponentManager {
             None              => false
         }
     }
+
 
 }

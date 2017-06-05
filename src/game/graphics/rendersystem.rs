@@ -72,14 +72,14 @@ impl PassiveSystem for RenderSystem {
                     let entity = entities[index as usize];
                     let tile_component_option = 
                         component_manager.get::<TileComponent>(entity);
-                    let tile = match tile_component_option {
+                    let mut tile = match tile_component_option {
                         Some(tc) => Some(tc.tile),
                         None     => None
                     };
                     let position_component_option =
                         component_manager.get::<PositionComponent>(entity);
                     let position_component = position_component_option.unwrap();
-                    
+                
                     if position_component.z >= max_depth {
                         self._draw_target.overlay_tile(
                             tile,

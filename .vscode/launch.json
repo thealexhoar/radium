@@ -6,7 +6,7 @@
             "type": "lldb",
             "request": "launch",
             "program": "${workspaceRoot}/target/debug/radium",
-            "args": ["--size", "800", "450"],
+            "args": ["--size", "1600", "900"],
             "cwd": "${workspaceRoot}"
         },
         {

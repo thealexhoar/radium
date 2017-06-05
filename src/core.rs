@@ -1,8 +1,21 @@
 use ecs::*;
 use graphics::*;
 use sfml::system::Clock;
+use game::action::Action;
 use game::graphics::*;
 use game::ui::*;
+use std::ops::DerefMut;
+
+#[derive(Clone, Copy)]
+pub enum CoreState {
+    View,
+    Selected,
+    EnemyTurn,
+
+    ViewAction,
+    SelectedAction,
+    EnemyAction
+}
 
 
 pub struct Core {
@@ -10,7 +23,9 @@ pub struct Core {
     height: u32,
     window: Window,
     engine: Engine, 
-    clock: Clock
+    clock: Clock,
+    state: CoreState,
+    current_action: Option<Box<Action>>
 }
 
 impl Core {
@@ -20,7 +35,9 @@ impl Core {
             height,
             window: Window::new(width, height),
             engine: Engine::new(),
-            clock: Clock::start()
+            clock: Clock::start(),
+            state: CoreState::View,
+            current_action: None
         }
     }
 
@@ -66,13 +83,65 @@ impl Core {
         self.clock.restart();
         while self.window.is_open() {
             let delta_time = self.clock.restart();
-            self.engine.update(
+            self.engine.update_passive_systems(
                 &mut glyphbatch,
                 &mut self.window,
                 delta_time.as_seconds()
             );
-            //clear event queue and check for closing event
-            //self.window.events();
+
+            self.window.clear();
+            glyphbatch.flush_tiles();
+            self.window.draw_glyphbatch(&glyphbatch);
+
+            let mut next_state = self.state;
+            match self.state {
+                CoreState::View               => {
+                    //listen for actions
+                },
+
+                CoreState::Selected           => {
+                    //listen for actions
+                },
+
+                CoreState::EnemyTurn          => {
+                    //iterate through enemy controllers
+                },
+                
+                CoreState::ViewAction |
+                CoreState::SelectedAction |
+                CoreState::EnemyAction        => {
+                    let (completed, delta) = match self.current_action {
+                        Some(ref mut action_box) => action_box
+                            .deref_mut()
+                            .execute(
+                                &mut self.engine.component_manager,
+                                &mut self.engine.space,
+                                delta_time.as_seconds()
+                        ),
+                        None             => (true, 0)
+                    };
+                    if delta > 0 { 
+                        self.engine.update_continuous_systems(delta);
+                    }
+                    if completed {
+                        match self.state {
+                            CoreState::ViewAction     =>
+                                next_state = CoreState::View,
+                            CoreState::SelectedAction =>
+                                next_state = CoreState::Selected,
+                            CoreState::EnemyAction    =>
+                                next_state = CoreState::EnemyTurn,
+                            _ => {}
+                        }
+                    }
+                },
+                
+                _ => {}
+            };
+
+            self.state = next_state;
+
+            self.window.update_event_queue();
         }
     }
 }

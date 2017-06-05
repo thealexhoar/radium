@@ -25,8 +25,6 @@ pub trait ContinuousSystem {
         blackboard: &mut Blackboard,
         component_manager: &mut ComponentManager,
         space: &mut Space,
-        glyphbatch: &mut GlyphBatch,
-        window: &mut Window,
         delta_time: u32 //game elapsed time
     );
 }

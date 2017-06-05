@@ -34,8 +34,6 @@ impl PlayerController {
             )
         };
 
-        
-        
         let mut move_allowed = {
             let collider_component = component_manager
                 .get::<ColliderComponent>(player)
@@ -84,44 +82,53 @@ impl Controller for PlayerController {
         space: &mut Space,
         window: &mut Window,
         entity: Entity
-    ) -> u32 {
-        match window.wait_for_event() {
-            Event::None => 0,
-            Event::KeyPress{code, alt, ctrl, shift} => {
-                match (code, alt, ctrl, shift) {
-                    ('a', false, false, false) => self.move_player(
-                        blackboard,
-                        component_manager,
-                        space,
-                        entity,
-                        -1, 0
-                    ),
-                    ('d', false, false, false) => self.move_player(
-                        blackboard,
-                        component_manager,
-                        space,
-                        entity,
-                        1, 0
-                    ),
-                    ('s', false, false, false) => self.move_player(
-                        blackboard,
-                        component_manager,
-                        space,
-                        entity,
-                        0, 1
-                    ),
-                    ('w', false, false, false) => self.move_player(
-                        blackboard,
-                        component_manager,
-                        space,
-                        entity,
-                        0, -1
-                    ),
-                    _ => 0
-                }
-            },
-            _           => 0
+    ) -> (u32, bool) {
+        let mut event_found = false;
+        let mut out = 0;
+        for event in window.events() {
+            out = match event {
+                Event::None => 0,
+                Event::KeyPress{code, alt, ctrl, shift} => {
+                    event_found = true;
+                    match (code, alt, ctrl, shift) {
+                        ('a', false, false, false) => self.move_player(
+                            blackboard,
+                            component_manager,
+                            space,
+                            entity,
+                            -1, 0
+                        ),
+                        ('d', false, false, false) => self.move_player(
+                            blackboard,
+                            component_manager,
+                            space,
+                            entity,
+                            1, 0
+                        ),
+                        ('s', false, false, false) => self.move_player(
+                            blackboard,
+                            component_manager,
+                            space,
+                            entity,
+                            0, 1
+                        ),
+                        ('w', false, false, false) => self.move_player(
+                            blackboard,
+                            component_manager,
+                            space,
+                            entity,
+                            0, -1
+                        ),
+                        _ => { event_found = false; 0}
+                    }
+                },
+                _ => 0
+            };
+            if event_found {
+                break;
+            }
         }
+        (out, event_found)
     }
 
 }

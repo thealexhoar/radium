@@ -11,5 +11,5 @@ pub trait Controller {
         space: &mut Space,
         window: &mut Window,
         entity: Entity
-    ) -> u32;
+    ) -> (u32, bool);
 }

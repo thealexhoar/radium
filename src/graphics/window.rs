@@ -1,5 +1,6 @@
 use graphics::GlyphBatch;
 
+use sfml::window::set_virtual_keyboard_visible;
 use sfml::system::Vector2f;
 use sfml::window::{ContextSettings, Key, VideoMode, style};
 use sfml::window::Window as SFWindow;
@@ -26,7 +27,8 @@ impl Clone for Event {
 }
 
 pub struct Window {
-    _render_window:RenderWindow
+    _render_window: RenderWindow,
+    _events: Vec<Event>
 }
 
 impl Window {
@@ -34,7 +36,7 @@ impl Window {
         let mut window = match RenderWindow::new(
             VideoMode::new(width, height, 32),
             "Radium",
-            style::CLOSE,
+            style::NONE,
             &ContextSettings::default()
         ) {
             Some(window) => window,
@@ -42,9 +44,11 @@ impl Window {
         };
 
         window.set_vertical_sync_enabled(true);
+        window.set_key_repeat_enabled(false);
 
         Window {
-            _render_window: window
+            _render_window: window,
+            _events: Vec::new()
         }
     }
 
@@ -57,39 +61,29 @@ impl Window {
         self._render_window.display();
     }
 
-    pub fn events(&mut self) -> Vec<Event> {
-        let mut out_events:Vec<Event> = Vec::new();
-        let mut     close = false;
+    pub fn update_event_queue(&mut self) {
+        self._events = Vec::new();
+        let mut close = false;
         for event in  self._render_window.events() {
             close =  match event {
                 SFEvent::Closed => true,
                 _  => {
-                    out_events.push(Window::convert_event(event));
+                    self._events.push(Window::convert_event(event));
                     close
                 }
             };
-            
         }
         if close {
             self.close();
-            return Vec::new();
         }
-        out_events
     }
 
-    pub fn wait_for_event(&mut self) -> Event {
-        //can simply unwrap, as failure will be caused only by error
-        loop {
-
-            let sf_event = self._render_window.wait_event().unwrap();
-            let event = Self::convert_event(sf_event);
-            match event {
-                Event::Close => self.close(),
-                Event::None  => continue,
-                _            => {}
-            };
-            return event;
+    pub fn events(&self) -> Vec<Event> {
+        let mut out_vec = Vec::with_capacity(self._events.len());
+        for &event in self._events.iter() {
+            out_vec.push(event);
         }
+        out_vec
     }
 
     pub fn is_open(&self) -> bool {
