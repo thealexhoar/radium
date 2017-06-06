@@ -6,6 +6,7 @@ use game::graphics::*;
 use game::ui::*;
 use std::ops::DerefMut;
 
+
 #[derive(Clone, Copy)]
 pub enum CoreState {
     View,
@@ -82,7 +83,20 @@ impl Core {
 
         self.clock.restart();
         while self.window.is_open() {
+
+            if self.window.mouse_pressed(MouseButton::Left) {
+                let (mouse_x, mouse_y) = self.window.mouse_pos();
+                let (x,y) = glyphbatch.get_tile_from_pos(
+                    mouse_x,
+                    mouse_y
+                );
+                println!("x: {} y: {}", x, y);
+            }
+
             let delta_time = self.clock.restart();
+            if delta_time.as_seconds() > 1. {
+                println!("Delta time: {}", delta_time.as_seconds());
+            }
             self.engine.update_passive_systems(
                 &mut glyphbatch,
                 &mut self.window,

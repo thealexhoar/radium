@@ -1,13 +1,19 @@
 use graphics::GlyphBatch;
 
-use sfml::window::set_virtual_keyboard_visible;
+use sfml::window::mouse;
 use sfml::system::Vector2f;
 use sfml::window::{ContextSettings, Key, VideoMode, style};
 use sfml::window::Window as SFWindow;
 use sfml::window::Event as SFEvent;
 use sfml::graphics::{RenderWindow, RenderTarget};
 use sfml::graphics::Color as SFColor;
+use std::cmp::max;
 use std::{time, thread};
+
+pub enum MouseButton {
+    Left,
+    Right
+}
 
 pub enum Event {
     Close,
@@ -92,6 +98,27 @@ impl Window {
 
     pub fn close(&mut self) {
         self._render_window.close();
+    }
+
+    pub fn mouse_pressed(&self, button:MouseButton) -> bool {
+        match button {
+            MouseButton::Left => {
+                mouse::Button::Left.is_pressed()
+            },
+            MouseButton::Right => {
+                mouse::Button::Right.is_pressed()
+            }
+        }
+    }
+
+    pub fn mouse_pos(&self) -> (u32, u32) {
+        let mouse_point = mouse::desktop_position();
+        let window_point = self._render_window.position();
+
+        let x = max(mouse_point.x - window_point.x, 0) as u32;
+        let y = max(mouse_point.y - window_point.y, 0) as u32;
+        
+        (x,y)
     }
 
 

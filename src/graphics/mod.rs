@@ -4,7 +4,7 @@ pub use self::drawtarget::DrawTarget;
 pub use self::glyphbatch::GlyphBatch;
 pub use self::glyphset::GlyphSet;
 pub use self::tile::{Tile, TILE_ID_MAX_VALUE};
-pub use self::window::{Window, Event};
+pub use self::window::{Window, Event, MouseButton};
 
 
 mod color;

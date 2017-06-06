@@ -8,7 +8,7 @@ pub struct Point {
 
 impl Point {
     pub fn new(x: i32, y: i32) -> Self {
-        Self {x,y}
+        Self {x, y}
     }
 
     pub fn from_tuple(tuple:(i32, i32)) -> Self {
@@ -48,7 +48,7 @@ impl Sub for Point {
     fn sub(self, other: Point) -> Point {
         Point { 
             x: self.x - other.x, 
-            y: self.y - other.y
+            y: self.y - other.y,
         }
     }
 }

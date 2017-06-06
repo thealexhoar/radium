@@ -148,6 +148,27 @@ impl GlyphBatch {
             }
         }
     }
+    
+    pub fn get_tile_from_pos(&self, x:u32, y:u32) -> (u32, u32) {
+        let mut out_x:u32;
+        let mut out_y:u32;
+
+        if x < self._big_offset.x {
+            out_x = 0;
+        }
+        else {
+            out_x = (x - self._big_offset.x) / self._tile_size.x;
+        }
+
+        if y < self._big_offset.y {
+            out_y = 0;
+        }
+        else {
+            out_y = (y - self._big_offset.y) / self._tile_size.y;
+        }
+
+        (out_x, out_y)
+    }
 
     fn set_vertices(&mut self, tile:Tile, x:u32, y:u32) {
         if tile.tile_id > TILE_ID_MAX_VALUE {

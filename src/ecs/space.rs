@@ -6,32 +6,24 @@ const CHUNK_SIDE_LEN:usize = 10;
 
 struct Chunk {
     corner: Point,
-    data: Vec<Vec<Vec<Entity>>>
+    floor_data: HashMap<(i32, i32), Entity>,
+    data:  HashMap<(i32, i32), Vec<Entity>>
 }
 
 impl Chunk {
     fn new(left:i32, top:i32) -> Chunk {
-        let mut data: Vec<Vec<Vec<Entity>>> = Vec::with_capacity(CHUNK_SIDE_LEN);
-        for i in 0..CHUNK_SIDE_LEN {
-            let mut next_column: Vec<Vec<Entity>> 
-                = Vec::with_capacity(CHUNK_SIDE_LEN);
-            for j in 0..CHUNK_SIDE_LEN {
-                next_column.insert(j, Vec::new());
-            }
-            data.insert(i, next_column);
-        }
         Chunk {
             corner: Point::new(left, top),
-            data
+            floor_data: HashMap::new(),
+            data: HashMap::new()
         }
     }
 
     fn entities_at(
         &self, 
         point: Point
-    ) -> &Vec<Entity> {
-        let (x,y) = self.local_indices(point);
-        &self.data[x][y]
+    ) -> Option<&Vec<Entity>> {
+        self.data.get(&point.tuple())
     }
 
     fn add_entity_at(
@@ -39,8 +31,10 @@ impl Chunk {
         entity:Entity,
         point: Point
     ) -> bool {
-        let (x,y) = self.local_indices(point);
-        self.data[x][y].push(entity);
+        if !self.data.contains_key(&point.tuple()) {
+                self.data.insert(point.tuple(), Vec::new());
+        }
+        self.data.get_mut(&point.tuple()).unwrap().push(entity);
         return true;
     }
 
@@ -49,28 +43,18 @@ impl Chunk {
         entity: Entity,
         point: Point
     ) -> bool {
-        let (x,y) = self.local_indices(point);
-        let vec = &mut self.data[x][y];
-        let mut result = false; 
-        for i in 0..vec.len() {
-            if vec[i] == entity {
-                result = true;
-                vec.remove(i);
-                break;
-            }
-        }
-        result
-    }
-
-    fn local_indices(&self, world_point:Point) -> (usize, usize) {
-        let (x,y) = world_point.tuple();
-        let corner_x = self.corner.x * CHUNK_SIDE_LEN as i32;
-        let corner_y = self.corner.y * CHUNK_SIDE_LEN as i32;
-        let transformed_x = x - corner_x;
-        let transformed_y = y - corner_y;
-        let out_x = (x - corner_x) as usize;
-        let out_y = (y - corner_y) as usize;
-        (out_x, out_y)
+        match self.data.get_mut(&point.tuple()) {
+            Some(data_vec) => {
+                for i in 0..data_vec.len() {
+                    if data_vec[i] == entity {
+                        data_vec.remove(i);
+                        return true;
+                    }
+                }
+            },
+            None           => {}
+        };
+        return false;
     }
 }
 
@@ -99,7 +83,7 @@ impl Space {
         );
 
         match self._chunks.get(&(chunk_x, chunk_y)) {
-            Some(chunk) => Some(chunk.entities_at(point)),
+            Some(chunk) => chunk.entities_at(point),
             None        => None
         }
     }
