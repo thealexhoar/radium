@@ -40,11 +40,11 @@ impl GlyphBatch {
             _pixel_dimensions: Vector2u::new(0, 0),
             _big_offset: Vector2u::new(0, 0),
             _small_offset: Vector2u::new(0, 0),
-            _fg_vertices: VertexArray::new_init(
+            _fg_vertices: VertexArray::new(
                 PrimitiveType::Quads,
                 vertex_count as usize
             ),
-            _bg_vertices: VertexArray::new_init(
+            _bg_vertices: VertexArray::new(
                 PrimitiveType::Quads,
                 vertex_count as usize
             ),

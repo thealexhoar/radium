@@ -4,4 +4,4 @@ version = "0.1.0"
 authors = ["thealexhoar <thealexhoar@gmail.com>"]
 
 [dependencies]
-sfml = "0.12.0"
+sfml = { git = "https://github.com/thealexhoar/rust-sfml", version = "0.12.0" }
