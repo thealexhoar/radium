@@ -63,13 +63,13 @@ impl Core {
             window_width, window_height,
             self.width, self.height
         );
-        self.engine.passive_systems.push(
+        /*self.engine.passive_systems.push(
             Box::new(RenderSystem::new(
                 game_console_width,
                 game_console_height,
                 0, 0
             ))
-        );
+        );*/
         self.engine.passive_systems.push(
             Box::new(ConsoleSystem::new(
                 game_console_width,
@@ -89,6 +89,11 @@ impl Core {
 
         self.clock.restart();
         while self.window.is_open() {
+            let delta_time = self.clock.restart();
+            if delta_time.as_seconds() > 1. {
+                println!("Delta time: {}", delta_time.as_seconds());
+            }
+
 
             if self.window.mouse_pressed(MouseButton::Left) {
                 let (mouse_x, mouse_y) = self.window.mouse_pos();
@@ -97,12 +102,9 @@ impl Core {
                     mouse_y
                 );  
                 println!("x: {} y: {}", x, y);
+                println!("{}", 1. / delta_time.as_seconds());
             }
 
-            let delta_time = self.clock.restart();
-            if delta_time.as_seconds() > 1. {
-                println!("Delta time: {}", delta_time.as_seconds());
-            }
             self.engine.update_passive_systems(
                 &mut glyphbatch,
                 &mut self.window,
@@ -115,7 +117,7 @@ impl Core {
             self.window.draw_glyphbatch(&glyphbatch);
 
             let events = self.window.events();
-
+/*
             let mut next_state = self.state;
             match self.state {
                 CoreState::View               => {
@@ -178,6 +180,7 @@ impl Core {
             };
 
             self.state = next_state;
+            */
 
             self.window.update_event_queue();
         }
