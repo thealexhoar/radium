@@ -55,7 +55,7 @@ impl Core {
 
         let mut blackboard = Blackboard::new();
 
-        let mut camera = Camera::new(10,1,0);
+        let mut camera = Camera::new(0,0,0);
         blackboard.camera = Some(camera);
 
         let mut glyphbatch = GlyphBatch::new(

@@ -76,18 +76,31 @@ impl PassiveSystem for RenderSystem {
                         let tile_component_option = 
                             component_manager.get::<TileComponent>(entity);
                         let mut tile = match tile_component_option {
-                            Some(tc) => Some(tc.tile),
-                            None     => None
+                            Some(tc) => tc.tile,
+                            None     => {continue;}
                         };
                         let position_component_option =
                             component_manager.get::<PositionComponent>(entity);
                         let position_component = 
                             position_component_option.unwrap();
 
+                        //render different color for lower items
+
+                        let step = self._current_depth - k;
+                        if step > 0 {
+                            tile.fg_color = match tile.fg_color {
+                                Some(color) => Some(
+                                    color.pow_stepdown(step, 1)
+                                ),
+                                None        => None
+                            };
+                            tile.bg_color = Some(Color::black());
+                        }
 
                         let highest =
-                            position_component.point.z >= max_depth 
-                            && position_component.sub_z >= max_subdepth;
+                            position_component.point.z > max_depth 
+                            || ( position_component.point.z == max_depth 
+                                && position_component.sub_z >= max_subdepth);
 
                         let height_allowed =
                             position_component.point.z <= self._current_depth;
@@ -95,7 +108,7 @@ impl PassiveSystem for RenderSystem {
                         if height_allowed {
                             if highest {
                                 self._draw_target.overlay_tile(
-                                    tile,
+                                    Some(tile),
                                     i + self._window_x,
                                     j + self._window_y
                                 );
@@ -104,7 +117,7 @@ impl PassiveSystem for RenderSystem {
                             }
                             else {
                                 self._draw_target.overlay_tile_soft(
-                                    tile,
+                                    Some(tile),
                                     i + self._window_x,
                                     j + self._window_y
                                 );

@@ -39,10 +39,10 @@ impl Engine {
         }
 
         let player = self.component_manager.create_entity();
-        self.component_manager.set(player, PositionComponent::new(1, 1, 1, 1));
+        self.component_manager.set(player, PositionComponent::new(1, 1, 0, 1));
         self.component_manager.set(player, TileComponent::new(
             Tile::new(
-                Some(Color::new_from_rgb_f(0.6, 0.8, 1.0)),
+                Some(Color::blue()),
                 None,
                 '@' as u32
             )
@@ -51,8 +51,9 @@ impl Engine {
 
         self.space.add_entity_at(player, Point::new(1, 1, 0));
 
-        let tile_fg = Color::new_from_rgb(50,50,50);
-        let tile_bg = Color::new_from_rgb(11,11,22);
+        let tile_fg = Color::new_from_rgb(30, 30, 30);
+        let tile_bg = Color::new_from_rgb(0,0,0);
+
         let floor_tile = Tile::new(
             Some(tile_fg),
             Some(tile_bg),
@@ -84,6 +85,20 @@ impl Engine {
                     TileComponent::new(tile)
                 );
                 self.space.add_entity_at(entity, Point::new(i, j, 0));
+            }
+        }
+        for i in 0..20 {
+            for j in 0..10 {
+                let entity = self.component_manager.create_entity();
+                self.component_manager.set(
+                    entity,
+                    PositionComponent::new(i, j, 2, 0)
+                );
+                self.component_manager.set(
+                    entity,
+                    TileComponent::new(wall_tile)
+                );
+                self.space.add_entity_at(entity, Point::new(i, j, 2));
             }
         }
     }

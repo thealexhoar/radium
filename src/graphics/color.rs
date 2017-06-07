@@ -29,7 +29,27 @@ impl Color {
         Color::new_from_rgba_f(r,g,b,1.)
     }
 
+    pub fn pow_stepdown(&self, step: u32, pow:u32) -> Color {
+        let step_val = (step + 1).pow(pow);
+        Color::new_from_rgb(
+            ((self.r as u32) / step_val) as u8,
+            ((self.g as u32) / step_val) as u8,
+            ((self.b as u32) / step_val) as u8
+        )
+    }
 
+    pub fn grayscale(&self) -> Color {
+        let sum = (self.r as u32) + (self.g as u32) + (self.b as u32);
+        let out = (sum / 3) as u8;
+        Color::new_from_rgb(out, out, out)
+    }
+
+    pub fn grayscale_pow_stepdown(&self, step: u32, pow:u32) -> Color {
+        let sum = (self.r as u32) + (self.g as u32) + (self.b as u32);
+        let out = (sum / 3) as u8;
+        Color::new_from_rgb(out, out, out).pow_stepdown(step, pow)
+    }
+    
     pub fn white() -> Color {
         Color::new_from_rgb(255,255,255)
     }

@@ -20,7 +20,7 @@ impl InfoSystem {
     ) -> Self {
         let mut output = Self {
             _draw_target: DrawTarget::new(width, height),
-            _center_draw_target: DrawTarget::new(width - 2, height - 2),
+            _center_draw_target: DrawTarget::new(width - 1, height),
             _width: width,
             _height: height,
             _window_x: window_x,
@@ -36,25 +36,37 @@ impl InfoSystem {
         output._draw_target.set_tiles_rect(
             Some(border_tile),
             0, 0,
-            width, 1
-        );
-        output._draw_target.set_tiles_rect(
-            Some(border_tile),
-            0, height - 1,
-            width, 1
-        );
-        output._draw_target.set_tiles_rect(
-            Some(border_tile),
-            0, 0,
             1, height
         );
-        output._draw_target.set_tiles_rect(
-            Some(border_tile),
-            width - 1, 0,
-            1, height
-        );
-
         output
+    }
+
+    fn draw_camera_info(&mut self, row:u32, blackboard:&mut Blackboard) {
+        self._center_draw_target.draw_string_slice(
+            "Camera Center",
+            0, row,
+            Color::yellow(),
+            Some(Color::black())
+        );
+        let mut x = 0;
+        let mut y = 0;
+        let mut z = 0;
+
+        match blackboard.camera {
+            Some(ref cam) => {
+                x = cam.x;
+                y = cam.y;
+                z = cam.z;
+            },
+            None => {}
+        };
+
+        self._center_draw_target.draw_string_slice(
+            &(x.to_string() + "," + &y.to_string() + "," + &z.to_string()),
+            1, row + 1,
+            Color::yellow(),
+            Some(Color::black())
+        );
     }
 }
 
@@ -71,16 +83,11 @@ impl PassiveSystem for InfoSystem {
         self._center_draw_target.clear();
 
         //TODO: implement console
-        self._center_draw_target.draw_string_slice(
-            "Info will go here",
-            5, 1,
-            Color::yellow(),
-            Some(Color::black())
-        );
+        self.draw_camera_info(1, blackboard);
 
         self._draw_target.set_from_drawtarget(
             &self._center_draw_target, 
-            1, 1
+            1, 0
         ); 
         glyphbatch.drawtarget.set_from_drawtarget(
             &self._draw_target,

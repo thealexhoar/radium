@@ -20,7 +20,7 @@ impl ConsoleSystem {
     ) -> Self {
         let mut output = Self {
             _draw_target: DrawTarget::new(width, height),
-            _center_draw_target: DrawTarget::new(width - 1, height - 2),
+            _center_draw_target: DrawTarget::new(width, height - 1),
             _width: width,
             _height: height,
             _window_x: window_x,
@@ -38,16 +38,6 @@ impl ConsoleSystem {
             0, 0,
             width, 1
         );
-        output._draw_target.set_tiles_rect(
-            Some(border_tile),
-            0, height - 1,
-            width, 1
-        );
-        output._draw_target.set_tiles_rect(
-            Some(border_tile),
-            0, 0,
-            1, height
-        );
 
         output
     }
@@ -61,7 +51,7 @@ impl PassiveSystem for ConsoleSystem {
         space: &Space,
         glyphbatch: &mut GlyphBatch,
         window: &mut Window,
-        delta_time: f32 
+        delta_time: f32
     ) {
         self._center_draw_target.clear();
 
@@ -75,7 +65,7 @@ impl PassiveSystem for ConsoleSystem {
 
         self._draw_target.set_from_drawtarget(
             &self._center_draw_target, 
-            1, 1
+            0, 1
         ); 
         glyphbatch.drawtarget.set_from_drawtarget(
             &self._draw_target,

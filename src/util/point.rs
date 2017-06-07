@@ -24,7 +24,7 @@ impl Point {
     pub fn swap(&self) -> Self {
         Self::new(self.y, self.x, self.z)
     }
-
+    
     pub fn swap_in_place(&mut self) {
         let temp = self.x;
         self.x = self.y;
