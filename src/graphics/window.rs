@@ -39,15 +39,12 @@ pub struct Window {
 
 impl Window {
     pub fn new(width:u32, height:u32) -> Window {
-        let mut window = match RenderWindow::new(
+        let mut window = RenderWindow::new(
             VideoMode::new(width, height, 32),
             "Radium",
             style::NONE,
             &ContextSettings::default()
-        ) {
-            Some(window) => window,
-            None => panic!("Cannot create a new Render Window.")
-        };
+        );
 
         window.set_vertical_sync_enabled(true);
         window.set_key_repeat_enabled(false);
