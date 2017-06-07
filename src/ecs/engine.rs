@@ -14,7 +14,6 @@ use std::collections::{HashMap, HashSet};
 pub struct Engine {
     pub passive_systems: Vec<Box<PassiveSystem>>,
     pub continuous_systems: Vec<Box<ContinuousSystem>>,
-    _blackboard: Blackboard,
     pub component_manager: ComponentManager,
     pub space: Space
 }
@@ -24,13 +23,15 @@ impl Engine {
         Engine {
             passive_systems: Vec::new(),
             continuous_systems: Vec::new(),
-            _blackboard: Blackboard::new(),
             component_manager: ComponentManager::new(),
             space: Space::new()
         }
     }
 
-    pub fn load(&mut self) {
+    pub fn load (
+        &mut self,
+        blackboard: &mut Blackboard
+    ) {
         for i in -10..10 {
             for j in -10..10 {
                 self.space.load_chunk(i,j);
@@ -38,7 +39,7 @@ impl Engine {
         }
 
         let player = self.component_manager.create_entity();
-        self.component_manager.set(player, PositionComponent::new(1, 1, 1));
+        self.component_manager.set(player, PositionComponent::new(1, 1, 0, 1));
         self.component_manager.set(player, TileComponent::new(
             Tile::new(
                 Some(Color::new_from_rgb_f(0.6, 0.8, 1.0)),
@@ -48,11 +49,9 @@ impl Engine {
         ));
         self.component_manager.set(player, ColliderComponent::new(1));
 
-        self.space.add_entity_at(player, Point::new(1, 1));
+        self.space.add_entity_at(player, Point::new(1, 1, 0));
 
-        //self._controllers.insert(player, Box::new(PlayerController::new()));
-        //self._scheduler.push_entity(player, 0);
-        self._blackboard.player = Some(player);
+        blackboard.player = Some(player);
 
         let tile_fg = Color::new_from_rgb(50,50,50);
         let tile_bg = Color::new_from_rgb(11,11,22);
@@ -72,7 +71,7 @@ impl Engine {
                 let entity = self.component_manager.create_entity();
                 self.component_manager.set(
                     entity,
-                    PositionComponent::new(i, j, 0)
+                    PositionComponent::new(i, j, 0, 0)
                 );
                 let mut tile = floor_tile;
                 if i == 0 || j == 0 {
@@ -86,7 +85,7 @@ impl Engine {
                     entity,
                     TileComponent::new(tile)
                 );
-                self.space.add_entity_at(entity, Point::new(i, j));
+                self.space.add_entity_at(entity, Point::new(i, j, 0));
             }
         }
     }
@@ -95,11 +94,12 @@ impl Engine {
         &mut self,
         glyphbatch: &mut GlyphBatch,
         window: &mut Window,
+        blackboard: &mut Blackboard,
         true_delta_time:f32
     ) {
         for passive_system in self.passive_systems.iter_mut() {
             passive_system.deref_mut().update(
-                &mut self._blackboard,
+                blackboard,
                 &mut self.component_manager,
                 &mut self.space,
                 glyphbatch,
@@ -111,11 +111,12 @@ impl Engine {
 
     pub fn update_continuous_systems(
         &mut self,
+        blackboard: &mut Blackboard,
         delta_time:u32
     ) {
         for continuous_system in self.continuous_systems.iter_mut() {
             continuous_system.deref_mut().update(
-                &mut self._blackboard,
+                blackboard,
                 &mut self.component_manager,
                 &mut self.space,
                 delta_time

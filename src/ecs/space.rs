@@ -5,16 +5,16 @@ use util::Point;
 const CHUNK_SIDE_LEN:usize = 10;
 
 struct Chunk {
-    corner: Point,
-    floor_data: HashMap<(i32, i32), Entity>,
-    data:  HashMap<(i32, i32), Vec<Entity>>
+    west: i32, 
+    north: i32,
+    data:  HashMap<(i32, i32, u32), Vec<Entity>>
 }
 
 impl Chunk {
-    fn new(left:i32, top:i32) -> Chunk {
+    fn new(west:i32, north:i32) -> Chunk {
         Chunk {
-            corner: Point::new(left, top),
-            floor_data: HashMap::new(),
+            west,
+            north,
             data: HashMap::new()
         }
     }
@@ -69,7 +69,7 @@ impl Space {
         }
     }
 
-    pub fn load_chunk(&mut self, chunk_x: i32, chunk_y:i32 ) {
+    pub fn load_chunk(&mut self, chunk_x: i32, chunk_y:i32) {
         //TODO: complex chunk load/unload
         self._chunks.insert((chunk_x, chunk_y), Chunk::new(chunk_x, chunk_y));
     } 

@@ -1,7 +1,7 @@
 use util::Point;
 use std::convert::Into;
 use std::cmp::max;
-
+/*
 pub fn bresenham(point0: Point, point1: Point) -> Vec<Point> {
     let mut p0 = point0;
     let mut p1 = point1;
@@ -47,13 +47,14 @@ pub fn bresenham(point0: Point, point1: Point) -> Vec<Point> {
 
     line
 }
-
+*/
 
 
 pub fn distance_direct(p0: Point, p1: Point) -> f32 {
     let delta = p1 - p0;
     let dx = delta.x as f32;
     let dy = delta.y as f32;
+    let dz = delta.z as u32;
     (dx * dx + dy * dy).sqrt()
 }
 
@@ -71,3 +72,4 @@ pub fn distance_diag(p0: Point, p1: Point) -> u32 {
     
     max(dx.abs(), dy.abs()) as u32
 }
+

@@ -30,7 +30,8 @@ impl PlayerController {
 
             Point::new(
                 position_component.point.x + dx,
-                position_component.point.y + dy
+                position_component.point.y + dy,
+                position_component.point.z
             )
         };
 

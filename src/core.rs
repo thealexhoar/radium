@@ -2,6 +2,7 @@ use ecs::*;
 use graphics::*;
 use sfml::system::Clock;
 use game::action::Action;
+use game::Blackboard;
 use game::graphics::*;
 use game::ui::*;
 use std::ops::DerefMut;
@@ -52,6 +53,11 @@ impl Core {
         let game_console_width = 55;
         let game_console_height = 31;
 
+        let mut blackboard = Blackboard::new();
+
+        let mut camera = Camera::new(10,1,0);
+        blackboard.camera = Some(camera);
+
         let mut glyphbatch = GlyphBatch::new(
             GlyphSet::new("assets/tileset_10x10.png", 10, 10, 256),
             window_width, window_height,
@@ -79,7 +85,7 @@ impl Core {
             ))
         );
 
-        self.engine.load();
+        self.engine.load(&mut blackboard);
 
         self.clock.restart();
         while self.window.is_open() {
@@ -100,6 +106,7 @@ impl Core {
             self.engine.update_passive_systems(
                 &mut glyphbatch,
                 &mut self.window,
+                &mut blackboard,
                 delta_time.as_seconds()
             );
 
@@ -135,7 +142,10 @@ impl Core {
                         None             => (true, 0)
                     };
                     if delta > 0 { 
-                        self.engine.update_continuous_systems(delta);
+                        self.engine.update_continuous_systems(
+                            &mut blackboard,
+                            delta
+                        );
                     }
                     if completed {
                         match self.state {
