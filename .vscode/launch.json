@@ -2,20 +2,20 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Launch",
-            "type": "lldb",
+            "type": "lldb-mi",
             "request": "launch",
-            "program": "${workspaceRoot}/target/debug/radium",
+            "name": "Debug-win",
+            "target": "${workspaceRoot}/target/debug/radium",
             "args": ["--size", "1600", "900"],
             "cwd": "${workspaceRoot}"
         },
         {
             "name": "Debug",
-            "type": "gdb",
+            "type": "lldb",
             "request": "launch",
-            "target": "target/debug/radium",
-            "cwd": "${workspaceRoot}",
-            "arguments": "--size 800 450"
+            "program": "${workspaceRoot}/target/debug/radium",
+            "args": ["--size", "1600", "900"],
+            "cwd": "${workspaceRoot}"
         }
     ]
 }

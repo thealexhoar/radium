@@ -63,13 +63,13 @@ impl Core {
             window_width, window_height,
             self.width, self.height
         );
-        /*self.engine.passive_systems.push(
+        self.engine.passive_systems.push(
             Box::new(RenderSystem::new(
                 game_console_width,
                 game_console_height,
                 0, 0
             ))
-        );*/
+        );
         self.engine.passive_systems.push(
             Box::new(ConsoleSystem::new(
                 game_console_width,
@@ -117,7 +117,7 @@ impl Core {
             self.window.draw_glyphbatch(&glyphbatch);
 
             let events = self.window.events();
-/*
+
             let mut next_state = self.state;
             match self.state {
                 CoreState::View               => {
@@ -180,7 +180,7 @@ impl Core {
             };
 
             self.state = next_state;
-            */
+            
 
             self.window.update_event_queue();
         }
