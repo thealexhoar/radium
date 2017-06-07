@@ -95,7 +95,7 @@ impl Core {
                 let (x,y) = glyphbatch.get_tile_from_pos(
                     mouse_x,
                     mouse_y
-                );
+                );  
                 println!("x: {} y: {}", x, y);
             }
 
@@ -114,14 +114,27 @@ impl Core {
             glyphbatch.flush_tiles();
             self.window.draw_glyphbatch(&glyphbatch);
 
+            let events = self.window.events();
+
             let mut next_state = self.state;
             match self.state {
                 CoreState::View               => {
-                    //listen for actions
+                    //listen for global actions
+                    //listen for selections
+                    self.control_camera(
+                        &mut blackboard,
+                        &events
+                    );
                 },
 
                 CoreState::Selected           => {
-                    //listen for actions
+                    //listen for escaping selection mode
+                    //listen for switching selection
+                    //listen for actions pertaining to selected unit
+                    self.control_camera(
+                        &mut blackboard,
+                        &events
+                    );
                 },
 
                 CoreState::EnemyTurn          => {
@@ -137,6 +150,7 @@ impl Core {
                             .execute(
                                 &mut self.engine.component_manager,
                                 &mut self.engine.space,
+                                &mut blackboard,
                                 delta_time.as_seconds()
                         ),
                         None             => (true, 0)
@@ -166,6 +180,32 @@ impl Core {
             self.state = next_state;
 
             self.window.update_event_queue();
+        }
+    }
+
+    fn control_camera(
+        &mut self,
+        blackboard: &mut Blackboard,
+        events: &Vec<Event>
+    ) {
+        let camera = match blackboard.camera {
+            Some(ref mut cam) => cam,
+            None      => { return; }
+        };
+        for &event in events.iter() {
+            match event {
+                Event::KeyPress{code, alt, ctrl, shift} => 
+                    match (code, alt, ctrl, shift) {
+                        ('a', false, false, false) => camera.move_west(),
+                        ('d', false, false, false) => camera.move_east(),
+                        ('e', false, false, false) => camera.move_down(),
+                        ('q', false, false, false) => camera.move_up(),
+                        ('s', false, false, false) => camera.move_south(),
+                        ('w', false, false, false) => camera.move_north(),
+                        _ => { }
+                },
+                _ => { }
+            }
         }
     }
 }

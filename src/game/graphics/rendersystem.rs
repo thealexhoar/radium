@@ -55,7 +55,6 @@ impl PassiveSystem for RenderSystem {
             None => {}
         }
         self._draw_target.clear();
-        //TODO: hard overwrite tiles with floor tiles
         for i in 0..self._width {
             let x = self.world_x + (i as i32);
             for j in 0..self._height {

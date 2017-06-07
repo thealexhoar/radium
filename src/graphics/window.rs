@@ -137,9 +137,31 @@ impl Window {
     ) -> Event {
         match code {
             Key::A => Event::KeyPress{code:'a', alt, ctrl, shift},
+            Key::B => Event::KeyPress{code:'b', alt, ctrl, shift},
+            Key::C => Event::KeyPress{code:'c', alt, ctrl, shift},
             Key::D => Event::KeyPress{code:'d', alt, ctrl, shift},
+            Key::E => Event::KeyPress{code:'e', alt, ctrl, shift},
+            Key::F => Event::KeyPress{code:'f', alt, ctrl, shift},
+            Key::G => Event::KeyPress{code:'g', alt, ctrl, shift},
+            Key::H => Event::KeyPress{code:'h', alt, ctrl, shift},
+            Key::I => Event::KeyPress{code:'i', alt, ctrl, shift},
+            Key::J => Event::KeyPress{code:'j', alt, ctrl, shift},
+            Key::K => Event::KeyPress{code:'k', alt, ctrl, shift},
+            Key::L => Event::KeyPress{code:'l', alt, ctrl, shift},
+            Key::M => Event::KeyPress{code:'m', alt, ctrl, shift},
+            Key::N => Event::KeyPress{code:'n', alt, ctrl, shift},
+            Key::O => Event::KeyPress{code:'o', alt, ctrl, shift},
+            Key::P => Event::KeyPress{code:'p', alt, ctrl, shift},
+            Key::Q => Event::KeyPress{code:'q', alt, ctrl, shift},
+            Key::R => Event::KeyPress{code:'r', alt, ctrl, shift},
             Key::S => Event::KeyPress{code:'s', alt, ctrl, shift},
+            Key::T => Event::KeyPress{code:'t', alt, ctrl, shift},
+            Key::U => Event::KeyPress{code:'u', alt, ctrl, shift},
+            Key::V => Event::KeyPress{code:'v', alt, ctrl, shift},
             Key::W => Event::KeyPress{code:'w', alt, ctrl, shift},
+            Key::X => Event::KeyPress{code:'x', alt, ctrl, shift},
+            Key::Y => Event::KeyPress{code:'y', alt, ctrl, shift},
+            Key::Z => Event::KeyPress{code:'z', alt, ctrl, shift},
             _      => Event::None
         }
     }

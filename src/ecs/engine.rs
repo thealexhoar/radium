@@ -39,7 +39,7 @@ impl Engine {
         }
 
         let player = self.component_manager.create_entity();
-        self.component_manager.set(player, PositionComponent::new(1, 1, 0, 1));
+        self.component_manager.set(player, PositionComponent::new(1, 1, 1, 1));
         self.component_manager.set(player, TileComponent::new(
             Tile::new(
                 Some(Color::new_from_rgb_f(0.6, 0.8, 1.0)),
@@ -50,8 +50,6 @@ impl Engine {
         self.component_manager.set(player, ColliderComponent::new(1));
 
         self.space.add_entity_at(player, Point::new(1, 1, 0));
-
-        blackboard.player = Some(player);
 
         let tile_fg = Color::new_from_rgb(50,50,50);
         let tile_bg = Color::new_from_rgb(11,11,22);
