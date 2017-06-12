@@ -8,8 +8,8 @@ mod control;
 use core::Core;
 
 fn main() {
-    let mut width = 3200;
-    let mut height = 1800;
+    let mut width = 2400;
+    let mut height = 1350;
     let args = util::clargs::collect();
     for (index, arg) in args.iter().enumerate() {
         if arg == "--size" || arg == "-S" {

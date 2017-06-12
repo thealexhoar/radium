@@ -24,7 +24,7 @@ pub struct Core {
     width: u32,
     height: u32,
     window: Window,
-    engine: Engine, 
+    engine: Engine,
     clock: Clock,
     state: CoreState,
     current_action: Option<Box<Action>>
@@ -87,6 +87,7 @@ impl Core {
 
         self.engine.load(&mut blackboard);
 
+
         self.clock.restart();
         while self.window.is_open() {
             let delta_time = self.clock.restart();
@@ -95,12 +96,13 @@ impl Core {
             }
 
 
+
             if self.window.mouse_pressed(MouseButton::Left) {
                 let (mouse_x, mouse_y) = self.window.mouse_pos();
                 let (x,y) = glyphbatch.get_tile_from_pos(
                     mouse_x,
                     mouse_y
-                );  
+                );
                 println!("x: {} y: {}", x, y);
                 println!("{}", 1. / delta_time.as_seconds());
             }
@@ -142,7 +144,7 @@ impl Core {
                 CoreState::EnemyTurn          => {
                     //iterate through enemy controllers
                 },
-                
+
                 CoreState::ViewAction |
                 CoreState::SelectedAction |
                 CoreState::EnemyAction        => {
@@ -157,7 +159,7 @@ impl Core {
                         ),
                         None             => (true, 0)
                     };
-                    if delta > 0 { 
+                    if delta > 0 {
                         self.engine.update_continuous_systems(
                             &mut blackboard,
                             delta
@@ -175,12 +177,12 @@ impl Core {
                         }
                     }
                 },
-                
+
                 _ => {}
             };
 
             self.state = next_state;
-            
+
 
             self.window.update_event_queue();
         }
@@ -197,7 +199,7 @@ impl Core {
         };
         for &event in events.iter() {
             match event {
-                Event::KeyPress{code, alt, ctrl, shift} => 
+                Event::KeyPress{code, alt, ctrl, shift} =>
                     match (code, alt, ctrl, shift) {
                         ('a', false, false, false) => camera.move_west(),
                         ('d', false, false, false) => camera.move_east(),
@@ -211,4 +213,5 @@ impl Core {
             }
         }
     }
+
 }

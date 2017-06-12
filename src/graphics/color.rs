@@ -1,5 +1,7 @@
 extern crate sfml;
 
+use std::cmp::max;
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Color {
     pub r:u8,
@@ -38,6 +40,24 @@ impl Color {
         )
     }
 
+    pub fn frac_stepdown(&self, step:u32, frac:u32) -> Color {
+        let adj_step = max(step, frac);
+
+        Color::new_from_rgb(
+            (((self.r as u32) * adj_step) / frac) as u8,
+            (((self.g as u32) * adj_step) / frac) as u8,
+            (((self.b as u32) * adj_step) / frac) as u8
+        )
+    }
+
+    pub fn lin_stepdown(&self, step:u32, mag:u32) -> Color {
+        Color::new_from_rgb(
+            self.r - max(self.r as u32, step * mag) as u8,
+            self.g - max(self.g as u32, step * mag) as u8,
+            self.b - max(self.b as u32, step * mag) as u8
+        )
+    }
+
     pub fn grayscale(&self) -> Color {
         let sum = (self.r as u32) + (self.g as u32) + (self.b as u32);
         let out = (sum / 3) as u8;
@@ -49,7 +69,7 @@ impl Color {
         let out = (sum / 3) as u8;
         Color::new_from_rgb(out, out, out).pow_stepdown(step, pow)
     }
-    
+
     pub fn white() -> Color {
         Color::new_from_rgb(255,255,255)
     }
