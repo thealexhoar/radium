@@ -1,6 +1,6 @@
 use util::Point;
 
-pub trait Component : 'static{
+pub trait Component : 'static {
     //TODO: add a serialize function
 }
 

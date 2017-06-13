@@ -12,9 +12,9 @@ pub struct GlyphSet {
 
 impl GlyphSet {
     pub fn new(
-        filename:&str, 
+        filename:&str,
         tile_width:u32,
-        tile_height:u32, 
+        tile_height:u32,
         tile_count:u32
     ) -> GlyphSet {
         let texture = match Texture::from_file(filename) {
@@ -27,7 +27,7 @@ impl GlyphSet {
 
         GlyphSet {
             texture: texture,
-            sub_rects: 
+            sub_rects:
                 (0..tile_count)
                 .map(
                     |i| -> IntRect {

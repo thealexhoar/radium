@@ -1,14 +1,13 @@
 use graphics::GlyphBatch;
+use graphics::Key;
 
 use sfml::window::mouse;
-use sfml::system::Vector2f;
-use sfml::window::{ContextSettings, Key, VideoMode, style};
-use sfml::window::Window as SFWindow;
+use sfml::window::{ContextSettings, VideoMode, style};
+use sfml::window::Key as SFKey;
 use sfml::window::Event as SFEvent;
 use sfml::graphics::{RenderWindow, RenderTarget};
 use sfml::graphics::Color as SFColor;
-use std::cmp::max;
-use std::{time, thread};
+use sfml::system::Clock;
 
 pub enum MouseButton {
     Left,
@@ -18,7 +17,7 @@ pub enum MouseButton {
 pub enum Event {
     Close,
     KeyPress {
-        code: char,
+        code: Key,
         alt: bool,
         ctrl: bool,
         shift: bool
@@ -34,7 +33,8 @@ impl Clone for Event {
 
 pub struct Window {
     _render_window: RenderWindow,
-    _events: Vec<Event>
+    _events: Vec<Event>,
+    _clock: Clock
 }
 
 impl Window {
@@ -51,8 +51,13 @@ impl Window {
 
         Window {
             _render_window: window,
-            _events: Vec::new()
+            _events: Vec::new(),
+            _clock: Clock::default()
         }
+    }
+
+    pub fn elapsed_time(&mut self) -> f32 {
+        self._clock.elapsed_time().as_seconds()
     }
 
     pub fn clear(&mut self) {
@@ -108,13 +113,19 @@ impl Window {
         }
     }
 
-    pub fn mouse_pos(&self) -> (u32, u32) {
+    pub fn mouse_pos(&self) -> (Option<u32>, Option<u32>) {
         let mouse_point = mouse::desktop_position();
         let window_point = self._render_window.position();
 
-        let x = max(mouse_point.x - window_point.x, 0) as u32;
-        let y = max(mouse_point.y - window_point.y, 0) as u32;
-        
+        let x = match mouse_point.x >= window_point.x {
+            true  => Some((mouse_point.x - window_point.x) as u32),
+            false => None
+        };
+        let y = match mouse_point.y >= window_point.y {
+            true  => Some((mouse_point.y - window_point.y) as u32),
+            false => None
+        };
+
         (x,y)
     }
 
@@ -122,43 +133,54 @@ impl Window {
     fn convert_event(sf_event:SFEvent) -> Event {
         match sf_event {
             SFEvent::Closed => Event::Close,
-            SFEvent::KeyPressed {code, alt, ctrl, shift, system } 
+            SFEvent::KeyPressed {code, alt, ctrl, shift, system }
                             => Self::convert_key_event(code, alt, ctrl, shift),
             _               => Event::None
         }
     }
 
     fn convert_key_event (
-        code:Key, 
+        code:SFKey,
         alt: bool, ctrl: bool, shift: bool
     ) -> Event {
         match code {
-            Key::A => Event::KeyPress{code:'a', alt, ctrl, shift},
-            Key::B => Event::KeyPress{code:'b', alt, ctrl, shift},
-            Key::C => Event::KeyPress{code:'c', alt, ctrl, shift},
-            Key::D => Event::KeyPress{code:'d', alt, ctrl, shift},
-            Key::E => Event::KeyPress{code:'e', alt, ctrl, shift},
-            Key::F => Event::KeyPress{code:'f', alt, ctrl, shift},
-            Key::G => Event::KeyPress{code:'g', alt, ctrl, shift},
-            Key::H => Event::KeyPress{code:'h', alt, ctrl, shift},
-            Key::I => Event::KeyPress{code:'i', alt, ctrl, shift},
-            Key::J => Event::KeyPress{code:'j', alt, ctrl, shift},
-            Key::K => Event::KeyPress{code:'k', alt, ctrl, shift},
-            Key::L => Event::KeyPress{code:'l', alt, ctrl, shift},
-            Key::M => Event::KeyPress{code:'m', alt, ctrl, shift},
-            Key::N => Event::KeyPress{code:'n', alt, ctrl, shift},
-            Key::O => Event::KeyPress{code:'o', alt, ctrl, shift},
-            Key::P => Event::KeyPress{code:'p', alt, ctrl, shift},
-            Key::Q => Event::KeyPress{code:'q', alt, ctrl, shift},
-            Key::R => Event::KeyPress{code:'r', alt, ctrl, shift},
-            Key::S => Event::KeyPress{code:'s', alt, ctrl, shift},
-            Key::T => Event::KeyPress{code:'t', alt, ctrl, shift},
-            Key::U => Event::KeyPress{code:'u', alt, ctrl, shift},
-            Key::V => Event::KeyPress{code:'v', alt, ctrl, shift},
-            Key::W => Event::KeyPress{code:'w', alt, ctrl, shift},
-            Key::X => Event::KeyPress{code:'x', alt, ctrl, shift},
-            Key::Y => Event::KeyPress{code:'y', alt, ctrl, shift},
-            Key::Z => Event::KeyPress{code:'z', alt, ctrl, shift},
+            SFKey::A => Event::KeyPress{code:Key::A, alt, ctrl, shift},
+            SFKey::B => Event::KeyPress{code:Key::B, alt, ctrl, shift},
+            SFKey::C => Event::KeyPress{code:Key::C, alt, ctrl, shift},
+            SFKey::D => Event::KeyPress{code:Key::D, alt, ctrl, shift},
+            SFKey::E => Event::KeyPress{code:Key::E, alt, ctrl, shift},
+            SFKey::F => Event::KeyPress{code:Key::F, alt, ctrl, shift},
+            SFKey::G => Event::KeyPress{code:Key::G, alt, ctrl, shift},
+            SFKey::H => Event::KeyPress{code:Key::H, alt, ctrl, shift},
+            SFKey::I => Event::KeyPress{code:Key::I, alt, ctrl, shift},
+            SFKey::J => Event::KeyPress{code:Key::J, alt, ctrl, shift},
+            SFKey::K => Event::KeyPress{code:Key::K, alt, ctrl, shift},
+            SFKey::L => Event::KeyPress{code:Key::L, alt, ctrl, shift},
+            SFKey::M => Event::KeyPress{code:Key::M, alt, ctrl, shift},
+            SFKey::N => Event::KeyPress{code:Key::N, alt, ctrl, shift},
+            SFKey::O => Event::KeyPress{code:Key::O, alt, ctrl, shift},
+            SFKey::P => Event::KeyPress{code:Key::P, alt, ctrl, shift},
+            SFKey::Q => Event::KeyPress{code:Key::Q, alt, ctrl, shift},
+            SFKey::R => Event::KeyPress{code:Key::R, alt, ctrl, shift},
+            SFKey::S => Event::KeyPress{code:Key::S, alt, ctrl, shift},
+            SFKey::T => Event::KeyPress{code:Key::T, alt, ctrl, shift},
+            SFKey::U => Event::KeyPress{code:Key::U, alt, ctrl, shift},
+            SFKey::V => Event::KeyPress{code:Key::V, alt, ctrl, shift},
+            SFKey::W => Event::KeyPress{code:Key::W, alt, ctrl, shift},
+            SFKey::X => Event::KeyPress{code:Key::X, alt, ctrl, shift},
+            SFKey::Y => Event::KeyPress{code:Key::Y, alt, ctrl, shift},
+            SFKey::Z => Event::KeyPress{code:Key::Z, alt, ctrl, shift},
+            SFKey::Num0 => Event::KeyPress{code:Key::NUM_0, alt, ctrl, shift},
+            SFKey::Num1 => Event::KeyPress{code:Key::NUM_1, alt, ctrl, shift},
+            SFKey::Num2 => Event::KeyPress{code:Key::NUM_2, alt, ctrl, shift},
+            SFKey::Num3 => Event::KeyPress{code:Key::NUM_3, alt, ctrl, shift},
+            SFKey::Num4 => Event::KeyPress{code:Key::NUM_4, alt, ctrl, shift},
+            SFKey::Num5 => Event::KeyPress{code:Key::NUM_5, alt, ctrl, shift},
+            SFKey::Num6 => Event::KeyPress{code:Key::NUM_6, alt, ctrl, shift},
+            SFKey::Num7 => Event::KeyPress{code:Key::NUM_7, alt, ctrl, shift},
+            SFKey::Num8 => Event::KeyPress{code:Key::NUM_8, alt, ctrl, shift},
+            SFKey::Num9 => Event::KeyPress{code:Key::NUM_9, alt, ctrl, shift},
+            SFKey::Tab => Event::KeyPress{code:Key::TAB, alt, ctrl, shift},
             _      => Event::None
         }
     }

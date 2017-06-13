@@ -6,7 +6,7 @@ pub enum ButtonType {
 
 pub enum MouseInput {
     Tile(u32,u32),
-    Button(ButtonType),
+    Button(ButtonType)
 }
 
 pub struct MouseInterface {
@@ -46,10 +46,56 @@ impl MouseInterface {
         self.current_right = window.mouse_pressed(MouseButton::Right);
     }
 
-    pub fn mouse_down(&self) -> (bool, bool) {
+    pub fn mouse_pressed(&self) -> (bool, bool) {
         (
             !self.old_left && self.current_left,
             !self.old_right && self.current_right
         )
+    }
+
+    pub fn mouse_released(&self) -> (bool, bool) {
+        (
+            self.old_left && !self.current_left,
+            self.old_right && !self.current_right
+        )
+    }
+
+    pub fn mouse_down(&self) -> (bool, bool) {
+        (self.current_left, self.current_right)
+    }
+
+    pub fn mouse_up(&self) -> (bool, bool) {
+        (!self.current_left, !self.current_right)
+    }
+
+    pub fn current_input(
+        &self,
+        window: &Window,
+        glyphbatch: &GlyphBatch
+    ) -> Option<MouseInput> {
+        let pos = Self::input_pos(window, glyphbatch);
+        match pos {
+            Some((x,y)) => {
+                if x < self.game_width && y < self.game_height {
+                    Some(MouseInput::Tile(x,y))
+                }
+                else {
+                    None
+                }
+            },
+            None        => None
+        }
+    }
+
+    fn input_pos(
+        window: &Window,
+        glyphbatch: &GlyphBatch
+    ) -> Option<(u32, u32)> {
+        let (mouse_x, mouse_y) = window.mouse_pos();
+
+        match (mouse_x, mouse_y) {
+            (Some(x), Some(y)) => Some(glyphbatch.get_tile_from_pos(x,y)),
+            _                  => None
+        }
     }
 }

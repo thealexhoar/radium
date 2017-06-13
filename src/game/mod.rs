@@ -1,8 +1,9 @@
 pub use self::blackboard::Blackboard;
+pub use self::direction::Direction;
 
 pub mod action;
 mod blackboard;
-pub mod graphics;
-pub mod player;
 pub mod components;
+mod direction;
+pub mod graphics;
 pub mod ui;

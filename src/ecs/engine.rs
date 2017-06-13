@@ -1,13 +1,10 @@
-use control::*;
 use ecs::*;
 use util::{Point, PriorityQueue};
 use graphics::{Color, GlyphBatch, Tile, Window};
 use graphics::Event as WindowEvent;
 use game::graphics::TileComponent;
-use game::player::PlayerController;
 use game::components::ColliderComponent;
 use game::Blackboard;
-use control::Controller;
 use std::ops::{Deref, DerefMut};
 use std::collections::{HashMap, HashSet};
 
