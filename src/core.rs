@@ -35,7 +35,6 @@ pub struct Core {
     glyphbatch: GlyphBatch,
     mouse_interface: MouseInterface,
     state: CoreState,
-    selected_entity: Option<Entity>,
     window: Window
 }
 
@@ -58,19 +57,26 @@ impl Core {
                 INFO_WIDTH, INFO_HEIGHT
             ),
             state: CoreState::PlayerTurn,
-            selected_entity: None,
             window: Window::new(width, height),
         }
     }
 
     pub fn init(&mut self) {
         self.blackboard.camera = Some(Camera::new(0,0,0));
+        self.blackboard.current_entity = Some(1);
+
 
         self.engine.passive_systems.push(
             Box::new(RenderSystem::new(
                 GAME_WIDTH,
                 GAME_HEIGHT,
                 0, 0
+            ))
+        );
+        self.engine.passive_systems.push(
+            Box::new(SelectionRenderSystem::new(
+                GAME_WIDTH,
+                GAME_HEIGHT
             ))
         );
         self.engine.passive_systems.push(
@@ -90,9 +96,6 @@ impl Core {
     }
 
     pub fn run(&mut self) {
-
-
-
         self.engine.load(&mut self.blackboard);
 
         while self.window.is_open() {
@@ -119,7 +122,7 @@ impl Core {
                     //listen for actions pertaining to selected unit
                     next_state = self.keyboard_control(
                         &events,
-                        1
+                        1 //TODO: use proper unit selection
                     );
                     if self.state == next_state {
                         next_state = self.mouse_control(&events);
@@ -198,7 +201,7 @@ impl Core {
                                 MoveAction::new(
                                     entity,
                                     Direction::East,
-                                    100 //TODO: use dynamic value
+                                    100
                                 )
                             )
                         ),
@@ -207,7 +210,7 @@ impl Core {
                                 MoveAction::new(
                                     entity,
                                     Direction::Down,
-                                    100 //TODO: use dynamic value
+                                    100
                                 )
                             )
                         ),
@@ -216,7 +219,7 @@ impl Core {
                                 MoveAction::new(
                                     entity,
                                     Direction::Up,
-                                    100 //TODO: use dynamic value
+                                    100
                                 )
                             )
                         ),
@@ -225,7 +228,7 @@ impl Core {
                                 MoveAction::new(
                                     entity,
                                     Direction::South,
-                                    100 //TODO: use dynamic value
+                                    100
                                 )
                             )
                         ),
@@ -234,7 +237,7 @@ impl Core {
                                 MoveAction::new(
                                     entity,
                                     Direction::North,
-                                    100 //TODO: use dynamic value
+                                    100
                                 )
                             )
                         ),
