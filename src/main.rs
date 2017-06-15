@@ -7,8 +7,8 @@ mod util;
 use core::Core;
 
 fn main() {
-    let mut width = 2400;
-    let mut height = 1350;
+    let mut width = 2560;
+    let mut height = 1440;
     let args = util::clargs::collect();
     for (index, arg) in args.iter().enumerate() {
         if arg == "--size" || arg == "-S" {

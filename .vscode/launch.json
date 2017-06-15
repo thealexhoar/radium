@@ -1,12 +1,13 @@
 {
     "version": "0.2.0",
     "configurations": [
+
         {
             "type": "lldb-mi",
             "request": "launch",
             "name": "Debug-win",
             "target": "${workspaceRoot}/target/debug/radium",
-            "args": ["--size", "1600", "900"],
+            "args": ["--size", "1280", "720"],
             "cwd": "${workspaceRoot}"
         },
         {

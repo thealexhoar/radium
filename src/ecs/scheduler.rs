@@ -20,13 +20,13 @@ impl Scheduler {
     }
 
     pub fn push_entity(
-        &mut self, 
+        &mut self,
         entity: Entity,
         delta_time: u32
     ) {
         let mut index:Option<usize> = None;
         for i in 0..self._queue.len() {
-            if self._queue[i].delta_time >= delta_time {
+            if self._queue[i].delta_time > delta_time {
                 index = Some(i);
                 break;
             }
@@ -45,7 +45,6 @@ impl Scheduler {
             0 => None,
             _ => {
                 let dt = self._queue[0].delta_time;
-                self.elapse_time(dt);
                 Some((self._queue.remove(0).entity, dt))
             }
         }

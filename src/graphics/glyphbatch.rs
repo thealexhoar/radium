@@ -1,9 +1,9 @@
-use graphics::{DrawTarget, GlyphSet, Tile, Color, TILE_ID_MAX_VALUE};
+use graphics::{DrawTarget, GlyphSet, Tile, Color};
 
 use sfml::system::{Vector2u, Vector2f};
 use sfml::graphics::{
-    BlendMode, Transform, PrimitiveType, 
-    Image, Texture, IntRect, RenderWindow, 
+    BlendMode, Transform, PrimitiveType,
+    Image, Texture, IntRect, RenderWindow,
     RenderStates, RenderTarget, VertexArray, Vertex};
 use sfml::graphics::Color as SFColor;
 use std::cmp::min;
@@ -70,12 +70,12 @@ impl GlyphBatch {
     }
 
     pub fn set_pixel_resolution(
-        &mut self, 
-        pixel_width:u32, 
+        &mut self,
+        pixel_width:u32,
         pixel_height:u32
     ) {
         let true_tile_size = Vector2f::new(
-            pixel_width as f32 / self._tiled_dimensions.x as f32, 
+            pixel_width as f32 / self._tiled_dimensions.x as f32,
             pixel_height as f32 / self._tiled_dimensions.y as f32
         );
         self._pixel_dimensions.x = pixel_width;
@@ -99,11 +99,11 @@ impl GlyphBatch {
         self._small_offset.y = extra_space.y / self._tiled_dimensions.y / 2;
 
         self._big_offset.x = (
-            extra_space.x 
+            extra_space.x
             - self._small_offset.x * self._tiled_dimensions.x
             ) / 2;
         self._big_offset.y = (
-            extra_space.y 
+            extra_space.y
             - self._small_offset.y * self._tiled_dimensions.y
             ) / 2;
     }
@@ -124,11 +124,11 @@ impl GlyphBatch {
         );
 
         window.draw_with_renderstates(
-            &self._bg_vertices, 
+            &self._bg_vertices,
             bg_renderstates
         );
         window.draw_with_renderstates(
-            &self._fg_vertices, 
+            &self._fg_vertices,
             fg_renderstates
         );
 
@@ -143,12 +143,12 @@ impl GlyphBatch {
                     None       => self.set_vertices(
                         null_tile,
                         x, y
-                    ) 
+                    )
                 };
             }
         }
     }
-    
+
     pub fn get_tile_from_pos(&self, x:u32, y:u32) -> (u32, u32) {
         let mut out_x:u32;
         let mut out_y:u32;
@@ -171,14 +171,14 @@ impl GlyphBatch {
     }
 
     fn set_vertices(&mut self, tile:Tile, x:u32, y:u32) {
-        if tile.tile_id > TILE_ID_MAX_VALUE {
+        if tile.tile_id as usize > self._glyphset.sub_rects.len() {
             return;
         }
 
         match tile.fg_color {
             Some(color) => self.set_tile_fg_vertices(
                 tile.tile_id,
-                color, 
+                color,
                 x, y
             ),
             None        => self.set_tile_fg_vertices(0, Color::clear(), x, y)
@@ -198,7 +198,7 @@ impl GlyphBatch {
     ) {
         let base_index = (x + y * self._tiled_dimensions.x) * 4;
         let source_rect = self._glyphset.sub_rects[tile_id as usize];
-        
+
         for i in 0..2 {
             for j in 0..2 {
                 let index = match j {
@@ -221,13 +221,13 @@ impl GlyphBatch {
                 next_position.y += (self._small_offset.y as i32 / 2
                                     * vert_factor) as f32;
                 let next_tex_coords = Vector2f::new(
-                    (source_rect.left 
-                    + source_rect.width * (i as i32)) as f32, 
-                    (source_rect.top 
+                    (source_rect.left
+                    + source_rect.width * (i as i32)) as f32,
+                    (source_rect.top
                     + source_rect.height * (j as i32)) as f32
                 );
                 let next_color = GlyphBatch::color_to_sf_color(color);
-                
+
                 self._fg_vertices[index as usize] = Vertex::new(
                     next_position,
                     next_color,
@@ -255,7 +255,7 @@ impl GlyphBatch {
                     j as f32
                 );
                 let next_color = GlyphBatch::color_to_sf_color(color);
-                
+
                 self._bg_vertices[index as usize] = Vertex::new(
                     next_position,
                     next_color,
@@ -268,9 +268,9 @@ impl GlyphBatch {
 
     fn vertex_position(&self, x:u32, y:u32) -> Vector2f {
         Vector2f::new(
-            (self._big_offset.x  
+            (self._big_offset.x
             + x * (self._tile_size.x + self._small_offset.x)) as f32,
-            (self._big_offset.y 
+            (self._big_offset.y
             + y * (self._tile_size.y + self._small_offset.y)) as f32
         )
     }

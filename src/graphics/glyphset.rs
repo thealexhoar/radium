@@ -21,14 +21,14 @@ impl GlyphSet {
             Some(texture) => texture,
             None          => panic!("Couldn't load texture at {}", filename)
         };
-        let tiles = min(tile_width * tile_height, tile_count);
         let tiled_width = texture.size().x / tile_width;
         let tiled_height = texture.size().y / tile_height;
+        let tiles = min(tiled_width * tiled_height, tile_count);
 
         GlyphSet {
             texture: texture,
             sub_rects:
-                (0..tile_count)
+                (0..tiles)
                 .map(
                     |i| -> IntRect {
                         let x = i % tiled_width;

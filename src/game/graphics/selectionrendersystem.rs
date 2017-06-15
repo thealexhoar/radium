@@ -9,6 +9,7 @@ pub struct SelectionRenderSystem {
     width: u32,
     height: u32,
     accumulator: f32,
+    pulse_up: bool,
     pulse_time: f32
 }
 
@@ -21,7 +22,8 @@ impl SelectionRenderSystem {
             width,
             height,
             accumulator: 0.0,
-            pulse_time: 1.0
+            pulse_up: true,
+            pulse_time: 1.0,
         }
     }
 }
@@ -39,19 +41,24 @@ impl PassiveSystem for SelectionRenderSystem {
         self.accumulator += delta_time;
         while self.accumulator > self.pulse_time {
             self.accumulator -= self.pulse_time;
+            self.pulse_up = !self.pulse_up;
         }
 
-        let (world_x, world_y) = match blackboard.camera {
+        let (world_x, world_y, world_z) = match blackboard.camera {
             Some(ref camera) => {
                 (
                     camera.x - (self.width as i32) / 2,
-                    camera.y - (self.height as i32) / 2
+                    camera.y - (self.height as i32) / 2,
+                    camera.z
                 )
             },
             None => { return; }
         };
 
-        let color_val = 20 + (40.0 * self.accumulator / self.pulse_time) as u8;
+        let color_val = match self.pulse_up {
+            true  => 20 + (40.0 * self.accumulator / self.pulse_time) as u8,
+            false => 60 - (40.0 * self.accumulator / self.pulse_time) as u8
+        };
         let tile = Tile::new(
             None,
             Some(Color::new_from_rgb(color_val, color_val, color_val)),
@@ -75,6 +82,7 @@ impl PassiveSystem for SelectionRenderSystem {
             || position_component.point.y < world_y
             || position_component.point.x >= world_x + self.width as i32
             || position_component.point.y >= world_y + self.height as i32
+            || position_component.point.z != world_z
         {
             return;
         }

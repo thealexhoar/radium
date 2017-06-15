@@ -1,11 +1,13 @@
 use ecs::*;
 use graphics::*;
 use game::action::*;
+use game::components::ColliderComponent;
 use game::Blackboard;
 use game::Direction;
 use game::graphics::*;
 use game::ui::*;
 use std::ops::DerefMut;
+use util::Point;
 
 
 const WINDOW_WIDTH:u32   = 80;
@@ -34,6 +36,7 @@ pub struct Core {
     engine: Engine,
     glyphbatch: GlyphBatch,
     mouse_interface: MouseInterface,
+    scheduler: Scheduler,
     state: CoreState,
     window: Window
 }
@@ -48,7 +51,7 @@ impl Core {
             current_action: None,
             engine: Engine::new(),
             glyphbatch: GlyphBatch::new(
-                GlyphSet::new("assets/tileset_10x10.png", 10, 10, 256),
+                GlyphSet::new("assets/tileset_16x16.png", 16, 16, 1024),
                 WINDOW_WIDTH, WINDOW_HEIGHT,
                 width, height
             ),
@@ -56,6 +59,7 @@ impl Core {
                 GAME_WIDTH, GAME_HEIGHT,
                 INFO_WIDTH, INFO_HEIGHT
             ),
+            scheduler: Scheduler::new(),
             state: CoreState::PlayerTurn,
             window: Window::new(width, height),
         }
@@ -63,7 +67,6 @@ impl Core {
 
     pub fn init(&mut self) {
         self.blackboard.camera = Some(Camera::new(0,0,0));
-        self.blackboard.current_entity = Some(1);
 
 
         self.engine.passive_systems.push(
@@ -93,11 +96,34 @@ impl Core {
                 GAME_WIDTH, 0
             ))
         );
+
+        self.engine.load(&mut self.blackboard);
+
+        for i in 0..4 {
+            let p = self.engine.component_manager.create_entity();
+            self.engine.component_manager
+                .set(p, PositionComponent::new(1 + i, 1, 0, 1));
+            self.engine.component_manager.set(p, TileComponent::new(
+                Tile::new(
+                    Some(Color::new_from_rgb(155, 200, 255)),
+                    None,
+                    160
+                )
+            ));
+            self.engine.component_manager.set(p, ColliderComponent::new(1));
+
+            self.engine.space.add_entity_at(p, Point::new(1 + i, 1, 0));
+            self.blackboard.player_entities.insert(p);
+            self.scheduler.push_entity(p, 0);
+        }
+
+        self.blackboard.current_entity = match self.scheduler.pop_entity() {
+            Some((e, dt)) => Some(e),
+            None          => None
+        };
     }
 
     pub fn run(&mut self) {
-        self.engine.load(&mut self.blackboard);
-
         while self.window.is_open() {
             let delta_time = self.window.elapsed_time();
 
@@ -120,9 +146,10 @@ impl Core {
             match self.state {
                 CoreState::PlayerTurn         => {
                     //listen for actions pertaining to selected unit
+                    let entity = self.blackboard.current_entity.unwrap();
                     next_state = self.keyboard_control(
                         &events,
-                        1 //TODO: use proper unit selection
+                        entity
                     );
                     if self.state == next_state {
                         next_state = self.mouse_control(&events);
@@ -150,13 +177,32 @@ impl Core {
                         ),
                         None => (true, 0)
                     };
-                    if delta > 0 {
+                    let time_elapsed = delta > 0;
+                    if time_elapsed {
                         self.engine.update_continuous_systems(
                             &mut self.blackboard,
                             delta
                         );
                     }
                     if completed {
+                        if time_elapsed {
+                            self.scheduler.push_entity(
+                                self.blackboard.current_entity.unwrap(),
+                                delta
+                            );
+
+                            match self.scheduler.pop_entity() {
+                                Some((entity, dt)) => {
+                                    self.blackboard.current_entity =
+                                        Some(entity);
+                                    self.scheduler.elapse_time(dt);
+                                }
+                                None => {
+                                    self.blackboard.current_entity = None;
+                                }
+                            };
+                        }
+
                         self.current_action = None;
                         match self.state {
                             CoreState::PlayerAction =>

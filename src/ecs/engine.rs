@@ -35,19 +35,6 @@ impl Engine {
             }
         }
 
-        let player = self.component_manager.create_entity();
-        self.component_manager.set(player, PositionComponent::new(1, 1, 0, 1));
-        self.component_manager.set(player, TileComponent::new(
-            Tile::new(
-                Some(Color::blue()),
-                None,
-                '@' as u32
-            )
-        ));
-        self.component_manager.set(player, ColliderComponent::new(1));
-
-        self.space.add_entity_at(player, Point::new(1, 1, 0));
-
         let tile_fg = Color::new_from_rgb(30, 30, 30);
         let tile_bg = Color::new_from_rgb(0,0,0);
 
@@ -59,7 +46,7 @@ impl Engine {
         let wall_tile = Tile::new(
             Some(Color::white()),
             Some(tile_bg),
-            '#' as u32
+            480
         );
 
         for i in 0..40 {

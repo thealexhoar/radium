@@ -1,19 +1,17 @@
 use graphics::Color;
 
-pub const TILE_ID_MAX_VALUE:u32 = 255;
-
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Tile {
     pub fg_color: Option<Color>,
     pub bg_color: Option<Color>,
     pub tile_id: u32
-    
+
 }
 
 impl Tile {
     pub fn new(
-        fg_color: Option<Color>, 
-        bg_color: Option<Color>, 
+        fg_color: Option<Color>,
+        bg_color: Option<Color>,
         tile_id: u32
     ) -> Tile {
         Tile {
@@ -22,7 +20,7 @@ impl Tile {
             tile_id: tile_id
         }
     }
-    
+
     //fill everything where the other has value
     pub fn overlay(&self, other:Tile) -> Tile{
         Tile{

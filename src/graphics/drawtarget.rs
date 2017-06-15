@@ -1,4 +1,4 @@
-use graphics::{Color, Tile, TILE_ID_MAX_VALUE};
+use graphics::{Color, Tile};
 
 use std::cmp::min;
 use std::str::Chars;
@@ -45,9 +45,9 @@ impl DrawTarget {
     }
 
     pub fn set_tiles_rect(
-        &mut self, 
+        &mut self,
         tile:Option<Tile>,
-        x:u32, y:u32, 
+        x:u32, y:u32,
         width:u32, height:u32
      ) {
         let x_bound = min(x+width, self._width);
@@ -72,9 +72,9 @@ impl DrawTarget {
     }
 
     pub fn overlay_tiles_rect(
-        &mut self, 
-        tile:Option<Tile>,  
-        x:u32, y:u32, 
+        &mut self,
+        tile:Option<Tile>,
+        x:u32, y:u32,
         width:u32, height:u32
 
     ) {
@@ -87,7 +87,7 @@ impl DrawTarget {
         }
     }
 
-    //the "overlay soft" functions will only overwrite 
+    //the "overlay soft" functions will only overwrite
     //if a source value exists AND no destination value exists
     pub fn overlay_tile_soft(&mut self, tile:Option<Tile>, x:u32, y:u32) {
         let index = self.get_index(x, y);
@@ -101,9 +101,9 @@ impl DrawTarget {
     }
 
     pub fn overlay_tiles_rect_soft(
-        &mut self, 
-        tile:Option<Tile>, 
-        x:u32, y:u32, 
+        &mut self,
+        tile:Option<Tile>,
+        x:u32, y:u32,
         width:u32, height:u32
     ) {
         let x_bound = min(x+width, self._width);
@@ -116,7 +116,7 @@ impl DrawTarget {
     }
 
     pub fn set_from_drawtarget(
-        &mut self, 
+        &mut self,
         drawtarget:&DrawTarget,
         x:u32, y:u32
     ) {
@@ -126,10 +126,10 @@ impl DrawTarget {
     }
 
     pub fn set_from_drawtarget_subrect(
-        &mut self, 
-        drawtarget:&DrawTarget, 
-        x:u32, y:u32, 
-        sub_x:u32, sub_y:u32, 
+        &mut self,
+        drawtarget:&DrawTarget,
+        x:u32, y:u32,
+        sub_x:u32, sub_y:u32,
         width:u32, height:u32
     ) {
         let x_bound = min(width, self._width - x);
@@ -137,7 +137,7 @@ impl DrawTarget {
         for i in 0..x_bound {
             for j in 0..y_bound {
                 self.set_tile(
-                    drawtarget.get_tile(sub_x + i, sub_y + j), 
+                    drawtarget.get_tile(sub_x + i, sub_y + j),
                     x + i, y + j
                 );
             }
@@ -145,16 +145,16 @@ impl DrawTarget {
     }
 
     pub fn overlay_from_drawtarget(
-        &mut self, 
-        drawtarget:&DrawTarget, 
+        &mut self,
+        drawtarget:&DrawTarget,
         x:u32, y:u32
     ) {
         let width = drawtarget.width();
         let height = drawtarget.height();
         self.overlay_from_drawtarget_subrect(
-            drawtarget, 
-            x, y, 
-            0, 0, 
+            drawtarget,
+            x, y,
+            0, 0,
             width, height
         );
     }
@@ -171,7 +171,7 @@ impl DrawTarget {
         for i in 0..x_bound {
             for j in 0..y_bound {
                 self.set_tile(
-                    drawtarget.get_tile(sub_x + i, sub_y + j), 
+                    drawtarget.get_tile(sub_x + i, sub_y + j),
                     x + i, y + j
                 );
             }
@@ -205,8 +205,8 @@ impl DrawTarget {
         for i in 0..x_bound {
             for j in 0..y_bound {
                 self.overlay_tile_soft(
-                    drawtarget.get_tile(sub_x + i, sub_y + j), 
-                    x + i, 
+                    drawtarget.get_tile(sub_x + i, sub_y + j),
+                    x + i,
                     y + j
                 );
             }
@@ -224,10 +224,10 @@ impl DrawTarget {
     }
 
     pub fn draw_string_slice(
-        &mut self, 
-        text:&str, 
-        x:u32, y:u32, 
-        fg_color:Color, 
+        &mut self,
+        text:&str,
+        x:u32, y:u32,
+        fg_color:Color,
         bg_color:Option<Color>
     ) {
         let mut chars = text.chars();
@@ -247,9 +247,6 @@ impl DrawTarget {
         match chars.next() {
             Some(char_val) => {
                 let mut val = char_val as u32;
-                if (val) > TILE_ID_MAX_VALUE {
-                    val = 0;
-                }
                 let tile = Tile::new(Some(fg_color), bg_color, val);
                 self.set_tile(Some(tile), x, y);
                 self.draw_chars(chars, x+1, y, fg_color, bg_color);
