@@ -2,8 +2,8 @@ use std::slice::Iter;
 use std::ops::{Index, IndexMut};
 
 struct Entry<T: Sized> {
-    priority: i32,
-    value:T
+    pub priority: i32,
+    pub value:T
 }
 
 pub struct PriorityQueue<T: Sized> {

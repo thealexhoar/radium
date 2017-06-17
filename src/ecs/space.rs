@@ -5,9 +5,9 @@ use util::Point;
 const CHUNK_SIDE_LEN:usize = 10;
 
 struct Chunk {
-    west: i32, 
-    north: i32,
-    data:  HashMap<(i32, i32, u32), Vec<Entity>>
+    pub west: i32,
+    pub north: i32,
+    pub data:  HashMap<(i32, i32, u32), Vec<Entity>>
 }
 
 impl Chunk {
@@ -20,7 +20,7 @@ impl Chunk {
     }
 
     fn entities_at(
-        &self, 
+        &self,
         point: Point
     ) -> Option<&Vec<Entity>> {
         self.data.get(&point.tuple())
@@ -72,10 +72,10 @@ impl Space {
     pub fn load_chunk(&mut self, chunk_x: i32, chunk_y:i32) {
         //TODO: complex chunk load/unload
         self._chunks.insert((chunk_x, chunk_y), Chunk::new(chunk_x, chunk_y));
-    } 
+    }
 
     pub fn entities_at(
-        &self, 
+        &self,
         point: Point
     ) -> Option<&Vec<Entity>> {
         let (chunk_x, chunk_y) = Self::chunk_dimensions(
@@ -91,13 +91,13 @@ impl Space {
     pub fn add_entity_at(
         &mut self,
         entity: Entity,
-        point: Point 
+        point: Point
     ) -> bool {
         let (chunk_x, chunk_y) = Self::chunk_dimensions(
             point.x, point.y
         );
         match self._chunks.get_mut(&(chunk_x, chunk_y)) {
-            Some(ref mut chunk) 
+            Some(ref mut chunk)
                  => chunk.add_entity_at(entity, point),
             None => false
         }
@@ -112,7 +112,7 @@ impl Space {
             point.x, point.y
         );
         match self._chunks.get_mut(&(chunk_x, chunk_y,)) {
-            Some(ref mut chunk) 
+            Some(ref mut chunk)
                  => chunk.remove_entity(entity, point),
             None => false
         }
@@ -138,7 +138,7 @@ impl Space {
 
     fn chunk_dimensions(x:i32, y:i32) -> (i32, i32) {
         let mut chunk_x;
-        let mut chunk_y; 
+        let mut chunk_y;
         if x < 0 {
             chunk_x = (x - 9) / (CHUNK_SIDE_LEN as i32);
         }

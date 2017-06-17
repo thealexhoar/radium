@@ -29,16 +29,16 @@ pub enum CoreState {
 }
 
 pub struct Core {
-    width: u32,
-    height: u32,
-    blackboard: Blackboard,
-    current_action: Option<Box<Action>>,
-    engine: Engine,
-    glyphbatch: GlyphBatch,
-    mouse_interface: MouseInterface,
-    scheduler: Scheduler,
-    state: CoreState,
-    window: Window
+    pub width: u32,
+    pub height: u32,
+    pub blackboard: Blackboard,
+    pub current_action: Option<Box<Action>>,
+    pub engine: Engine,
+    pub glyphbatch: GlyphBatch,
+    pub mouse_interface: MouseInterface,
+    pub scheduler: Scheduler,
+    pub state: CoreState,
+    pub window: Window
 }
 
 

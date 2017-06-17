@@ -3,15 +3,14 @@ use graphics::*;
 use util::Point;
 use game::graphics::TileComponent;
 use game::Blackboard;
-use game::graphics::Camera;
 
 pub struct RenderSystem {
-    draw_target: DrawTarget,
-    width: u32,
-    height: u32,
-    window_x: u32,
-    window_y: u32,
-    current_depth: u32,
+    _draw_target: DrawTarget,
+    _width: u32,
+    _height: u32,
+    _window_x: u32,
+    _window_y: u32,
+    _current_depth: u32,
     pub world_x: i32,
     pub world_y: i32
 }
@@ -24,12 +23,12 @@ impl RenderSystem {
         window_y:u32
     ) -> Self {
         Self {
-            draw_target: DrawTarget::new(width, height),
-            width: width,
-            height: height,
-            window_x: window_x,
-            window_y: window_y,
-            current_depth: 0,
+            _draw_target: DrawTarget::new(width, height),
+            _width: width,
+            _height: height,
+            _window_x: window_x,
+            _window_y: window_y,
+            _current_depth: 0,
             world_x: 0,
             world_y: 0
         }
@@ -48,22 +47,22 @@ impl PassiveSystem for RenderSystem {
     ) {
         match blackboard.camera {
             Some(ref camera) => {
-                self.world_x = camera.x - (self.width as i32) / 2;
-                self.world_y = camera.y - (self.height as i32) / 2;
-                self.current_depth = camera.z;
+                self.world_x = camera.x - (self._width as i32) / 2;
+                self.world_y = camera.y - (self._height as i32) / 2;
+                self._current_depth = camera.z;
             },
             None => {}
         }
-        self.draw_target.clear();
-        for i in 0..self.width {
+        self._draw_target.clear();
+        for i in 0..self._width {
             let x = self.world_x + (i as i32);
-            for j in 0..self.height {
+            for j in 0..self._height {
                 let y = self.world_y + (j as i32);
 
                 let mut max_depth = 0;
                 let mut max_subdepth = 0;
 
-                for k in 0..(self.current_depth+1) {
+                for k in 0..(self._current_depth+1) {
                     let entities = match space.entities_at(Point::new(x,y,k)) {
                         Some(vector) => vector,
                         None         => { continue; }
@@ -86,7 +85,7 @@ impl PassiveSystem for RenderSystem {
 
                         //render different color for lower items
 
-                        let step = self.current_depth - k;
+                        let step = self._current_depth - k;
                         if step > 0 {
                             tile.fg_color = match tile.fg_color {
                                 Some(color) => Some(
@@ -103,23 +102,23 @@ impl PassiveSystem for RenderSystem {
                                 && position_component.sub_z >= max_subdepth);
 
                         let height_allowed =
-                            position_component.point.z <= self.current_depth;
+                            position_component.point.z <= self._current_depth;
 
                         if height_allowed {
                             if highest {
-                                self.draw_target.overlay_tile(
+                                self._draw_target.overlay_tile(
                                     Some(tile),
-                                    i + self.window_x,
-                                    j + self.window_y
+                                    i + self._window_x,
+                                    j + self._window_y
                                 );
                                 max_depth = position_component.point.z;
                                 max_subdepth = position_component.sub_z;
                             }
                             else {
-                                self.draw_target.overlay_tile_soft(
+                                self._draw_target.overlay_tile_soft(
                                     Some(tile),
-                                    i + self.window_x,
-                                    j + self.window_y
+                                    i + self._window_x,
+                                    j + self._window_y
                                 );
                             }
                         }
@@ -129,9 +128,9 @@ impl PassiveSystem for RenderSystem {
         }
 
         glyphbatch.drawtarget.set_from_drawtarget(
-            &self.draw_target,
-            self.window_x,
-            self.window_y
+            &self._draw_target,
+            self._window_x,
+            self._window_y
         );
     }
 }

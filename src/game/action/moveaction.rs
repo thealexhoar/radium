@@ -6,14 +6,18 @@ use util::Point;
 use std::cmp::max;
 
 pub struct MoveAction {
-    entity: Entity,
-    direction: Direction,
-    time: u32
+    _entity: Entity,
+    _direction: Direction,
+    _time: u32
 }
 
 impl MoveAction {
     pub fn new(entity: Entity, direction: Direction, time: u32) -> Self {
-        Self {entity, direction, time}
+        Self {
+            _entity: entity,
+            _direction: direction,
+            _time: time
+        }
     }
 }
 
@@ -27,10 +31,10 @@ impl Action for MoveAction {
     ) -> (bool, u32) {
         let position_component =
             component_manager
-            .get_mut::<PositionComponent>(self.entity)
+            .get_mut::<PositionComponent>(self._entity)
             .unwrap();
 
-        let (dx, dy, dz) = self.direction.to_delta();
+        let (dx, dy, dz) = self._direction.to_delta();
 
         let mut allowed = true;
         //check if allowed
@@ -42,12 +46,12 @@ impl Action for MoveAction {
                 max(0, (position_component.point.z as i32) + dz) as u32
             );
             space.move_entity(
-                self.entity,
+                self._entity,
                 position_component.point,
                 next_point
             );
             position_component.point = next_point;
-            (true, self.time)
+            (true, self._time)
         }
         else {
             (true, 0)

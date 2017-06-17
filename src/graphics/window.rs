@@ -32,9 +32,9 @@ impl Clone for Event {
 }
 
 pub struct Window {
-    render_window: RenderWindow,
-    events: Vec<Event>,
-    clock: Clock
+    _render_window: RenderWindow,
+    _events: Vec<Event>,
+    _clock: Clock
 }
 
 impl Window {
@@ -50,33 +50,33 @@ impl Window {
         window.set_key_repeat_enabled(false);
 
         Window {
-            render_window: window,
-            events: Vec::new(),
-            clock: Clock::default()
+            _render_window: window,
+            _events: Vec::new(),
+            _clock: Clock::default()
         }
     }
 
     pub fn elapsed_time(&mut self) -> f32 {
-        self.clock.restart().as_seconds()
+        self._clock.restart().as_seconds()
     }
 
     pub fn clear(&mut self) {
-        self.render_window.clear(&SFColor::black());
+        self._render_window.clear(&SFColor::black());
     }
 
     pub fn draw_glyphbatch(&mut self, glyphbatch:& GlyphBatch) {
-        glyphbatch.render(&mut self.render_window);
-        self.render_window.display();
+        glyphbatch.render(&mut self._render_window);
+        self._render_window.display();
     }
 
     pub fn update_event_queue(&mut self) {
-        self.events = Vec::new();
+        self._events = Vec::new();
         let mut close = false;
-        for event in  self.render_window.events() {
+        for event in  self._render_window.events() {
             close =  match event {
                 SFEvent::Closed => true,
                 _  => {
-                    self.events.push(Window::convert_event(event));
+                    self._events.push(Window::convert_event(event));
                     close
                 }
             };
@@ -87,19 +87,19 @@ impl Window {
     }
 
     pub fn events(&self) -> Vec<Event> {
-        let mut out_vec = Vec::with_capacity(self.events.len());
-        for &event in self.events.iter() {
+        let mut out_vec = Vec::with_capacity(self._events.len());
+        for &event in self._events.iter() {
             out_vec.push(event);
         }
         out_vec
     }
 
     pub fn is_open(&self) -> bool {
-        self.render_window.is_open()
+        self._render_window.is_open()
     }
 
     pub fn close(&mut self) {
-        self.render_window.close();
+        self._render_window.close();
     }
 
     pub fn mouse_pressed(&self, button:MouseButton) -> bool {
@@ -115,7 +115,7 @@ impl Window {
 
     pub fn mouse_pos(&self) -> (Option<u32>, Option<u32>) {
         let mouse_point = mouse::desktop_position();
-        let window_point = self.render_window.position();
+        let window_point = self._render_window.position();
 
         let x = match mouse_point.x >= window_point.x {
             true  => Some((mouse_point.x - window_point.x) as u32),

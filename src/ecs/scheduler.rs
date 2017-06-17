@@ -2,8 +2,8 @@ use ecs::*;
 use std::any::Any;
 
 struct ScheduleItem {
-    entity: Entity,
-    delta_time: u32
+    pub entity: Entity,
+    pub delta_time: u32
 }
 
 pub struct Scheduler {

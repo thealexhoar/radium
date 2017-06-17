@@ -3,7 +3,7 @@ use std::collections::{HashMap, HashSet};
 use std::any::{Any, TypeId};
 
 pub struct ComponentManager {
-    //was previously a map of vectors... 
+    //was previously a map of vectors...
     //hashes by typeid and entity
     _data: HashMap<(TypeId, Entity), Option<Box<Any>>>,
     _entities: HashSet<Entity>,
@@ -25,12 +25,12 @@ impl ComponentManager {
 
     pub fn get<T: Component>(&self, entity:Entity) -> Option<&T> {
         let id = TypeId::of::<T>();
-        
+
         match self._data.get(&(id, entity)) {
             Some(data_option) => match *data_option {
                 Some(ref data_box) => data_box.downcast_ref::<T>(),
                 //entity component pair is possible, but nonexistant
-                None           => None 
+                None           => None
             },
             //entity or component doesn't yet exist in manager
             None              => None
@@ -43,7 +43,7 @@ impl ComponentManager {
             Some(data_option) => match *data_option {
                 Some(ref mut data_box) => data_box.downcast_mut::<T>(),
                 //entity component pair is possible, but nonexistant
-                None           => None 
+                None           => None
             },
             //entity or component doesn't yet exist in manager
             None              => None
@@ -52,9 +52,9 @@ impl ComponentManager {
 
     //fails if entity not yet in manager
     pub fn set<T: Component + Sized>(
-        &mut self, 
+        &mut self,
         entity:Entity, component:T
-    ) -> bool { 
+    ) -> bool {
         let id = TypeId::of::<T>();
         if !self._entities.contains(&entity) {
             return false;
