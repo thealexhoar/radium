@@ -19,6 +19,8 @@ const CONSOLE_HEIGHT:u32 = WINDOW_HEIGHT - GAME_HEIGHT;
 const INFO_WIDTH:u32     = WINDOW_WIDTH - GAME_WIDTH;
 const INFO_HEIGHT:u32    = WINDOW_HEIGHT;
 
+const TURN_MAX_TIME:u32 = 300;
+
 #[derive(Clone, Copy, PartialEq, Eq)]
 pub enum CoreState {
     PlayerTurn,
@@ -67,7 +69,7 @@ impl Core {
 
     pub fn init(&mut self) {
         self.blackboard.camera = Some(Camera::new(0,0,0));
-
+        self.blackboard.max_action_time = TURN_MAX_TIME;
 
         self.engine.passive_systems.push(
             Box::new(RenderSystem::new(
@@ -125,102 +127,113 @@ impl Core {
 
     pub fn run(&mut self) {
         while self.window.is_open() {
-            let delta_time = self.window.elapsed_time();
-
-            self.mouse_interface.update(&self.window);
-
-            self.engine.update_passive_systems(
-                &mut self.glyphbatch,
-                &mut self.window,
-                &mut self.blackboard,
-                delta_time
-            );
-
-            self.window.clear();
-            self.glyphbatch.flush_tiles();
-            self.window.draw_glyphbatch(&self.glyphbatch);
-
-            let events = self.window.events();
-
-            let mut next_state = self.state;
-            match self.state {
-                CoreState::PlayerTurn         => {
-                    //listen for actions pertaining to selected unit
-                    let entity = self.blackboard.current_entity.unwrap();
-                    next_state = self.keyboard_control(
-                        &events,
-                        entity
-                    );
-                    if self.state == next_state {
-                        next_state = self.mouse_control(&events);
-                    }
-
-                    self.control_camera(
-                        &events
-                    );
-                },
-
-                CoreState::EnemyTurn          => {
-                    //iterate through enemy controllers
-                },
-
-                CoreState::PlayerAction |
-                CoreState::EnemyAction        => {
-                    let (completed, delta) = match self.current_action {
-                        Some(ref mut action_box) => action_box
-                            .deref_mut()
-                            .execute(
-                                &mut self.engine.component_manager,
-                                &mut self.engine.space,
-                                &mut self.blackboard,
-                                delta_time
-                        ),
-                        None => (true, 0)
-                    };
-                    let time_elapsed = delta > 0;
-                    if time_elapsed {
-                        self.engine.update_continuous_systems(
-                            &mut self.blackboard,
-                            delta
-                        );
-                    }
-                    if completed {
-                        if time_elapsed {
-                            self.scheduler.push_entity(
-                                self.blackboard.current_entity.unwrap(),
-                                delta
-                            );
-
-                            match self.scheduler.pop_entity() {
-                                Some((entity, dt)) => {
-                                    self.blackboard.current_entity =
-                                        Some(entity);
-                                    self.scheduler.elapse_time(dt);
-                                }
-                                None => {
-                                    self.blackboard.current_entity = None;
-                                }
-                            };
-                        }
-
-                        self.current_action = None;
-                        match self.state {
-                            CoreState::PlayerAction =>
-                                next_state = CoreState::PlayerTurn,
-                            CoreState::EnemyAction    =>
-                                next_state = CoreState::EnemyTurn,
-                            _ => {}
-                        }
-                    }
-                },
-
-                _ => {}
-            };
-
-            self.state = next_state;
-
-            self.window.update_event_queue();
+            self.update();
         }
+    }
+
+    fn update(&mut self) {
+        let delta_time = self.window.elapsed_time();
+
+        self.mouse_interface.update(&self.window);
+
+        self.engine.update_passive_systems(
+            &mut self.glyphbatch,
+            &mut self.window,
+            &mut self.blackboard,
+            delta_time
+        );
+
+        self.window.clear();
+        self.glyphbatch.flush_tiles();
+        self.window.draw_glyphbatch(&self.glyphbatch);
+
+        let events = self.window.events();
+
+        let mut next_state = self.state;
+        match self.state {
+            CoreState::PlayerTurn         => {
+                //listen for actions pertaining to selected unit
+                let entity = self.blackboard.current_entity.unwrap();
+                next_state = self.keyboard_control(
+                    &events,
+                    entity
+                );
+                if self.state == next_state {
+                    next_state = self.mouse_control(&events);
+                }
+
+                self.control_camera(
+                    &events
+                );
+            },
+
+            CoreState::EnemyTurn          => {
+                //iterate through enemy controllers
+            },
+
+            CoreState::PlayerAction |
+            CoreState::EnemyAction        => {
+                let (completed, delta) = match self.current_action {
+                    Some(ref mut action_box) => action_box
+                        .deref_mut()
+                        .execute(
+                            &mut self.engine.component_manager,
+                            &mut self.engine.space,
+                            &mut self.blackboard,
+                            delta_time
+                    ),
+                    None => (true, 0)
+                };
+                let time_elapsed = delta > 0;
+                if time_elapsed {
+                    self.engine.update_continuous_systems(
+                        &mut self.blackboard,
+                        delta
+                    );
+                }
+                if completed {
+                    if time_elapsed {
+                        self.blackboard.current_action_time += delta;
+                    }
+                    if self.blackboard.current_action_time
+                        >= self.blackboard.max_action_time
+                    {
+                        self.scheduler.push_entity(
+                            self.blackboard.current_entity.unwrap(),
+                            self.blackboard.current_action_time
+                        );
+
+                        match self.scheduler.pop_entity() {
+                            Some((entity, dt)) => {
+                                self.blackboard.current_entity =
+                                    Some(entity);
+                                self.scheduler.elapse_time(dt);
+                            }
+                            None => {
+                                self.blackboard.current_entity = None;
+                            }
+                        };
+
+                        self.blackboard.current_action_time = 0;
+                    }
+
+                    self.current_action = None;
+                    match self.state {
+                        CoreState::PlayerAction =>
+                            next_state = CoreState::PlayerTurn,
+                        CoreState::EnemyAction    =>
+                            next_state = CoreState::EnemyTurn,
+                        _ => {}
+                    }
+                }
+            },
+
+            _ => {}
+        };
+
+        self.state = next_state;
+
+        self.window.update_event_queue();
     }
 
     fn keyboard_control(
@@ -238,7 +251,7 @@ impl Core {
                                 MoveAction::new(
                                     entity,
                                     Direction::West,
-                                    100 //TODO: use dynamic value
+                                    50 //TODO: use dynamic value
                                 )
                             )
                         ),
@@ -247,7 +260,7 @@ impl Core {
                                 MoveAction::new(
                                     entity,
                                     Direction::East,
-                                    100
+                                    50
                                 )
                             )
                         ),
@@ -256,7 +269,7 @@ impl Core {
                                 MoveAction::new(
                                     entity,
                                     Direction::Down,
-                                    100
+                                    50
                                 )
                             )
                         ),
@@ -265,7 +278,7 @@ impl Core {
                                 MoveAction::new(
                                     entity,
                                     Direction::Up,
-                                    100
+                                    50
                                 )
                             )
                         ),
@@ -274,7 +287,7 @@ impl Core {
                                 MoveAction::new(
                                     entity,
                                     Direction::South,
-                                    100
+                                    50
                                 )
                             )
                         ),
@@ -283,7 +296,7 @@ impl Core {
                                 MoveAction::new(
                                     entity,
                                     Direction::North,
-                                    100
+                                    50
                                 )
                             )
                         ),
