@@ -3,7 +3,7 @@ use util::{Point, PriorityQueue};
 use graphics::{Color, GlyphBatch, Tile, Window};
 use graphics::Event as WindowEvent;
 use game::graphics::TileComponent;
-use game::components::ColliderComponent;
+use game::components::{ColliderComponent, FloorComponent};
 use game::Blackboard;
 use std::ops::{Deref, DerefMut};
 use std::collections::{HashMap, HashSet};
@@ -62,6 +62,12 @@ impl Engine {
                     self.component_manager.set(
                         entity,
                         ColliderComponent::new(1)
+                    );
+                }
+                else {
+                    self.component_manager.set(
+                        entity,
+                        FloorComponent::new(false, false)
                     );
                 }
                 self.component_manager.set(

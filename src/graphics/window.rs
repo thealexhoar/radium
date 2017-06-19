@@ -42,7 +42,7 @@ impl Window {
         let mut window = RenderWindow::new(
             VideoMode::new(width, height, 32),
             "Radium",
-            style::NONE,
+            style::CLOSE,
             &ContextSettings::default()
         );
 
