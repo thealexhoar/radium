@@ -9,5 +9,5 @@ pub trait Action {
         space: &mut Space,
         blackboard: &mut Blackboard,
         delta_time: f32
-    ) -> (bool, u32);
+    ) -> (bool, bool, u32);
 }

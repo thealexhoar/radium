@@ -53,8 +53,8 @@ impl PassiveSystem for SelectionRenderSystem {
         };
 
         let color_val = match self._pulse_up {
-            true  => 20 + (40.0 * self._accumulator / self._pulse_time) as u8,
-            false => 60 - (40.0 * self._accumulator / self._pulse_time) as u8
+            true  => 20 + (120.0 * self._accumulator / self._pulse_time) as u8,
+            false => 140 - (120.0 * self._accumulator / self._pulse_time) as u8
         };
         let tile = Tile::new(
             None,

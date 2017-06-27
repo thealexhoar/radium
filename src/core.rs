@@ -6,6 +6,7 @@ use game::Blackboard;
 use game::Direction;
 use game::graphics::*;
 use game::ui::*;
+use std::cmp::max;
 use std::ops::DerefMut;
 use util::Point;
 
@@ -173,7 +174,7 @@ impl Core {
 
             CoreState::PlayerAction |
             CoreState::EnemyAction        => {
-                let (completed, delta) = match self.current_action {
+                let (completed, end_turn, delta) = match self.current_action {
                     Some(ref mut action_box) => action_box
                         .deref_mut()
                         .execute(
@@ -182,7 +183,7 @@ impl Core {
                             &mut self.blackboard,
                             delta_time
                     ),
-                    None => (true, 0)
+                    None => (true, false, 0)
                 };
                 let time_elapsed = delta > 0;
                 if time_elapsed {
@@ -191,13 +192,20 @@ impl Core {
                         delta
                     );
                 }
+                
                 if completed {
                     if time_elapsed {
                         self.blackboard.current_action_time += delta;
                     }
                     if self.blackboard.current_action_time
                         >= self.blackboard.max_action_time
+                        || end_turn
                     {
+                        if end_turn {
+                            self.blackboard.current_action_time =
+                                max(150, self.blackboard.current_action_time);
+                            //TODO: make dynamic
+                        }
                         self.scheduler.push_entity(
                             self.blackboard.current_entity.unwrap(),
                             self.blackboard.current_action_time
@@ -299,6 +307,9 @@ impl Core {
                                     50
                                 )
                             )
+                        ),
+                        (Key::Space, false, false, true) => Some(
+                            Box::new(WaitAction::new())
                         ),
                         _ => { action_taken = false; None }
                     };

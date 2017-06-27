@@ -48,12 +48,12 @@ impl Action for MoveAction {
         space: &mut Space,
         blackboard: &mut Blackboard,
         delta_time: f32
-    ) -> (bool, u32) {
+    ) -> (bool, bool, u32) {
         let current_point = match component_manager
             .get_mut::<PositionComponent>(self._entity)
         {
             Some(pc) => pc.point,
-            None     => { return (false, 0) }
+            None     => { return (false, false, 0) }
         };
 
         let (dx, dy, dz) = self._direction.to_delta();
@@ -159,10 +159,10 @@ impl Action for MoveAction {
                 
                 position_component.point = next_point;
             }
-            (true, self._time)
+            (true, false, self._time)
         }
         else {
-            (true, 0)
+            (true, false, 0)
         }
     }
 }
