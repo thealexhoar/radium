@@ -1,11 +1,6 @@
-use graphics::{DrawTarget, GlyphSet, Tile, Color};
-
-use sfml::system::{Vector2u, Vector2f};
-use sfml::graphics::{
-    BlendMode, Transform, PrimitiveType,
-    Image, Texture, IntRect, RenderWindow,
-    RenderStates, RenderTarget, VertexArray, Vertex};
-use sfml::graphics::Color as SFColor;
+use graphics::*;
+use sfml::system::*;
+use sfml::graphics::*;
 use std::cmp::min;
 
 pub struct GlyphBatch {
@@ -28,7 +23,7 @@ impl GlyphBatch {
         tiled_width:u32, tiled_height:u32,
         pixel_width:u32, pixel_height:u32
     ) -> GlyphBatch {
-        let null_img = match Image::from_color(1, 1, &SFColor::white()) {
+        let null_img = match Image::from_color(1, 1, &Color::white()) {
             Some(img) => img,
             None      => panic!("Couldn't create Image")
         };
@@ -54,14 +49,14 @@ impl GlyphBatch {
                 Some(texture) => texture,
                 None          => panic!("Couldn't create Texture")
             },
-            _null_tile: Tile::new(None, Some(Color::black()), 0)
+            _null_tile: Tile::new(None, Some(RGBColor::black()), 0)
         };
         glyphbatch.set_pixel_resolution(pixel_width, pixel_height);
 
         glyphbatch
     }
 
-    pub fn set_null_color(&mut self, color:Color) {
+    pub fn set_null_color(&mut self, color:RGBColor) {
         self._null_tile = Tile::new(
             None,
             Some(color),
@@ -181,19 +176,19 @@ impl GlyphBatch {
                 color,
                 x, y
             ),
-            None        => self.set_tile_fg_vertices(0, Color::clear(), x, y)
+            None        => self.set_tile_fg_vertices(0, RGBColor::clear(), x, y)
         }
 
         match tile.bg_color {
             Some(color) => self.set_tile_bg_vertices(color, x, y),
-            None        => self.set_tile_bg_vertices(Color::clear(), x, y)
+            None        => self.set_tile_bg_vertices(RGBColor::clear(), x, y)
         }
     }
 
     fn set_tile_fg_vertices(
         &mut self,
         tile_id:u32,
-        color:Color,
+        color:RGBColor,
         x:u32, y:u32
     ) {
         let base_index = (x + y * self._tiled_dimensions.x) * 4;
@@ -237,7 +232,7 @@ impl GlyphBatch {
         }
     }
 
-    fn set_tile_bg_vertices(&mut self, color:Color, x:u32, y:u32) {
+    fn set_tile_bg_vertices(&mut self, color:RGBColor, x:u32, y:u32) {
         let base_index = (x + y * self._tiled_dimensions.x) * 4;
 
         for i in 0..2 {
@@ -275,8 +270,8 @@ impl GlyphBatch {
         )
     }
 
-    fn color_to_sf_color(color:Color) -> SFColor {
-        SFColor::rgba(color.r, color.g, color.b, color.a)
+    fn color_to_sf_color(color:RGBColor) -> Color {
+        Color::rgba(color.r, color.g, color.b, color.a)
     }
 
 }

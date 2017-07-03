@@ -4,23 +4,11 @@ use game::action::*;
 use game::components::ColliderComponent;
 use game::Blackboard;
 use game::Direction;
-use game::graphics::*;
+use game::render::*;
 use game::ui::*;
 use std::cmp::max;
 use std::ops::DerefMut;
 use util::Point;
-
-
-const WINDOW_WIDTH:u32   = 80;
-const WINDOW_HEIGHT:u32  = 45;
-const GAME_WIDTH:u32     = 55;
-const GAME_HEIGHT:u32    = 31;
-const CONSOLE_WIDTH:u32  = GAME_WIDTH;
-const CONSOLE_HEIGHT:u32 = WINDOW_HEIGHT - GAME_HEIGHT;
-const INFO_WIDTH:u32     = WINDOW_WIDTH - GAME_WIDTH;
-const INFO_HEIGHT:u32    = WINDOW_HEIGHT;
-
-const TURN_MAX_TIME:u32 = 300;
 
 #[derive(Clone, Copy, PartialEq, Eq)]
 pub enum CoreState {
@@ -31,130 +19,57 @@ pub enum CoreState {
     EnemyAction
 }
 
-pub struct Core {
-    pub width: u32,
-    pub height: u32,
-    pub blackboard: Blackboard,
-    pub current_action: Option<Box<Action>>,
-    pub engine: Engine,
-    pub glyphbatch: GlyphBatch,
-    pub mouse_interface: MouseInterface,
-    pub scheduler: Scheduler,
-    pub state: CoreState,
-    pub window: Window
+pub struct GameCore {
+    width: u32,
+    height: u32,
+    current_action: Option<Box<Action>>,
+    state: CoreState
 }
 
 
-impl Core {
-    pub fn new(width: u32, height: u32) -> Core {
-        Core {
+impl GameCore {
+    pub fn new(width: u32, height: u32) -> Self {
+        Self {
             width,
             height,
-            blackboard: Blackboard::new(),
             current_action: None,
-            engine: Engine::new(),
-            glyphbatch: GlyphBatch::new(
-                GlyphSet::new("assets/tileset_16x16.png", 16, 16, 1024),
-                WINDOW_WIDTH, WINDOW_HEIGHT,
-                width, height
-            ),
-            mouse_interface: MouseInterface::new(
-                GAME_WIDTH, GAME_HEIGHT,
-                INFO_WIDTH, INFO_HEIGHT
-            ),
-            scheduler: Scheduler::new(),
-            state: CoreState::PlayerTurn,
-            window: Window::new(width, height),
+            state: CoreState::PlayerTurn
         }
     }
 
-    pub fn init(&mut self) {
-        self.blackboard.camera = Some(Camera::new(0,0,0));
-        self.blackboard.max_action_time = TURN_MAX_TIME;
+    pub fn update(
+        &mut self,
+        blackboard: &mut Blackboard,
+        engine: &mut Engine,
+        glyphbatch: &mut GlyphBatch,
+        mouse_interface: &mut MouseInterface,
+        scheduler: &mut Scheduler,
+        window: &mut Window
+    ) {
+        let delta_time = window.elapsed_time();
 
-        self.engine.passive_systems.push(
-            Box::new(RenderSystem::new(
-                GAME_WIDTH,
-                GAME_HEIGHT,
-                0, 0
-            ))
-        );
-        self.engine.passive_systems.push(
-            Box::new(SelectionRenderSystem::new(
-                GAME_WIDTH,
-                GAME_HEIGHT
-            ))
-        );
-        self.engine.passive_systems.push(
-            Box::new(ConsoleSystem::new(
-                GAME_WIDTH,
-                WINDOW_HEIGHT - GAME_HEIGHT,
-                0, GAME_HEIGHT
-            ))
-        );
-        self.engine.passive_systems.push(
-            Box::new(InfoSystem::new(
-                WINDOW_WIDTH - GAME_WIDTH,
-                WINDOW_HEIGHT,
-                GAME_WIDTH, 0
-            ))
-        );
+        mouse_interface.update(window);
 
-        self.engine.load(&mut self.blackboard);
-
-        for i in 0..4 {
-            let p = self.engine.component_manager.create_entity();
-            self.engine.component_manager
-                .set(p, PositionComponent::new(1 + i, 1, 0, 1));
-            self.engine.component_manager.set(p, TileComponent::new(
-                Tile::new(
-                    Some(Color::new_from_rgb(155, 200, 255)),
-                    None,
-                    160
-                )
-            ));
-            self.engine.component_manager.set(p, ColliderComponent::new(1));
-
-            self.engine.space.add_entity_at(p, Point::new(1 + i, 1, 0));
-            self.blackboard.player_entities.insert(p);
-            self.scheduler.push_entity(p, 0);
-        }
-
-        self.blackboard.current_entity = match self.scheduler.pop_entity() {
-            Some((e, dt)) => Some(e),
-            None          => None
-        };
-    }
-
-    pub fn run(&mut self) {
-        while self.window.is_open() {
-            self.update();
-        }
-    }
-
-    fn update(&mut self) {
-        let delta_time = self.window.elapsed_time();
-
-        self.mouse_interface.update(&self.window);
-
-        self.engine.update_passive_systems(
-            &mut self.glyphbatch,
-            &mut self.window,
-            &mut self.blackboard,
+        engine.update_passive_systems(
+            glyphbatch,
+            window,
+            blackboard,
             delta_time
         );
 
-        self.window.clear();
-        self.glyphbatch.flush_tiles();
-        self.window.draw_glyphbatch(&self.glyphbatch);
+        window.clear();
+        glyphbatch.flush_tiles();
+        window.draw_glyphbatch(&glyphbatch);
 
-        let events = self.window.events();
+        let events = window.events();
+
+        
 
         let mut next_state = self.state;
         match self.state {
             CoreState::PlayerTurn         => {
                 //listen for actions pertaining to selected unit
-                let entity = self.blackboard.current_entity.unwrap();
+                let entity = blackboard.current_entity.unwrap();
                 next_state = self.keyboard_control(
                     &events,
                     entity
@@ -164,7 +79,8 @@ impl Core {
                 }
 
                 self.control_camera(
-                    &events
+                    blackboard,
+                    &events,
                 );
             },
 
@@ -178,51 +94,51 @@ impl Core {
                     Some(ref mut action_box) => action_box
                         .deref_mut()
                         .execute(
-                            &mut self.engine.component_manager,
-                            &mut self.engine.space,
-                            &mut self.blackboard,
+                            &mut engine.component_manager,
+                            &mut engine.space,
+                            blackboard,
                             delta_time
                     ),
                     None => (true, false, 0)
                 };
                 let time_elapsed = delta > 0;
                 if time_elapsed {
-                    self.engine.update_continuous_systems(
-                        &mut self.blackboard,
+                    engine.update_continuous_systems(
+                        blackboard,
                         delta
                     );
                 }
                 
                 if completed {
                     if time_elapsed {
-                        self.blackboard.current_action_time += delta;
+                        blackboard.current_action_time += delta;
                     }
-                    if self.blackboard.current_action_time
-                        >= self.blackboard.max_action_time
+                    if blackboard.current_action_time
+                        >= blackboard.max_action_time
                         || end_turn
                     {
                         if end_turn {
-                            self.blackboard.current_action_time =
-                                max(150, self.blackboard.current_action_time);
+                            blackboard.current_action_time =
+                                max(150, blackboard.current_action_time);
                             //TODO: make dynamic
                         }
-                        self.scheduler.push_entity(
-                            self.blackboard.current_entity.unwrap(),
-                            self.blackboard.current_action_time
+                        scheduler.push_entity(
+                            blackboard.current_entity.unwrap(),
+                            blackboard.current_action_time
                         );
 
-                        match self.scheduler.pop_entity() {
+                        match scheduler.pop_entity() {
                             Some((entity, dt)) => {
-                                self.blackboard.current_entity =
+                                blackboard.current_entity =
                                     Some(entity);
-                                self.scheduler.elapse_time(dt);
+                                scheduler.elapse_time(dt);
                             }
                             None => {
-                                self.blackboard.current_entity = None;
+                                blackboard.current_entity = None;
                             }
                         };
 
-                        self.blackboard.current_action_time = 0;
+                        blackboard.current_action_time = 0;
                     }
 
                     self.current_action = None;
@@ -241,7 +157,7 @@ impl Core {
 
         self.state = next_state;
 
-        self.window.update_event_queue();
+        window.update_event_queue();
     }
 
     fn keyboard_control(
@@ -334,11 +250,12 @@ impl Core {
 
     fn control_camera(
         &mut self,
+        blackboard: &mut Blackboard,
         events: &Vec<Event>
     ) {
-        let camera = match self.blackboard.camera {
-            Some(ref mut cam) => cam,
-            None      => { return; }
+        let camera = match blackboard.camera {
+            Some(ref mut c) => c,
+            None            => { return; }
         };
         for &event in events.iter() {
             match event {

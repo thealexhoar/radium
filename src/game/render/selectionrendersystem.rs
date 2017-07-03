@@ -58,7 +58,7 @@ impl PassiveSystem for SelectionRenderSystem {
         };
         let tile = Tile::new(
             None,
-            Some(Color::new_from_rgb(color_val, color_val, color_val)),
+            Some(RGBColor::new_from_rgb(color_val, color_val, color_val)),
             0
         );
 

@@ -1,8 +1,8 @@
 use ecs::*;
 use util::{Point, PriorityQueue};
-use graphics::{Color, GlyphBatch, Tile, Window};
+use graphics::{RGBColor, GlyphBatch, Tile, Window};
 use graphics::Event as WindowEvent;
-use game::graphics::TileComponent;
+use game::render::TileComponent;
 use game::components::{ColliderComponent, FloorComponent};
 use game::Blackboard;
 use std::ops::{Deref, DerefMut};
@@ -35,8 +35,8 @@ impl Engine {
             }
         }
 
-        let tile_fg = Color::new_from_rgb(30, 30, 30);
-        let tile_bg = Color::new_from_rgb(0,0,0);
+        let tile_fg = RGBColor::new_from_rgb(30, 30, 30);
+        let tile_bg = RGBColor::new_from_rgb(0,0,0);
 
         let floor_tile = Tile::new(
             Some(tile_fg),
@@ -44,7 +44,7 @@ impl Engine {
             '.' as u32
         );
         let wall_tile = Tile::new(
-            Some(Color::white()),
+            Some(RGBColor::white()),
             Some(tile_bg),
             480
         );

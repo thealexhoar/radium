@@ -1,7 +1,7 @@
 use ecs::*;
 use graphics::*;
 use util::Point;
-use game::graphics::TileComponent;
+use game::render::TileComponent;
 use game::Blackboard;
 
 pub struct RenderSystem {
@@ -93,7 +93,7 @@ impl PassiveSystem for RenderSystem {
                                 ),
                                 None        => None
                             };
-                            tile.bg_color = Some(Color::black());
+                            tile.bg_color = Some(RGBColor::black());
                         }
 
                         let highest =

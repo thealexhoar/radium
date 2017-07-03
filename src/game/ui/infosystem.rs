@@ -29,8 +29,8 @@ impl InfoSystem {
 
         //TODO: Draw real borders
         let border_tile = Tile::new(
-            Some(Color::black()),
-            Some(Color::gray()),
+            Some(RGBColor::black()),
+            Some(RGBColor::gray()),
             '+' as u32
         );
         output._draw_target.set_tiles_rect(
@@ -45,8 +45,8 @@ impl InfoSystem {
         self._center_draw_target.draw_string_slice(
             "Camera Center",
             0, row,
-            Color::yellow(),
-            Some(Color::black())
+            RGBColor::yellow(),
+            Some(RGBColor::black())
         );
         let mut x = 0;
         let mut y = 0;
@@ -64,8 +64,8 @@ impl InfoSystem {
         self._center_draw_target.draw_string_slice(
             &(x.to_string() + "," + &y.to_string() + "," + &z.to_string()),
             1, row + 1,
-            Color::yellow(),
-            Some(Color::black())
+            RGBColor::yellow(),
+            Some(RGBColor::black())
         );
     }
 
@@ -73,8 +73,8 @@ impl InfoSystem {
         self._center_draw_target.draw_string_slice(
             "Turn Time",
             0, row,
-            Color::yellow(),
-            Some(Color::black())
+            RGBColor::yellow(),
+            Some(RGBColor::black())
         );
 
         let time = blackboard.current_action_time;
@@ -83,8 +83,8 @@ impl InfoSystem {
         self._center_draw_target.draw_string_slice(
             &(time.to_string() + "/" + &max_time.to_string()),
             1, row + 1,
-            Color::yellow(),
-            Some(Color::black())
+            RGBColor::yellow(),
+            Some(RGBColor::black())
         );
     }
 }

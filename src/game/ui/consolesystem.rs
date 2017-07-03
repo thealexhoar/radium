@@ -29,8 +29,8 @@ impl ConsoleSystem {
         
         //TODO: Draw real borders
         let border_tile = Tile::new(
-            Some(Color::black()),
-            Some(Color::gray()),
+            Some(RGBColor::black()),
+            Some(RGBColor::gray()),
             '+' as u32
         );
         output._draw_target.set_tiles_rect(
@@ -59,8 +59,8 @@ impl PassiveSystem for ConsoleSystem {
         self._center_draw_target.draw_string_slice(
             "Console will go here",
             5, 1,
-            Color::yellow(),
-            Some(Color::black())
+            RGBColor::yellow(),
+            Some(RGBColor::black())
         );
 
         self._draw_target.set_from_drawtarget(

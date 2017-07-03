@@ -1,10 +1,11 @@
 extern crate sfml;
-mod core;
+mod coremanager;
 mod ecs;
 mod game;
 mod graphics;
 mod util;
-use core::Core;
+use game::GameCore;
+use coremanager::CoreManager;
 
 fn main() {
     let mut width = 2560;
@@ -16,7 +17,8 @@ fn main() {
             height = args[index + 2].parse::<u32>().unwrap();
         }
     }
-    let mut core = Core::new(width, height);
-    core.init();
-    core.run();
+    
+
+    let mut core_manager = CoreManager::new(width, height);
+    core_manager.run();
 }

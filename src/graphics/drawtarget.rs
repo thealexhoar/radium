@@ -1,4 +1,4 @@
-use graphics::{Color, Tile};
+use graphics::{RGBColor, Tile};
 
 use std::cmp::min;
 use std::str::Chars;
@@ -217,8 +217,8 @@ impl DrawTarget {
         &mut self,
         text:&String,
         x:u32, y:u32,
-        fg_color:Color,
-        bg_color:Option<Color>
+        fg_color:RGBColor,
+        bg_color:Option<RGBColor>
     ) {
         self.draw_string_slice(text.as_str(), x, y, fg_color, bg_color);
     }
@@ -227,8 +227,8 @@ impl DrawTarget {
         &mut self,
         text:&str,
         x:u32, y:u32,
-        fg_color:Color,
-        bg_color:Option<Color>
+        fg_color:RGBColor,
+        bg_color:Option<RGBColor>
     ) {
         let mut chars = text.chars();
         self.draw_chars(chars, x, y, fg_color, bg_color);
@@ -238,8 +238,8 @@ impl DrawTarget {
         &mut self,
         mut chars:Chars,
         x:u32, y:u32,
-        fg_color:Color,
-        bg_color:Option<Color>
+        fg_color:RGBColor,
+        bg_color:Option<RGBColor>
     ) {
         if x >= self._width || y >= self._height {
             return;
