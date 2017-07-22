@@ -1,17 +1,15 @@
+use coremanager::CoreState;
 use ecs::*;
 use graphics::*;
 use game::action::*;
-use game::components::ColliderComponent;
 use game::Blackboard;
 use game::Direction;
-use game::render::*;
 use game::ui::*;
 use std::cmp::max;
 use std::ops::DerefMut;
-use util::Point;
 
 #[derive(Clone, Copy, PartialEq, Eq)]
-pub enum CoreState {
+pub enum GameState {
     PlayerTurn,
     EnemyTurn,
 
@@ -20,21 +18,29 @@ pub enum CoreState {
 }
 
 pub struct GameCore {
-    width: u32,
-    height: u32,
     current_action: Option<Box<Action>>,
-    state: CoreState
+    state: GameState
 }
 
 
 impl GameCore {
-    pub fn new(width: u32, height: u32) -> Self {
+    pub fn new() -> Self {
         Self {
-            width,
-            height,
             current_action: None,
-            state: CoreState::PlayerTurn
+            state: GameState::PlayerTurn
         }
+    }
+
+    pub fn init(
+        &mut self,
+        blackboard: &mut Blackboard,
+        engine: &mut Engine,
+        glyphbatch: &mut GlyphBatch,
+        mouse_interface: &mut MouseInterface,
+        scheduler: &mut Scheduler,
+        window: &mut Window
+    ) {
+
     }
 
     pub fn update(
@@ -45,7 +51,9 @@ impl GameCore {
         mouse_interface: &mut MouseInterface,
         scheduler: &mut Scheduler,
         window: &mut Window
-    ) {
+    ) -> CoreState {
+        let mut out_state = CoreState::Game;
+
         let delta_time = window.elapsed_time();
 
         mouse_interface.update(window);
@@ -57,17 +65,16 @@ impl GameCore {
             delta_time
         );
 
+
         window.clear();
         glyphbatch.flush_tiles();
         window.draw_glyphbatch(&glyphbatch);
 
         let events = window.events();
 
-        
-
         let mut next_state = self.state;
         match self.state {
-            CoreState::PlayerTurn         => {
+            GameState::PlayerTurn         => {
                 //listen for actions pertaining to selected unit
                 let entity = blackboard.current_entity.unwrap();
                 next_state = self.keyboard_control(
@@ -84,12 +91,12 @@ impl GameCore {
                 );
             },
 
-            CoreState::EnemyTurn          => {
+            GameState::EnemyTurn          => {
                 //iterate through enemy controllers
             },
 
-            CoreState::PlayerAction |
-            CoreState::EnemyAction        => {
+            GameState::PlayerAction |
+            GameState::EnemyAction        => {
                 let (completed, end_turn, delta) = match self.current_action {
                     Some(ref mut action_box) => action_box
                         .deref_mut()
@@ -143,10 +150,10 @@ impl GameCore {
 
                     self.current_action = None;
                     match self.state {
-                        CoreState::PlayerAction =>
-                            next_state = CoreState::PlayerTurn,
-                        CoreState::EnemyAction    =>
-                            next_state = CoreState::EnemyTurn,
+                        GameState::PlayerAction =>
+                            next_state = GameState::PlayerTurn,
+                        GameState::EnemyAction    =>
+                            next_state = GameState::EnemyTurn,
                         _ => {}
                     }
                 }
@@ -158,13 +165,15 @@ impl GameCore {
         self.state = next_state;
 
         window.update_event_queue();
+
+        out_state
     }
 
     fn keyboard_control(
         &mut self,
         events: &Vec<Event>,
         entity: Entity
-    ) -> CoreState {
+    ) -> GameState {
         for &event in events.iter() {
             match event {
                 Event::KeyPress{code, alt, ctrl, shift} => {
@@ -230,19 +239,19 @@ impl GameCore {
                         _ => { action_taken = false; None }
                     };
                     if action_taken {
-                        return CoreState::PlayerAction
+                        return GameState::PlayerAction
                     }
                 },
                 _ => {}
             }
         }
-        CoreState::PlayerTurn
+        GameState::PlayerTurn
     }
 
     fn mouse_control(
         &mut self,
         events: &Vec<Event>
-    ) -> CoreState {
+    ) -> GameState {
         let mut action_taken = false;
         //TODO: implement mouse control
         self.state

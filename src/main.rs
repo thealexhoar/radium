@@ -3,8 +3,8 @@ mod coremanager;
 mod ecs;
 mod game;
 mod graphics;
+mod menu;
 mod util;
-use game::GameCore;
 use coremanager::CoreManager;
 
 fn main() {

@@ -4,6 +4,7 @@ use game::components::*;
 use game::render::*;
 use game::ui::*;
 use graphics::*;
+use menu::*;
 use util::*;
 
 const WINDOW_WIDTH:u32   = 80;
@@ -17,6 +18,12 @@ const INFO_HEIGHT:u32    = WINDOW_HEIGHT;
 
 const TURN_MAX_TIME:u32 = 300;
 
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub enum CoreState {
+    Game,
+    Menu(MenuType)
+}
+
 pub struct CoreManager {
     _width: u32,
     _height: u32,
@@ -25,7 +32,8 @@ pub struct CoreManager {
     _glyphbatch: GlyphBatch,
     _mouse_interface: MouseInterface,
     _scheduler: Scheduler,
-    _window: Window
+    _state: CoreState,
+    _window: Window,
 }
 
 
@@ -46,6 +54,7 @@ impl CoreManager {
                 INFO_WIDTH, INFO_HEIGHT
             ),
             _scheduler: Scheduler::new(),
+            _state: CoreState::Game,
             _window: Window::new(width, height),
         }
     }
@@ -70,20 +79,21 @@ impl CoreManager {
         );
         self._engine.passive_systems.push(
             Box::new(ConsoleSystem::new(
-                GAME_WIDTH,
-                WINDOW_HEIGHT - GAME_HEIGHT,
+                CONSOLE_WIDTH,
+                CONSOLE_HEIGHT,
                 0, GAME_HEIGHT
             ))
         );
         self._engine.passive_systems.push(
             Box::new(InfoSystem::new(
-                WINDOW_WIDTH - GAME_WIDTH,
-                WINDOW_HEIGHT,
+                INFO_WIDTH,
+                INFO_HEIGHT,
                 GAME_WIDTH, 0
             ))
         );
 
         self._engine.load(&mut self._blackboard);
+
 
         for i in 0..4 {
             let p = self._engine.component_manager.create_entity();
@@ -108,17 +118,29 @@ impl CoreManager {
             None          => None
         };
 
-        let mut game_core = GameCore::new(self._width, self._height);
+
+        let mut game_core = GameCore::new();
+        let mut menu_core = MenuCore::new();
 
         while self._window.is_open() {
-            game_core.update(
-                &mut self._blackboard,
-                &mut self._engine,
-                &mut self._glyphbatch,
-                &mut self._mouse_interface,
-                &mut self._scheduler,
-                &mut self._window
-            );
+            let mut next_state = match self._state {
+                CoreState::Game => game_core.update(
+                        &mut self._blackboard,
+                        &mut self._engine,
+                        &mut self._glyphbatch,
+                        &mut self._mouse_interface,
+                        &mut self._scheduler,
+                        &mut self._window
+                ),
+                CoreState::Menu(_) => menu_core.update(
+                        &mut self._blackboard,
+                        &mut self._engine,
+                        &mut self._glyphbatch,
+                        &mut self._mouse_interface,
+                        &mut self._scheduler,
+                        &mut self._window
+                ), 
+            };
         }
     }
 }
