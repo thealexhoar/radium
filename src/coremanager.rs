@@ -1,6 +1,6 @@
 use ecs::*;
 use game::*;
-use game::components::*;
+use game::component::*;
 use game::render::*;
 use game::ui::*;
 use graphics::*;

@@ -4,7 +4,7 @@ pub use self::direction::Direction;
 
 pub mod action;
 mod blackboard;
-pub mod components;
+pub mod component;
 mod gamecore;
 mod direction;
 pub mod render;

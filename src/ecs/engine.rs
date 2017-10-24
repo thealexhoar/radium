@@ -3,7 +3,7 @@ use util::{Point, PriorityQueue};
 use graphics::{RGBColor, GlyphBatch, Tile, Window};
 use graphics::Event as WindowEvent;
 use game::render::TileComponent;
-use game::components::{ColliderComponent, FloorComponent};
+use game::component::{ColliderComponent, FloorComponent};
 use game::Blackboard;
 use std::ops::{Deref, DerefMut};
 use std::collections::{HashMap, HashSet};
@@ -41,7 +41,7 @@ impl Engine {
         let floor_tile = Tile::new(
             Some(tile_fg),
             Some(tile_bg),
-            '.' as u32
+            603
         );
         let wall_tile = Tile::new(
             Some(RGBColor::white()),

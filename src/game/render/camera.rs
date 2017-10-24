@@ -36,13 +36,11 @@ impl Camera {
 
     pub fn move_up(&mut self) {
         self.z += 1;
-        println!("{}", self.z);
     }
 
     pub fn move_down(&mut self) {
         if self.z > 0 {
             self.z -= 1;
         }
-        println!("{}", self.z);
     }
 }

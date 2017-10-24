@@ -1,7 +1,7 @@
 use ecs::*;
 use graphics::*;
 use game::action::*;
-use game::components::ColliderComponent;
+use game::component::ColliderComponent;
 use game::Blackboard;
 use game::Direction;
 use game::render::*;
@@ -63,8 +63,6 @@ impl GameCore {
 
         let events = window.events();
 
-        
-
         let mut next_state = self.state;
         match self.state {
             CoreState::PlayerTurn         => {
@@ -119,8 +117,8 @@ impl GameCore {
                     {
                         if end_turn {
                             blackboard.current_action_time =
-                                max(150, blackboard.current_action_time);
-                            //TODO: make dynamic
+                                max(blackboard.max_action_time, blackboard.current_action_time);
+                            //TODO: make dynamic?
                         }
                         scheduler.push_entity(
                             blackboard.current_entity.unwrap(),
@@ -274,5 +272,4 @@ impl GameCore {
             }
         }
     }
-
 }
