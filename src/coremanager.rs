@@ -92,9 +92,9 @@ impl CoreManager {
             ))
         );
 
-        self._engine.load(&mut self._blackboard);
+        self._engine.initialize(&mut self._blackboard);
 
-
+        //test level initialization
         for i in 0..4 {
             let p = self._engine.component_manager.create_entity();
             self._engine.component_manager
@@ -111,6 +111,63 @@ impl CoreManager {
             self._engine.space.add_entity_at(p, Point::new(1 + i, 1, 0));
             self._blackboard.player_entities.insert(p);
             self._scheduler.push_entity(p, 0);
+        }
+
+        let tile_fg = RGBColor::new_from_rgb(30, 30, 30);
+        let tile_bg = RGBColor::new_from_rgb(0,0,0);
+
+        let floor_tile = Tile::new(
+            Some(tile_fg),
+            Some(tile_bg),
+            663
+        );
+        let wall_tile = Tile::new(
+            Some(RGBColor::white()),
+            Some(tile_bg),
+            480
+        );
+
+        for i in 0..40 {
+            for j in 0..25 {
+                let entity = self._engine.component_manager.create_entity();
+                self._engine.component_manager.set(
+                    entity,
+                    PositionComponent::new(i, j, 0, 0)
+                );
+                let mut tile = floor_tile;
+                if i == 0 || j == 0 {
+                    tile = wall_tile;
+                    self._engine.component_manager.set(
+                        entity,
+                        ColliderComponent::new(1)
+                    );
+                }
+                    else {
+                        self._engine.component_manager.set(
+                            entity,
+                            FloorComponent::new(false, false)
+                        );
+                    }
+                self._engine.component_manager.set(
+                    entity,
+                    TileComponent::new(tile)
+                );
+                self._engine.space.add_entity_at(entity, Point::new(i, j, 0));
+            }
+        }
+        for i in 0..20 {
+            for j in 0..10 {
+                let entity = self._engine.component_manager.create_entity();
+                self._engine.component_manager.set(
+                    entity,
+                    PositionComponent::new(i, j, 2, 0)
+                );
+                self._engine.component_manager.set(
+                    entity,
+                    TileComponent::new(wall_tile)
+                );
+                self._engine.space.add_entity_at(entity, Point::new(i, j, 2));
+            }
         }
 
         self._blackboard.current_entity = match self._scheduler.pop_entity() {

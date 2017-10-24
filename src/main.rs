@@ -8,8 +8,8 @@ mod util;
 use coremanager::CoreManager;
 
 fn main() {
-    let mut width = 2560;
-    let mut height = 1440;
+    let mut width = 1280;
+    let mut height = 720;
     let args = util::clargs::collect();
     for (index, arg) in args.iter().enumerate() {
         if arg == "--size" || arg == "-S" {

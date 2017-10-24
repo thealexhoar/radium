@@ -1,5 +1,3 @@
-use util::Point;
-
 #[derive(Clone, Copy)]
 pub enum Direction {
     Up,

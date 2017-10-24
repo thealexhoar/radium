@@ -2,7 +2,6 @@ use coremanager::CoreState;
 use ecs::*;
 use graphics::*;
 use game::action::*;
-use game::component::ColliderComponent;
 use game::Blackboard;
 use game::Direction;
 use game::ui::*;

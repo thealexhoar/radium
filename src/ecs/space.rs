@@ -1,4 +1,4 @@
-use ecs::{Component, PositionComponent, Entity, ComponentManager};
+use ecs::{Entity};
 use std::collections::{HashMap};
 use util::Point;
 
