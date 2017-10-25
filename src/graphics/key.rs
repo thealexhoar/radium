@@ -37,5 +37,7 @@ pub enum Key {
     Num8,
     Num9,
     Space,
-    Tab
+    Tab,
+    Return,
+    Escape
 }

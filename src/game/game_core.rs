@@ -1,29 +1,15 @@
-use ecs::*;
-use graphics::*;
-use game::action::*;
-use game::components::ColliderComponent;
+use core_manager::CoreState;
+use ecs::{ComponentManager, Engine, Entity, Scheduler, Space};
+use graphics::{Event, GlyphBatch, Key, Window};
+use game::action::{Action, MoveAction, WaitAction};
 use game::Blackboard;
 use game::Direction;
-use game::graphics::*;
-use game::ui::*;
+use game::ui::MouseInterface;
 use std::cmp::max;
 use std::ops::DerefMut;
-use util::Point;
-
-
-const WINDOW_WIDTH:u32   = 80;
-const WINDOW_HEIGHT:u32  = 45;
-const GAME_WIDTH:u32     = 55;
-const GAME_HEIGHT:u32    = 31;
-const CONSOLE_WIDTH:u32  = GAME_WIDTH;
-const CONSOLE_HEIGHT:u32 = WINDOW_HEIGHT - GAME_HEIGHT;
-const INFO_WIDTH:u32     = WINDOW_WIDTH - GAME_WIDTH;
-const INFO_HEIGHT:u32    = WINDOW_HEIGHT;
-
-const TURN_MAX_TIME:u32 = 300;
 
 #[derive(Clone, Copy, PartialEq, Eq)]
-pub enum CoreState {
+pub enum GameState {
     PlayerTurn,
     EnemyTurn,
 
@@ -31,130 +17,66 @@ pub enum CoreState {
     EnemyAction
 }
 
-pub struct Core {
-    pub width: u32,
-    pub height: u32,
-    pub blackboard: Blackboard,
-    pub current_action: Option<Box<Action>>,
-    pub engine: Engine,
-    pub glyphbatch: GlyphBatch,
-    pub mouse_interface: MouseInterface,
-    pub scheduler: Scheduler,
-    pub state: CoreState,
-    pub window: Window
+pub struct GameCore {
+    current_action: Option<Box<Action>>,
+    state: GameState
 }
 
 
-impl Core {
-    pub fn new(width: u32, height: u32) -> Core {
-        Core {
-            width,
-            height,
-            blackboard: Blackboard::new(),
+impl GameCore {
+    pub fn new() -> Self {
+        Self {
             current_action: None,
-            engine: Engine::new(),
-            glyphbatch: GlyphBatch::new(
-                GlyphSet::new("assets/tileset_16x16.png", 16, 16, 1024),
-                WINDOW_WIDTH, WINDOW_HEIGHT,
-                width, height
-            ),
-            mouse_interface: MouseInterface::new(
-                GAME_WIDTH, GAME_HEIGHT,
-                INFO_WIDTH, INFO_HEIGHT
-            ),
-            scheduler: Scheduler::new(),
-            state: CoreState::PlayerTurn,
-            window: Window::new(width, height),
+            state: GameState::PlayerTurn
         }
     }
 
-    pub fn init(&mut self) {
-        self.blackboard.camera = Some(Camera::new(0,0,0));
-        self.blackboard.max_action_time = TURN_MAX_TIME;
+    pub fn init(
+        &mut self,
+        blackboard: &mut Blackboard,
+        engine: &mut Engine,
+        glyph_batch: &mut GlyphBatch,
+        mouse_interface: &mut MouseInterface,
+        scheduler: &mut Scheduler,
+        window: &mut Window
+    ) {
 
-        self.engine.passive_systems.push(
-            Box::new(RenderSystem::new(
-                GAME_WIDTH,
-                GAME_HEIGHT,
-                0, 0
-            ))
-        );
-        self.engine.passive_systems.push(
-            Box::new(SelectionRenderSystem::new(
-                GAME_WIDTH,
-                GAME_HEIGHT
-            ))
-        );
-        self.engine.passive_systems.push(
-            Box::new(ConsoleSystem::new(
-                GAME_WIDTH,
-                WINDOW_HEIGHT - GAME_HEIGHT,
-                0, GAME_HEIGHT
-            ))
-        );
-        self.engine.passive_systems.push(
-            Box::new(InfoSystem::new(
-                WINDOW_WIDTH - GAME_WIDTH,
-                WINDOW_HEIGHT,
-                GAME_WIDTH, 0
-            ))
-        );
-
-        self.engine.load(&mut self.blackboard);
-
-        for i in 0..4 {
-            let p = self.engine.component_manager.create_entity();
-            self.engine.component_manager
-                .set(p, PositionComponent::new(1 + i, 1, 0, 1));
-            self.engine.component_manager.set(p, TileComponent::new(
-                Tile::new(
-                    Some(Color::new_from_rgb(155, 200, 255)),
-                    None,
-                    160
-                )
-            ));
-            self.engine.component_manager.set(p, ColliderComponent::new(1));
-
-            self.engine.space.add_entity_at(p, Point::new(1 + i, 1, 0));
-            self.blackboard.player_entities.insert(p);
-            self.scheduler.push_entity(p, 0);
-        }
-
-        self.blackboard.current_entity = match self.scheduler.pop_entity() {
-            Some((e, dt)) => Some(e),
-            None          => None
-        };
     }
 
-    pub fn run(&mut self) {
-        while self.window.is_open() {
-            self.update();
-        }
-    }
+    pub fn update(
+        &mut self,
+        blackboard: &mut Blackboard,
+        engine: &mut Engine,
+        glyph_batch: &mut GlyphBatch,
+        mouse_interface: &mut MouseInterface,
+        scheduler: &mut Scheduler,
+        window: &mut Window
+    ) -> CoreState {
+        let mut out_state = CoreState::Game;
 
-    fn update(&mut self) {
-        let delta_time = self.window.elapsed_time();
+        let delta_time = window.elapsed_time();
 
-        self.mouse_interface.update(&self.window);
+        mouse_interface.update(window);
 
-        self.engine.update_passive_systems(
-            &mut self.glyphbatch,
-            &mut self.window,
-            &mut self.blackboard,
+        engine.update_passive_systems(
+            glyph_batch,
+            window,
+            blackboard,
             delta_time
         );
 
-        self.window.clear();
-        self.glyphbatch.flush_tiles();
-        self.window.draw_glyphbatch(&self.glyphbatch);
 
-        let events = self.window.events();
+        window.clear();
+        glyph_batch.flush_tiles();
+        window.draw_glyph_batch(&glyph_batch);
+
+        let events = window.events();
 
         let mut next_state = self.state;
         match self.state {
-            CoreState::PlayerTurn         => {
+            GameState::PlayerTurn         => {
                 //listen for actions pertaining to selected unit
-                let entity = self.blackboard.current_entity.unwrap();
+                let entity = blackboard.current_entity.unwrap();
                 next_state = self.keyboard_control(
                     &events,
                     entity
@@ -164,73 +86,74 @@ impl Core {
                 }
 
                 self.control_camera(
-                    &events
+                    blackboard,
+                    &events,
                 );
             },
 
-            CoreState::EnemyTurn          => {
+            GameState::EnemyTurn          => {
                 //iterate through enemy controllers
             },
 
-            CoreState::PlayerAction |
-            CoreState::EnemyAction        => {
+            GameState::PlayerAction |
+            GameState::EnemyAction        => {
                 let (completed, end_turn, delta) = match self.current_action {
                     Some(ref mut action_box) => action_box
                         .deref_mut()
                         .execute(
-                            &mut self.engine.component_manager,
-                            &mut self.engine.space,
-                            &mut self.blackboard,
+                            &mut engine.component_manager,
+                            &mut engine.space,
+                            blackboard,
                             delta_time
                     ),
                     None => (true, false, 0)
                 };
                 let time_elapsed = delta > 0;
                 if time_elapsed {
-                    self.engine.update_continuous_systems(
-                        &mut self.blackboard,
+                    engine.update_continuous_systems(
+                        blackboard,
                         delta
                     );
                 }
                 
                 if completed {
                     if time_elapsed {
-                        self.blackboard.current_action_time += delta;
+                        blackboard.current_action_time += delta;
                     }
-                    if self.blackboard.current_action_time
-                        >= self.blackboard.max_action_time
+                    if blackboard.current_action_time
+                        >= blackboard.max_action_time
                         || end_turn
                     {
                         if end_turn {
-                            self.blackboard.current_action_time =
-                                max(150, self.blackboard.current_action_time);
-                            //TODO: make dynamic
+                            blackboard.current_action_time =
+                                max(blackboard.max_action_time, blackboard.current_action_time);
+                            //TODO: make dynamic?
                         }
-                        self.scheduler.push_entity(
-                            self.blackboard.current_entity.unwrap(),
-                            self.blackboard.current_action_time
+                        scheduler.push_entity(
+                            blackboard.current_entity.unwrap(),
+                            blackboard.current_action_time
                         );
 
-                        match self.scheduler.pop_entity() {
+                        match scheduler.pop_entity() {
                             Some((entity, dt)) => {
-                                self.blackboard.current_entity =
+                                blackboard.current_entity =
                                     Some(entity);
-                                self.scheduler.elapse_time(dt);
+                                scheduler.elapse_time(dt);
                             }
                             None => {
-                                self.blackboard.current_entity = None;
+                                blackboard.current_entity = None;
                             }
                         };
 
-                        self.blackboard.current_action_time = 0;
+                        blackboard.current_action_time = 0;
                     }
 
                     self.current_action = None;
                     match self.state {
-                        CoreState::PlayerAction =>
-                            next_state = CoreState::PlayerTurn,
-                        CoreState::EnemyAction    =>
-                            next_state = CoreState::EnemyTurn,
+                        GameState::PlayerAction =>
+                            next_state = GameState::PlayerTurn,
+                        GameState::EnemyAction    =>
+                            next_state = GameState::EnemyTurn,
                         _ => {}
                     }
                 }
@@ -241,14 +164,16 @@ impl Core {
 
         self.state = next_state;
 
-        self.window.update_event_queue();
+        window.update_event_queue();
+
+        out_state
     }
 
     fn keyboard_control(
         &mut self,
         events: &Vec<Event>,
         entity: Entity
-    ) -> CoreState {
+    ) -> GameState {
         for &event in events.iter() {
             match event {
                 Event::KeyPress{code, alt, ctrl, shift} => {
@@ -314,19 +239,19 @@ impl Core {
                         _ => { action_taken = false; None }
                     };
                     if action_taken {
-                        return CoreState::PlayerAction
+                        return GameState::PlayerAction
                     }
                 },
                 _ => {}
             }
         }
-        CoreState::PlayerTurn
+        GameState::PlayerTurn
     }
 
     fn mouse_control(
         &mut self,
         events: &Vec<Event>
-    ) -> CoreState {
+    ) -> GameState {
         let mut action_taken = false;
         //TODO: implement mouse control
         self.state
@@ -334,11 +259,12 @@ impl Core {
 
     fn control_camera(
         &mut self,
+        blackboard: &mut Blackboard,
         events: &Vec<Event>
     ) {
-        let camera = match self.blackboard.camera {
-            Some(ref mut cam) => cam,
-            None      => { return; }
+        let camera = match blackboard.camera {
+            Some(ref mut c) => c,
+            None            => { return; }
         };
         for &event in events.iter() {
             match event {
@@ -357,5 +283,4 @@ impl Core {
             }
         }
     }
-
 }

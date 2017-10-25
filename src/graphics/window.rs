@@ -64,8 +64,8 @@ impl Window {
         self._render_window.clear(&SFColor::black());
     }
 
-    pub fn draw_glyphbatch(&mut self, glyphbatch:& GlyphBatch) {
-        glyphbatch.render(&mut self._render_window);
+    pub fn draw_glyph_batch(&mut self, glyph_batch:& GlyphBatch) {
+        glyph_batch.render(&mut self._render_window);
         self._render_window.display();
     }
 
@@ -182,6 +182,9 @@ impl Window {
             SFKey::Num9 => Event::KeyPress{code:Key::Num9, alt, ctrl, shift},
             SFKey::Space => Event::KeyPress{code:Key::Space, alt, ctrl, shift},
             SFKey::Tab => Event::KeyPress{code:Key::Tab, alt, ctrl, shift},
+            SFKey::Return =>
+                Event::KeyPress{code:Key::Return, alt, ctrl, shift},
+            SFKey::Escape => Event::KeyPress{code:Key::Escape, alt, ctrl, shift},
             _      => Event::None
         }
     }

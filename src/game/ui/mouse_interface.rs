@@ -1,4 +1,4 @@
-use graphics::*;
+use graphics::{GlyphBatch, MouseButton, Window};
 
 pub enum ButtonType {
     //TODO: implement
@@ -71,9 +71,9 @@ impl MouseInterface {
     pub fn current_input(
         &self,
         window: &Window,
-        glyphbatch: &GlyphBatch
+        glyph_batch: &GlyphBatch
     ) -> Option<MouseInput> {
-        let pos = Self::input_pos(window, glyphbatch);
+        let pos = Self::input_pos(window, glyph_batch);
         match pos {
             Some((x,y)) => {
                 if x < self.game_width && y < self.game_height {
@@ -89,12 +89,12 @@ impl MouseInterface {
 
     fn input_pos(
         window: &Window,
-        glyphbatch: &GlyphBatch
+        glyph_batch: &GlyphBatch
     ) -> Option<(u32, u32)> {
         let (mouse_x, mouse_y) = window.mouse_pos();
 
         match (mouse_x, mouse_y) {
-            (Some(x), Some(y)) => Some(glyphbatch.get_tile_from_pos(x,y)),
+            (Some(x), Some(y)) => Some(glyph_batch.get_tile_from_pos(x,y)),
             _                  => None
         }
     }

@@ -1,5 +1,5 @@
 use ecs::Entity;
-use game::graphics::Camera;
+use game::render::Camera;
 use std::collections::HashSet;
 
 pub struct Blackboard {

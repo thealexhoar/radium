@@ -1,5 +1,4 @@
-use ecs::*;
-use std::any::Any;
+use ecs::{Entity};
 
 struct ScheduleItem {
     pub entity: Entity,

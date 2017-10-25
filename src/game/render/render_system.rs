@@ -1,7 +1,7 @@
-use ecs::*;
-use graphics::*;
+use ecs::{ComponentManager, PassiveSystem, PositionComponent, Space};
+use graphics::{DrawTarget, GlyphBatch, RGBColor, Window};
 use util::Point;
-use game::graphics::TileComponent;
+use game::render::TileComponent;
 use game::Blackboard;
 
 pub struct RenderSystem {
@@ -41,7 +41,7 @@ impl PassiveSystem for RenderSystem {
         blackboard: &mut Blackboard,
         component_manager: &ComponentManager,
         space: &Space,
-        glyphbatch: &mut GlyphBatch,
+        glyph_batch: &mut GlyphBatch,
         window: &mut Window,
         delta_time: f32
     ) {
@@ -93,7 +93,7 @@ impl PassiveSystem for RenderSystem {
                                 ),
                                 None        => None
                             };
-                            tile.bg_color = Some(Color::black());
+                            tile.bg_color = Some(RGBColor::black());
                         }
 
                         let highest =
@@ -127,7 +127,7 @@ impl PassiveSystem for RenderSystem {
             }
         }
 
-        glyphbatch.drawtarget.set_from_drawtarget(
+        glyph_batch.draw_target.set_from_draw_target(
             &self._draw_target,
             self._window_x,
             self._window_y

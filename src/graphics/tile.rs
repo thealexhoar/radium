@@ -1,17 +1,17 @@
-use graphics::Color;
+use graphics::RGBColor;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Tile {
-    pub fg_color: Option<Color>,
-    pub bg_color: Option<Color>,
+    pub fg_color: Option<RGBColor>,
+    pub bg_color: Option<RGBColor>,
     pub tile_id: u32
 
 }
 
 impl Tile {
     pub fn new(
-        fg_color: Option<Color>,
-        bg_color: Option<Color>,
+        fg_color: Option<RGBColor>,
+        bg_color: Option<RGBColor>,
         tile_id: u32
     ) -> Tile {
         Tile {

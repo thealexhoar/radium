@@ -1,5 +1,5 @@
-use ecs::*;
-use graphics::*;
+use ecs::{ComponentManager, PassiveSystem, Space};
+use graphics::{DrawTarget, GlyphBatch, RGBColor, Tile, Window};
 use game::Blackboard;
 
 pub struct InfoSystem {
@@ -29,9 +29,9 @@ impl InfoSystem {
 
         //TODO: Draw real borders
         let border_tile = Tile::new(
-            Some(Color::black()),
-            Some(Color::gray()),
-            '+' as u32
+            Some(RGBColor::gray()),
+            Some(RGBColor::black()),
+            719//'+' as u32
         );
         output._draw_target.set_tiles_rect(
             Some(border_tile),
@@ -45,8 +45,8 @@ impl InfoSystem {
         self._center_draw_target.draw_string_slice(
             "Camera Center",
             0, row,
-            Color::yellow(),
-            Some(Color::black())
+            RGBColor::yellow(),
+            Some(RGBColor::black())
         );
         let mut x = 0;
         let mut y = 0;
@@ -64,8 +64,8 @@ impl InfoSystem {
         self._center_draw_target.draw_string_slice(
             &(x.to_string() + "," + &y.to_string() + "," + &z.to_string()),
             1, row + 1,
-            Color::yellow(),
-            Some(Color::black())
+            RGBColor::yellow(),
+            Some(RGBColor::black())
         );
     }
 
@@ -73,8 +73,8 @@ impl InfoSystem {
         self._center_draw_target.draw_string_slice(
             "Turn Time",
             0, row,
-            Color::yellow(),
-            Some(Color::black())
+            RGBColor::yellow(),
+            Some(RGBColor::black())
         );
 
         let time = blackboard.current_action_time;
@@ -83,8 +83,8 @@ impl InfoSystem {
         self._center_draw_target.draw_string_slice(
             &(time.to_string() + "/" + &max_time.to_string()),
             1, row + 1,
-            Color::yellow(),
-            Some(Color::black())
+            RGBColor::yellow(),
+            Some(RGBColor::black())
         );
     }
 }
@@ -95,7 +95,7 @@ impl PassiveSystem for InfoSystem {
         blackboard: &mut Blackboard,
         component_manager: &ComponentManager,
         space: &Space,
-        glyphbatch: &mut GlyphBatch,
+        glyph_batch: &mut GlyphBatch,
         window: &mut Window,
         delta_time: f32
     ) {
@@ -105,11 +105,11 @@ impl PassiveSystem for InfoSystem {
         self.draw_camera_info(1, blackboard);
         self.draw_turn_info(3, blackboard);
 
-        self._draw_target.set_from_drawtarget(
+        self._draw_target.set_from_draw_target(
             &self._center_draw_target,
             1, 0
         );
-        glyphbatch.drawtarget.set_from_drawtarget(
+        glyph_batch.draw_target.set_from_draw_target(
             &self._draw_target,
             self._window_x, self._window_y
         );

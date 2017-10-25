@@ -1,4 +1,4 @@
-use graphics::{Color, Tile};
+use graphics::{RGBColor, Tile};
 
 use std::cmp::min;
 use std::str::Chars;
@@ -115,19 +115,19 @@ impl DrawTarget {
         }
     }
 
-    pub fn set_from_drawtarget(
+    pub fn set_from_draw_target(
         &mut self,
-        drawtarget:&DrawTarget,
+        draw_target:&DrawTarget,
         x:u32, y:u32
     ) {
-        let width = drawtarget.width();
-        let height = drawtarget.height();
-        self.set_from_drawtarget_subrect(drawtarget, x, y, 0, 0, width, height);
+        let width = draw_target.width();
+        let height = draw_target.height();
+        self.set_from_draw_target_subrect(draw_target, x, y, 0, 0, width, height);
     }
 
-    pub fn set_from_drawtarget_subrect(
+    pub fn set_from_draw_target_subrect(
         &mut self,
-        drawtarget:&DrawTarget,
+        draw_target:&DrawTarget,
         x:u32, y:u32,
         sub_x:u32, sub_y:u32,
         width:u32, height:u32
@@ -137,31 +137,31 @@ impl DrawTarget {
         for i in 0..x_bound {
             for j in 0..y_bound {
                 self.set_tile(
-                    drawtarget.get_tile(sub_x + i, sub_y + j),
+                    draw_target.get_tile(sub_x + i, sub_y + j),
                     x + i, y + j
                 );
             }
         }
     }
 
-    pub fn overlay_from_drawtarget(
+    pub fn overlay_from_draw_target(
         &mut self,
-        drawtarget:&DrawTarget,
+        draw_target:&DrawTarget,
         x:u32, y:u32
     ) {
-        let width = drawtarget.width();
-        let height = drawtarget.height();
-        self.overlay_from_drawtarget_subrect(
-            drawtarget,
+        let width = draw_target.width();
+        let height = draw_target.height();
+        self.overlay_from_draw_target_subrect(
+            draw_target,
             x, y,
             0, 0,
             width, height
         );
     }
 
-    pub fn overlay_from_drawtarget_subrect(
+    pub fn overlay_from_draw_target_subrect(
         &mut self,
-        drawtarget:&DrawTarget,
+        draw_target:&DrawTarget,
         x:u32, y:u32,
         sub_x:u32, sub_y:u32,
         width:u32, height:u32
@@ -171,31 +171,31 @@ impl DrawTarget {
         for i in 0..x_bound {
             for j in 0..y_bound {
                 self.set_tile(
-                    drawtarget.get_tile(sub_x + i, sub_y + j),
+                    draw_target.get_tile(sub_x + i, sub_y + j),
                     x + i, y + j
                 );
             }
         }
     }
 
-    pub fn overlay_soft_from_drawtarget(
+    pub fn overlay_soft_from_draw_target(
         &mut self,
-        drawtarget:&DrawTarget,
+        draw_target:&DrawTarget,
         x:u32, y:u32
     ) {
-        let width = drawtarget.width();
-        let height = drawtarget.height();
-        self.overlay_soft_from_drawtarget_subrect(
-            drawtarget,
+        let width = draw_target.width();
+        let height = draw_target.height();
+        self.overlay_soft_from_draw_target_subrect(
+            draw_target,
             x, y,
             0, 0,
             width, height
         );
     }
 
-    pub fn overlay_soft_from_drawtarget_subrect(
+    pub fn overlay_soft_from_draw_target_subrect(
         &mut self,
-        drawtarget:&DrawTarget,
+        draw_target:&DrawTarget,
         x:u32, y:u32,
         sub_x:u32, sub_y:u32,
         width:u32, height:u32
@@ -205,7 +205,7 @@ impl DrawTarget {
         for i in 0..x_bound {
             for j in 0..y_bound {
                 self.overlay_tile_soft(
-                    drawtarget.get_tile(sub_x + i, sub_y + j),
+                    draw_target.get_tile(sub_x + i, sub_y + j),
                     x + i,
                     y + j
                 );
@@ -215,10 +215,10 @@ impl DrawTarget {
 
     pub fn draw_string(
         &mut self,
-        text:&String,
-        x:u32, y:u32,
-        fg_color:Color,
-        bg_color:Option<Color>
+        text: &String,
+        x: u32, y: u32,
+        fg_color: RGBColor,
+        bg_color: Option<RGBColor>
     ) {
         self.draw_string_slice(text.as_str(), x, y, fg_color, bg_color);
     }
@@ -227,8 +227,8 @@ impl DrawTarget {
         &mut self,
         text:&str,
         x:u32, y:u32,
-        fg_color:Color,
-        bg_color:Option<Color>
+        fg_color:RGBColor,
+        bg_color:Option<RGBColor>
     ) {
         let mut chars = text.chars();
         self.draw_chars(chars, x, y, fg_color, bg_color);
@@ -238,8 +238,8 @@ impl DrawTarget {
         &mut self,
         mut chars:Chars,
         x:u32, y:u32,
-        fg_color:Color,
-        bg_color:Option<Color>
+        fg_color:RGBColor,
+        bg_color:Option<RGBColor>
     ) {
         if x >= self._width || y >= self._height {
             return;

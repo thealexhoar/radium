@@ -1,5 +1,5 @@
-use ecs::*;
-use graphics::*;
+use ecs::{ComponentManager, PassiveSystem, Space};
+use graphics::{DrawTarget, GlyphBatch, RGBColor, Tile, Window};
 use game::Blackboard;
 
 pub struct ConsoleSystem {
@@ -29,9 +29,9 @@ impl ConsoleSystem {
         
         //TODO: Draw real borders
         let border_tile = Tile::new(
-            Some(Color::black()),
-            Some(Color::gray()),
-            '+' as u32
+            Some(RGBColor::gray()),
+            Some(RGBColor::black()),
+            751//'+' as u32
         );
         output._draw_target.set_tiles_rect(
             Some(border_tile),
@@ -49,7 +49,7 @@ impl PassiveSystem for ConsoleSystem {
         blackboard: &mut Blackboard,
         component_manager: &ComponentManager,
         space: &Space,
-        glyphbatch: &mut GlyphBatch,
+        glyph_batch: &mut GlyphBatch,
         window: &mut Window,
         delta_time: f32
     ) {
@@ -59,15 +59,15 @@ impl PassiveSystem for ConsoleSystem {
         self._center_draw_target.draw_string_slice(
             "Console will go here",
             5, 1,
-            Color::yellow(),
-            Some(Color::black())
+            RGBColor::yellow(),
+            Some(RGBColor::black())
         );
 
-        self._draw_target.set_from_drawtarget(
+        self._draw_target.set_from_draw_target(
             &self._center_draw_target, 
             0, 1
         ); 
-        glyphbatch.drawtarget.set_from_drawtarget(
+        glyph_batch.draw_target.set_from_draw_target(
             &self._draw_target,
             self._window_x, self._window_y
         );

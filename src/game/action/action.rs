@@ -1,4 +1,4 @@
-use ecs::*;
+use ecs::{ComponentManager, Space};
 use game::Blackboard;
 
 pub trait Action {

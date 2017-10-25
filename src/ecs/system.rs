@@ -10,7 +10,7 @@ pub trait PassiveSystem {
         blackboard: &mut Blackboard,
         component_manager: &ComponentManager,
         space: &Space,
-        glyphbatch: &mut GlyphBatch,
+        glyph_batch: &mut GlyphBatch,
         window: &mut Window,
         delta_time: f32 // real elapsed time
     );
