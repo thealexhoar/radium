@@ -226,6 +226,8 @@ impl CoreManager {
                         &mut self._window
                 ), 
             };
+
+            self._state = next_state;
         }
     }
 }

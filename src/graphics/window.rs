@@ -182,6 +182,9 @@ impl Window {
             SFKey::Num9 => Event::KeyPress{code:Key::Num9, alt, ctrl, shift},
             SFKey::Space => Event::KeyPress{code:Key::Space, alt, ctrl, shift},
             SFKey::Tab => Event::KeyPress{code:Key::Tab, alt, ctrl, shift},
+            SFKey::Return =>
+                Event::KeyPress{code:Key::Return, alt, ctrl, shift},
+            SFKey::Escape => Event::KeyPress{code:Key::Escape, alt, ctrl, shift},
             _      => Event::None
         }
     }

@@ -42,9 +42,28 @@ impl MainMenu {
         window.draw_glyph_batch(&glyph_batch);
 
         let events = window.events();
+        let mut out_state = CoreState::Menu(MenuType::Main);
         //update state here
+
+        //test
+
+        for event in events.iter() {
+            match event {
+                &Event::KeyPress{code, alt, ctrl, shift} => {
+                    match (code, alt, ctrl, shift) {
+                        (Key::Return, false, false, false) => {
+                            out_state = CoreState::Game;
+                        },
+                        _ => {}
+                    }
+                },
+                _ => {}
+            }
+        }
+
+
         window.update_event_queue();
 
-        CoreState::Menu(MenuType::Main)
+        out_state
     }
 }
