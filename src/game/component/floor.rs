@@ -1,4 +1,4 @@
-use ecs::*;
+use ecs::Component;
 
 pub struct FloorComponent {
     pub allow_up: bool,

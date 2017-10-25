@@ -1,10 +1,10 @@
 use core_manager::CoreState;
-use ecs::*;
-use graphics::*;
-use game::action::*;
+use ecs::{ComponentManager, Engine, Entity, Scheduler, Space};
+use graphics::{Event, GlyphBatch, Key, Window};
+use game::action::{Action, MoveAction, WaitAction};
 use game::Blackboard;
 use game::Direction;
-use game::ui::*;
+use game::ui::MouseInterface;
 use std::cmp::max;
 use std::ops::DerefMut;
 

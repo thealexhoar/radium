@@ -1,7 +1,7 @@
-use ecs::*;
+use ecs::{ComponentManager, Entity, PositionComponent, Space};
 use game::action::Action;
 use game::Blackboard;
-use game::component::{FloorComponent, ColliderComponent};
+use game::component::{ColliderComponent, FloorComponent};
 use game::Direction;
 use util::Point;
 use std::cmp::max;

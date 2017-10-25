@@ -1,4 +1,4 @@
-use graphics::*;
+use graphics::{GlyphBatch, MouseButton, Window};
 
 pub enum ButtonType {
     //TODO: implement

@@ -215,10 +215,10 @@ impl DrawTarget {
 
     pub fn draw_string(
         &mut self,
-        text:&String,
-        x:u32, y:u32,
-        fg_color:RGBColor,
-        bg_color:Option<RGBColor>
+        text: &String,
+        x: u32, y: u32,
+        fg_color: RGBColor,
+        bg_color: Option<RGBColor>
     ) {
         self.draw_string_slice(text.as_str(), x, y, fg_color, bg_color);
     }

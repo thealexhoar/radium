@@ -1,5 +1,5 @@
-use ecs::*;
-use graphics::*;
+use ecs::{ComponentManager, PassiveSystem, PositionComponent, Space};
+use graphics::{GlyphBatch, RGBColor, Tile, Window};
 use game::Blackboard;
 
 pub struct SelectionRenderSystem {

@@ -1,5 +1,5 @@
-use ecs::*;
-use graphics::*;
+use ecs::{ComponentManager, PassiveSystem, PositionComponent, Space};
+use graphics::{DrawTarget, GlyphBatch, RGBColor, Window};
 use util::Point;
 use game::render::TileComponent;
 use game::Blackboard;

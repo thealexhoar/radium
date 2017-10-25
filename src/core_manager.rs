@@ -54,15 +54,15 @@ impl CoreManager {
                 INFO_WIDTH, INFO_HEIGHT
             ),
             _scheduler: Scheduler::new(),
-            _state: CoreState::Game,
+            _state: CoreState::Menu(MenuType::Main),
             _window: Window::new(width, height),
         }
     }
 
     pub fn run(&mut self) {
-        self._blackboard.camera = Some(Camera::new(0,0,0));
+        self._blackboard.camera = Some(Camera::new(0, 0, 0, 8));
         self._blackboard.max_action_time = TURN_MAX_TIME;
-        
+
 
         self._engine.passive_systems.push(
             Box::new(RenderSystem::new(
@@ -114,7 +114,7 @@ impl CoreManager {
         }
 
         let tile_fg = RGBColor::new_from_rgb(30, 30, 30);
-        let tile_bg = RGBColor::new_from_rgb(0,0,0);
+        let tile_bg = RGBColor::new_from_rgb(0, 0, 0);
 
         let floor_tile = Tile::new(
             Some(tile_fg),
@@ -126,33 +126,36 @@ impl CoreManager {
             Some(tile_bg),
             480
         );
-
-        for i in 0..40 {
-            for j in 0..25 {
-                let entity = self._engine.component_manager.create_entity();
-                self._engine.component_manager.set(
-                    entity,
-                    PositionComponent::new(i, j, 0, 0)
-                );
-                let mut tile = floor_tile;
-                if i == 0 || j == 0 {
-                    tile = wall_tile;
+        for l in 0..2 {
+            for i in 0..40 {
+                for j in 0..25 {
+                    let entity = self._engine.component_manager.create_entity();
                     self._engine.component_manager.set(
                         entity,
-                        ColliderComponent::new(1)
+                        PositionComponent::new(i, j, l, 0)
                     );
-                }
-                    else {
+                    let mut tile = floor_tile;
+                    if i == 0 || j == 0 {
+                        tile = wall_tile;
+                        self._engine.component_manager.set(
+                            entity,
+                            ColliderComponent::new(1)
+                        );
+                    } else if l == 0 {
                         self._engine.component_manager.set(
                             entity,
                             FloorComponent::new(false, false)
                         );
                     }
-                self._engine.component_manager.set(
-                    entity,
-                    TileComponent::new(tile)
-                );
-                self._engine.space.add_entity_at(entity, Point::new(i, j, 0));
+                    else {
+                        continue;
+                    }
+                    self._engine.component_manager.set(
+                        entity,
+                        TileComponent::new(tile)
+                    );
+                    self._engine.space.add_entity_at(entity, Point::new(i, j, l));
+                }
             }
         }
         for i in 0..20 {
@@ -177,7 +180,32 @@ impl CoreManager {
 
 
         let mut game_core = GameCore::new();
-        let mut menu_core = MenuCore::new();
+        let mut menu_core = MenuCore::new(
+            Box::new(
+                Label::new(
+                    0, 0,
+                    String::from("Config Menu"),
+                    RGBColor::yellow(),
+                    None
+                )
+            ),
+            Box::new(
+                Label::new(
+                    0, 0,
+                    String::from("Game Menu"),
+                    RGBColor::yellow(),
+                    None
+                )
+            ),
+            Box::new(
+                Label::new(
+                    0, 0,
+                    String::from("Main Menu"),
+                    RGBColor::yellow(),
+                    None
+                )
+            )
+        );
 
         while self._window.is_open() {
             let mut next_state = match self._state {

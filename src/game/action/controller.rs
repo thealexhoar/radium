@@ -1,5 +1,5 @@
-use ecs::*;
-use graphics::*;
+use ecs::{ComponentManager, Entity, Space};
+use graphics::{Window};
 use game::Blackboard;
 
 pub trait Controller {

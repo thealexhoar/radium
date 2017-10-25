@@ -19,11 +19,15 @@ pub struct MenuCore {
 }
 
 impl MenuCore {
-    pub fn new() -> Self {
+    pub fn new(
+        config_menu_object: Box<MenuObject>,
+        game_menu_object: Box<MenuObject>,
+        main_menu_object: Box<MenuObject>
+    ) -> Self {
         Self {
-            _config_menu: ConfigMenu::new(),
-            _game_menu: GameMenu::new(),
-            _main_menu: MainMenu::new()
+            _config_menu: ConfigMenu::new(config_menu_object),
+            _game_menu: GameMenu::new(game_menu_object),
+            _main_menu: MainMenu::new(main_menu_object)
         }
     }
 
@@ -41,28 +45,28 @@ impl MenuCore {
         window: &mut Window
     ) -> CoreState {
         match menu_type {
-            Config => self._config_menu.update(
+            MenuType::Config => self._config_menu.update(
                 blackboard,
                 engine,
                 glyph_batch,
                 mouse_interface,
                 window
             ),
-            Game   => self._game_menu.update(
+            MenuType::Game   => self._game_menu.update(
                 blackboard,
                 engine,
                 glyph_batch,
                 mouse_interface,
                 window
             ),
-            Main   => self._main_menu.update(
+            MenuType::Main   => self._main_menu.update(
                 blackboard,
                 engine,
                 glyph_batch,
                 mouse_interface,
                 window
             ),
-            _      => CoreState::Menu(menu_type)
+            _                => CoreState::Menu(menu_type)
         }
     }
 }

@@ -1,5 +1,5 @@
-use ecs::*;
-use graphics::*;
+use ecs::{ComponentManager, PassiveSystem, Space};
+use graphics::{DrawTarget, GlyphBatch, RGBColor, Tile, Window};
 use game::Blackboard;
 
 pub struct InfoSystem {

@@ -1,4 +1,4 @@
-use ecs::*;
+use ecs::Component;
 
 pub struct ColliderComponent {
     pub collision_bits: u32
