@@ -180,6 +180,17 @@ impl CoreManager {
 
 
         let mut game_core = GameCore::new();
+
+        let main_menu = Box::new(
+            Canvas::new(0, 0)
+                .add(Box::new(Label::new(
+                    10, 20,
+                    String::from("Main Menu"),
+                    RGBColor::yellow(),
+                    None
+                )))
+        );
+
         let mut menu_core = MenuCore::new(
             Box::new(
                 Label::new(
@@ -197,14 +208,7 @@ impl CoreManager {
                     None
                 )
             ),
-            Box::new(
-                Label::new(
-                    0, 0,
-                    String::from("Main Menu"),
-                    RGBColor::yellow(),
-                    None
-                )
-            )
+            main_menu
         );
 
         while self._window.is_open() {

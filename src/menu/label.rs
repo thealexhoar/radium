@@ -32,11 +32,13 @@ impl Label {
 
 impl MenuObject for Label {
     fn select(&mut self) -> bool {
-        true
+        //can't select a label
+        false
     }
 
     fn deselect(&mut self) -> bool {
-        true
+        //can't select a label
+        false
     }
 
     fn update(
