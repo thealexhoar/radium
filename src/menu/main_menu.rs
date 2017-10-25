@@ -22,6 +22,15 @@ impl MainMenu {
         mouse_interface: &mut MouseInterface,
         window: &mut Window
     ) -> CoreState {
+
+        //render to drawtarget here
+
+        window.clear();
+        glyph_batch.flush_tiles();
+        window.draw_glyph_batch(&glyph_batch);
+
+        //update state here
+
         CoreState::Menu(MenuType::Main)
     }
 }
