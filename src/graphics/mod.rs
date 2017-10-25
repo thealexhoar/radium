@@ -1,16 +1,16 @@
-pub use self::rgbcolor::RGBColor;
-pub use self::drawtarget::DrawTarget;
-pub use self::glyphbatch::GlyphBatch;
-pub use self::glyphset::GlyphSet;
+pub use self::rgb_color::RGBColor;
+pub use self::draw_target::DrawTarget;
+pub use self::glyph_batch::GlyphBatch;
+pub use self::glyph_set::GlyphSet;
 pub use self::key::Key;
 pub use self::tile::Tile;
 pub use self::window::{Window, Event, MouseButton};
 
 
-mod rgbcolor;
-mod drawtarget;
-mod glyphbatch;
-mod glyphset;
+mod rgb_color;
+mod draw_target;
+mod glyph_batch;
+mod glyph_set;
 mod key;
 mod tile;
 mod window;

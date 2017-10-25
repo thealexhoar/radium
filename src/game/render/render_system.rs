@@ -41,7 +41,7 @@ impl PassiveSystem for RenderSystem {
         blackboard: &mut Blackboard,
         component_manager: &ComponentManager,
         space: &Space,
-        glyphbatch: &mut GlyphBatch,
+        glyph_batch: &mut GlyphBatch,
         window: &mut Window,
         delta_time: f32
     ) {
@@ -127,7 +127,7 @@ impl PassiveSystem for RenderSystem {
             }
         }
 
-        glyphbatch.drawtarget.set_from_drawtarget(
+        glyph_batch.draw_target.set_from_draw_target(
             &self._draw_target,
             self._window_x,
             self._window_y

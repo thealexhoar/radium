@@ -31,7 +31,7 @@ impl PassiveSystem for SelectionRenderSystem {
         blackboard: &mut Blackboard,
         component_manager: &ComponentManager,
         space: &Space,
-        glyphbatch: &mut GlyphBatch,
+        glyph_batch: &mut GlyphBatch,
         window: &mut Window,
         delta_time: f32
     ) {
@@ -87,7 +87,7 @@ impl PassiveSystem for SelectionRenderSystem {
         let x = (position_component.point.x - world_x) as u32;
         let y = (position_component.point.y - world_y) as u32;
 
-        glyphbatch.drawtarget.overlay_tile(Some(tile), x, y);
+        glyph_batch.draw_target.overlay_tile(Some(tile), x, y);
 
     }
 }

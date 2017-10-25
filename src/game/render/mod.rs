@@ -1,9 +1,9 @@
 pub use self::camera::Camera;
-pub use self::rendersystem::RenderSystem;
-pub use self::selectionrendersystem::SelectionRenderSystem;
-pub use self::tilecomponent::TileComponent;
+pub use self::render_system::RenderSystem;
+pub use self::selection_render_system::SelectionRenderSystem;
+pub use self::tile_component::TileComponent;
 
 mod camera;
-mod rendersystem;
-mod selectionrendersystem;
-mod tilecomponent;
+mod render_system;
+mod selection_render_system;
+mod tile_component;

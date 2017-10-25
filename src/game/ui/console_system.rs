@@ -49,7 +49,7 @@ impl PassiveSystem for ConsoleSystem {
         blackboard: &mut Blackboard,
         component_manager: &ComponentManager,
         space: &Space,
-        glyphbatch: &mut GlyphBatch,
+        glyph_batch: &mut GlyphBatch,
         window: &mut Window,
         delta_time: f32
     ) {
@@ -63,11 +63,11 @@ impl PassiveSystem for ConsoleSystem {
             Some(RGBColor::black())
         );
 
-        self._draw_target.set_from_drawtarget(
+        self._draw_target.set_from_draw_target(
             &self._center_draw_target, 
             0, 1
         ); 
-        glyphbatch.drawtarget.set_from_drawtarget(
+        glyph_batch.draw_target.set_from_draw_target(
             &self._draw_target,
             self._window_x, self._window_y
         );

@@ -1,11 +1,12 @@
 pub use self::blackboard::Blackboard;
-pub use self::gamecore::GameCore;
+pub use self::game_core::GameCore;
 pub use self::direction::Direction;
 
 pub mod action;
+pub mod behavior;
 mod blackboard;
 pub mod component;
-mod gamecore;
+mod game_core;
 mod direction;
 pub mod render;
 pub mod ui;

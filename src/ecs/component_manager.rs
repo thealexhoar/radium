@@ -24,6 +24,8 @@ impl ComponentManager {
     }
 
     pub fn get<T: Component>(&self, entity:Entity) -> Option<&T> {
+
+    
         let id = TypeId::of::<T>();
 
         match self._data.get(&(id, entity)) {

@@ -1,7 +1,7 @@
-pub use self::consolesystem::*;
-pub use self::infosystem::*;
-pub use self::mouseinterface::*;
+pub use self::console_system::*;
+pub use self::info_system::*;
+pub use self::mouse_interface::*;
 
-mod consolesystem;
-mod infosystem;
-mod mouseinterface;
+mod console_system;
+mod info_system;
+mod mouse_interface;

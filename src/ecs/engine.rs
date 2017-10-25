@@ -35,7 +35,7 @@ impl Engine {
 
     pub fn update_passive_systems(
         &mut self,
-        glyphbatch: &mut GlyphBatch,
+        glyph_batch: &mut GlyphBatch,
         window: &mut Window,
         blackboard: &mut Blackboard,
         true_delta_time:f32
@@ -45,7 +45,7 @@ impl Engine {
                 blackboard,
                 &mut self.component_manager,
                 &mut self.space,
-                glyphbatch,
+                glyph_batch,
                 window,
                 true_delta_time
             );

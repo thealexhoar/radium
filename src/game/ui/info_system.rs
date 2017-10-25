@@ -95,7 +95,7 @@ impl PassiveSystem for InfoSystem {
         blackboard: &mut Blackboard,
         component_manager: &ComponentManager,
         space: &Space,
-        glyphbatch: &mut GlyphBatch,
+        glyph_batch: &mut GlyphBatch,
         window: &mut Window,
         delta_time: f32
     ) {
@@ -105,11 +105,11 @@ impl PassiveSystem for InfoSystem {
         self.draw_camera_info(1, blackboard);
         self.draw_turn_info(3, blackboard);
 
-        self._draw_target.set_from_drawtarget(
+        self._draw_target.set_from_draw_target(
             &self._center_draw_target,
             1, 0
         );
-        glyphbatch.drawtarget.set_from_drawtarget(
+        glyph_batch.draw_target.set_from_draw_target(
             &self._draw_target,
             self._window_x, self._window_y
         );

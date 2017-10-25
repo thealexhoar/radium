@@ -29,7 +29,7 @@ pub struct CoreManager {
     _height: u32,
     _blackboard: Blackboard,
     _engine: Engine,
-    _glyphbatch: GlyphBatch,
+    _glyph_batch: GlyphBatch,
     _mouse_interface: MouseInterface,
     _scheduler: Scheduler,
     _state: CoreState,
@@ -44,7 +44,7 @@ impl CoreManager {
             _height: height,
             _blackboard: Blackboard::new(),
             _engine: Engine::new(),
-            _glyphbatch: GlyphBatch::new(
+            _glyph_batch: GlyphBatch::new(
                 GlyphSet::new("assets/tileset_16x16.png", 16, 16, 1024),
                 WINDOW_WIDTH, WINDOW_HEIGHT,
                 width, height
@@ -184,17 +184,17 @@ impl CoreManager {
                 CoreState::Game => game_core.update(
                         &mut self._blackboard,
                         &mut self._engine,
-                        &mut self._glyphbatch,
+                        &mut self._glyph_batch,
                         &mut self._mouse_interface,
                         &mut self._scheduler,
                         &mut self._window
                 ),
-                CoreState::Menu(_) => menu_core.update(
+                CoreState::Menu(menu_type) => menu_core.update(
+                        menu_type,
                         &mut self._blackboard,
                         &mut self._engine,
-                        &mut self._glyphbatch,
+                        &mut self._glyph_batch,
                         &mut self._mouse_interface,
-                        &mut self._scheduler,
                         &mut self._window
                 ), 
             };

@@ -11,15 +11,15 @@ pub struct GlyphBatch {
     _small_offset: Vector2u,
     _fg_vertices: VertexArray,
     _bg_vertices: VertexArray,
-    _glyphset: GlyphSet,
+    _glyph_set: GlyphSet,
     _null_texture: Texture,
     _null_tile: Tile,
-    pub drawtarget: DrawTarget
+    pub draw_target: DrawTarget
 }
 
 impl GlyphBatch {
     pub fn new(
-        glyphset:GlyphSet,
+        glyph_set:GlyphSet,
         tiled_width:u32, tiled_height:u32,
         pixel_width:u32, pixel_height:u32
     ) -> GlyphBatch {
@@ -29,7 +29,7 @@ impl GlyphBatch {
         };
         let vertex_count = tiled_width * tiled_height * 4;
 
-        let mut glyphbatch = GlyphBatch{
+        let mut glyph_batch = GlyphBatch{
             _tile_size: Vector2u::new(0, 0),
             _tiled_dimensions: Vector2u::new(tiled_width, tiled_height),
             _pixel_dimensions: Vector2u::new(0, 0),
@@ -43,17 +43,17 @@ impl GlyphBatch {
                 PrimitiveType::Quads,
                 vertex_count as usize
             ),
-            _glyphset: glyphset,
-            drawtarget: DrawTarget::new(tiled_width, tiled_height),
+            _glyph_set: glyph_set,
+            draw_target: DrawTarget::new(tiled_width, tiled_height),
             _null_texture: match Texture::from_image(&null_img) {
                 Some(texture) => texture,
                 None          => panic!("Couldn't create Texture")
             },
             _null_tile: Tile::new(None, Some(RGBColor::black()), 0)
         };
-        glyphbatch.set_pixel_resolution(pixel_width, pixel_height);
+        glyph_batch.set_pixel_resolution(pixel_width, pixel_height);
 
-        glyphbatch
+        glyph_batch
     }
 
     pub fn set_null_color(&mut self, color:RGBColor) {
@@ -77,7 +77,7 @@ impl GlyphBatch {
         self._pixel_dimensions.y = pixel_height;
 
 
-        let base_tile_size = self._glyphset.tile_size();
+        let base_tile_size = self._glyph_set.tile_size();
         let x_scale = true_tile_size.x as u32 / base_tile_size.x;
         let y_scale = true_tile_size.y as u32 / base_tile_size.y;
         let min_scale = min(x_scale, y_scale);
@@ -107,7 +107,7 @@ impl GlyphBatch {
         let mut fg_renderstates = RenderStates::new (
                 BlendMode::default(),
                 Transform::identity(),
-                Some(&self._glyphset.texture),
+                Some(&self._glyph_set.texture),
                 None
         );
 
@@ -131,9 +131,9 @@ impl GlyphBatch {
 
     pub fn flush_tiles(&mut self) {
         let null_tile = self._null_tile;
-        for x in 0..self.drawtarget.width() {
-            for y in 0..self.drawtarget.height() {
-                match self.drawtarget.get_tile(x, y) {
+        for x in 0..self.draw_target.width() {
+            for y in 0..self.draw_target.height() {
+                match self.draw_target.get_tile(x, y) {
                     Some(tile) => self.set_vertices(tile, x, y),
                     None       => self.set_vertices(
                         null_tile,
@@ -166,7 +166,7 @@ impl GlyphBatch {
     }
 
     fn set_vertices(&mut self, tile:Tile, x:u32, y:u32) {
-        if tile.tile_id as usize > self._glyphset.sub_rects.len() {
+        if tile.tile_id as usize > self._glyph_set.sub_rects.len() {
             return;
         }
 
@@ -192,7 +192,7 @@ impl GlyphBatch {
         x:u32, y:u32
     ) {
         let base_index = (x + y * self._tiled_dimensions.x) * 4;
-        let source_rect = self._glyphset.sub_rects[tile_id as usize];
+        let source_rect = self._glyph_set.sub_rects[tile_id as usize];
 
         for i in 0..2 {
             for j in 0..2 {

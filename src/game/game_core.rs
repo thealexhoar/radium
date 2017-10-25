@@ -1,4 +1,4 @@
-use coremanager::CoreState;
+use core_manager::CoreState;
 use ecs::*;
 use graphics::*;
 use game::action::*;
@@ -35,7 +35,7 @@ impl GameCore {
         &mut self,
         blackboard: &mut Blackboard,
         engine: &mut Engine,
-        glyphbatch: &mut GlyphBatch,
+        glyph_batch: &mut GlyphBatch,
         mouse_interface: &mut MouseInterface,
         scheduler: &mut Scheduler,
         window: &mut Window
@@ -47,7 +47,7 @@ impl GameCore {
         &mut self,
         blackboard: &mut Blackboard,
         engine: &mut Engine,
-        glyphbatch: &mut GlyphBatch,
+        glyph_batch: &mut GlyphBatch,
         mouse_interface: &mut MouseInterface,
         scheduler: &mut Scheduler,
         window: &mut Window
@@ -59,7 +59,7 @@ impl GameCore {
         mouse_interface.update(window);
 
         engine.update_passive_systems(
-            glyphbatch,
+            glyph_batch,
             window,
             blackboard,
             delta_time
@@ -67,8 +67,8 @@ impl GameCore {
 
 
         window.clear();
-        glyphbatch.flush_tiles();
-        window.draw_glyphbatch(&glyphbatch);
+        glyph_batch.flush_tiles();
+        window.draw_glyph_batch(&glyph_batch);
 
         let events = window.events();
 
