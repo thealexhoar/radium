@@ -54,7 +54,8 @@ impl CoreManager {
                 INFO_WIDTH, INFO_HEIGHT
             ),
             _scheduler: Scheduler::new(),
-            _state: CoreState::Menu(MenuType::Main),
+            //_state: CoreState::Menu(MenuType::Main),
+            _state: CoreState::Game,
             _window: Window::new(width, height),
         }
     }
@@ -103,7 +104,7 @@ impl CoreManager {
                 Tile::new(
                     Some(RGBColor::new_from_rgb(155, 200, 255)),
                     None,
-                    160
+                    '@' as u32 //160
                 )
             ));
             self._engine.component_manager.set(p, ColliderComponent::new(1));
@@ -119,12 +120,12 @@ impl CoreManager {
         let floor_tile = Tile::new(
             Some(tile_fg),
             Some(tile_bg),
-            663
+            '.' as u32 //663
         );
         let wall_tile = Tile::new(
             Some(RGBColor::white()),
             Some(tile_bg),
-            480
+            '#' as u32 //480
         );
         for l in 0..2 {
             for i in 0..40 {

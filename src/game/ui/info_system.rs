@@ -29,9 +29,9 @@ impl InfoSystem {
 
         //TODO: Draw real borders
         let border_tile = Tile::new(
+            None,
             Some(RGBColor::gray()),
-            Some(RGBColor::black()),
-            719//'+' as u32
+            ' ' as u32
         );
         output._draw_target.set_tiles_rect(
             Some(border_tile),

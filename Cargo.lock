@@ -1,10 +1,3 @@
-[root]
-name = "radium"
-version = "0.1.0"
-dependencies = [
- "sfml 0.12.0 (git+https://github.com/thealexhoar/rust-sfml)",
-]
-
 [[package]]
 name = "bitflags"
 version = "0.5.0"
@@ -44,6 +37,13 @@ source = "git+https://github.com/thealexhoar/rust-sfml#f64e10a96722f0f2b38d63c38
 dependencies = [
  "csfml-system-sys 0.2.1 (git+https://github.com/thealexhoar/rust-sfml)",
  "sfml-build 0.1.0 (git+https://github.com/thealexhoar/rust-sfml)",
+]
+
+[[package]]
+name = "radium"
+version = "0.1.0"
+dependencies = [
+ "sfml 0.12.0 (git+https://github.com/thealexhoar/rust-sfml)",
 ]
 
 [[package]]

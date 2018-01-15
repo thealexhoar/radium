@@ -82,11 +82,11 @@ impl Action for MoveAction {
                 for entity in entities {
                     //check if something is in the way
                     let other_collision_bits = match component_manager
-                        .get::<ColliderComponent>(*entity) 
-                    {
-                        Some(cc) => cc.collision_bits,
-                        None     => { continue; }
-                    };
+                        .get::<ColliderComponent>(*entity)
+                        {
+                            Some(cc) => cc.collision_bits,
+                            None     => { continue; }
+                        };
                     if collision_bits & other_collision_bits > 0 {
                         allowed = false;
                         break;
@@ -94,18 +94,18 @@ impl Action for MoveAction {
 
                     let (allow_up, allow_down) = match component_manager
                         .get::<FloorComponent>(*entity)
-                    {
-                        Some(fc) => (fc.allow_up, fc.allow_down),
-                        None      => (false, false)
-                    };
+                        {
+                            Some(fc) => (fc.allow_up, fc.allow_down),
+                            None     => (false, false)
+                        };
 
                     if stairs_needed {
                         if dz > 0 {
                             stairs_present = stairs_present || allow_up;
                         }
-                        else {
-                            stairs_present = stairs_present || allow_down;
-                        }
+                            else {
+                                stairs_present = stairs_present || allow_down;
+                            }
                     }
 
                 }

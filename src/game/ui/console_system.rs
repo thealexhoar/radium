@@ -29,9 +29,9 @@ impl ConsoleSystem {
         
         //TODO: Draw real borders
         let border_tile = Tile::new(
+            None,
             Some(RGBColor::gray()),
-            Some(RGBColor::black()),
-            751//'+' as u32
+            ' ' as u32
         );
         output._draw_target.set_tiles_rect(
             Some(border_tile),

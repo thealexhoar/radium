@@ -1,11 +1,12 @@
 use graphics::GlyphBatch;
+use graphics::ICON_PIXELS;
 use graphics::Key;
 
 use sfml::window::mouse;
 use sfml::window::{ContextSettings, VideoMode, style};
 use sfml::window::Key as SFKey;
 use sfml::window::Event as SFEvent;
-use sfml::graphics::{RenderWindow, RenderTarget};
+use sfml::graphics::{Image, RenderWindow, RenderTarget};
 use sfml::graphics::Color as SFColor;
 use sfml::system::Clock;
 
@@ -45,6 +46,9 @@ impl Window {
             style::CLOSE,
             &ContextSettings::default()
         );
+
+        let img = Image::from_file("assets/icon.png");
+        window.set_icon(16, 16, &ICON_PIXELS);
 
         window.set_vertical_sync_enabled(true);
         window.set_key_repeat_enabled(false);
